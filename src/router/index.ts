@@ -3,11 +3,17 @@
 //RouteRecordRaw用于限定路由记录的类型，ts专属功能
 import {createRouter, createWebHashHistory, RouteRecordRaw} from "vue-router";
 
+//懒加载路由，避免一次性导入过多而卡顿
 const routes: RouteRecordRaw[] = [
+    {
+        path:'/',
+        name:'home',
+        component: () => import('../pages/home.vue')
+    },
     {
         path: '/login',
         name: 'login',
-        component: () => import('../pages/test.vue')
+        component: () => import('../pages/login.vue')
     },
     {
         path:'/test',
