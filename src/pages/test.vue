@@ -12,7 +12,7 @@ function increment(num:number) {
   user.increment(num)
 }
 
-1
+
 </script>
 
 
