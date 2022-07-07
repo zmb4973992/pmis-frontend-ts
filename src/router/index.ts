@@ -4,27 +4,43 @@
 import {createRouter, createWebHashHistory, RouteRecordRaw} from "vue-router";
 
 //懒加载路由，避免一次性导入过多而卡顿
+//这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 const routes: RouteRecordRaw[] = [
     {
-        path:'/',
-        name:'home',
-        component: () => import('../pages/home.vue')
+        path: '/',
+        name: 'home',
+        //meta用于自定义页面信息
+        meta: {
+            title: '首页',
+            requireAuth: false
+        },
+        component: () => import('../pages/home.vue'),
+        children: [
+            {
+                path: 'test',
+                name: 'test',
+                meta: {
+                    title: '测试页',
+                    requireAuth: false
+                },
+                component: () => import('../pages/test.vue')
+            }
+        ]
     },
     {
         path: '/login',
         name: 'login',
         component: () => import('../pages/login.vue')
     },
-    {
-        path:'/test',
-        name:'test',
-        component: () => import('../pages/test.vue')
-    }
 ]
 
 const router = createRouter({
     history: createWebHashHistory(),
-    routes: routes
+    routes
+})
+
+router.beforeEach((to,from) => {
+
 })
 
 export default router

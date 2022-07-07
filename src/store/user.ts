@@ -3,18 +3,15 @@ import {defineStore} from "pinia";
 const userUserStore = defineStore({
     id: 'user',
     state: () => ({
-        name: 'tom',
-        age: 22,
-        token:''
+        token: 'fdsd',
+        username: '',
+        roles:[],
     }),
     getters: {
-        doubleAge: (state) => state.age * 2,
+        testToken: (state) => 'aaa' + state.token ,
     },
     actions: {
-        increment(num:number) {
-            this.age += num
-        },
-        updateToken(token) {
+        updateToken(token: string) {
             this.token = token
         }
     }

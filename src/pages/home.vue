@@ -1,8 +1,21 @@
 <template>
-  这里是home组件
-  <a-button type="primary" @click="jump">Primary Button</a-button>
+  这里是home页面
+  <br />
+  <router-link :to="{name:'login'}">点击跳转至login页面</router-link>
+  <br /><br />
+  <router-link :to="{name:'test'}">点击跳转至test页面</router-link>
+  <br /><br />
+
+  <a-button type="primary" @click="jump">home页面 测试按钮</a-button>
+  <div>
   <a-rate v-model:value="value"/>
-  <div class="test">测试less</div>
+  </div>
+    <div class="test">测试less</div>
+  <br /><br />
+  <router-view/>
+
+
+
 
 
 </template>
@@ -20,7 +33,7 @@ const user = userUserStore()
 
 const jump = () => {
   router.push({name: 'test'})
-  user.updateToken('123')
+  user.updateToken('11111')
   console.log(user.token)
 }
 
@@ -30,7 +43,6 @@ const jump = () => {
 
 <style scoped lang="less">
 .test {
-  color: yellow;
-  background: red;
+  color: red;
 }
 </style>
