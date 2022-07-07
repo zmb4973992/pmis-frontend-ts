@@ -1,21 +1,15 @@
 <template>
-  这里是home页面
-  <br />
-  <router-link :to="{name:'login'}">点击跳转至login页面</router-link>
-  <br /><br />
-  <router-link :to="{name:'test'}">点击跳转至test页面</router-link>
-  <br /><br />
-
-  <a-button type="primary" @click="jump">home页面 测试按钮</a-button>
-  <div>
-  <a-rate v-model:value="value"/>
-  </div>
-    <div class="test">测试less</div>
-  <br /><br />
-  <router-view/>
+  <a-layout class="layout">
 
 
+    <a-layout-sider>Sider</a-layout-sider>
+    <a-layout>
+      <a-layout-header>Header</a-layout-header>
+      <a-layout-content>Content</a-layout-content>
+      <a-layout-footer>Footer</a-layout-footer>
+    </a-layout>
 
+  </a-layout>
 
 
 </template>
@@ -42,7 +36,22 @@ const jump = () => {
 </script>
 
 <style scoped lang="less">
-.test {
-  color: red;
+.layout {
+  height: 100vh;
+}
+.ant-layout-sider {
+  background: burlywood;
+}
+
+.ant-layout-header {
+  background: cornflowerblue;
+}
+
+.ant-layout-content {
+  background: antiquewhite;
+}
+
+.ant-layout-footer {
+  background: cornsilk ;
 }
 </style>
