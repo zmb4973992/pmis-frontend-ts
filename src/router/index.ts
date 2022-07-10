@@ -15,22 +15,16 @@ const routes: RouteRecordRaw[] = [
             requireAuth: false
         },
         component: () => import('../pages/home.vue'),
-        children: [
-            {
-                path: 'test',
-                name: 'test',
-                meta: {
-                    title: '测试页',
-                    requireAuth: false
-                },
-                component: () => import('../pages/test.vue')
-            }
-        ]
     },
     {
         path: '/login',
         name: 'login',
-        component: () => import('../pages/login.vue')
+        component: () => import('@/pages/login.vue')
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: '404',
+        component: ()=> import('@/pages/404.vue')
     },
 ]
 
@@ -39,7 +33,7 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to,from) => {
+router.beforeEach((to, from) => {
 
 })
 

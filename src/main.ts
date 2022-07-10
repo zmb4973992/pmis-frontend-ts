@@ -4,6 +4,7 @@ import router from "@/router";
 import store from "@/store";
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+import 'virtual:windi.css'
 // import './permission';
 
 const app = createApp(App)
