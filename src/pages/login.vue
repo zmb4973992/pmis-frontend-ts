@@ -1,44 +1,52 @@
 <template>
+  <!--版面总图-->
   <div class="layout">
+    <!--登录框-->
     <div class="login-container">
+      <!--中文标题-->
       <div class="chinese_title">
         中文标题
       </div>
+      <!--英文标题-->
       <div class="english_title">
         English Name
       </div>
       <br><br>
-      <a-form class="my_form"
+      <!--登录表单-->
+      <a-form
+          class="my_form"
+          name="login"
           :model="formState"
-          name="basic"
           :label-col="{ span: 6 }"
           :wrapper-col="{ span: 18 }"
           autocomplete="off"
           @finish="onFinish"
           @finishFailed="onFinishFailed"
       >
-        <a-form-item class="username_setting"
-            label="Username"
+        <a-form-item
+            class="username_setting"
+            label="用户名："
             name="username"
-            :rules="[{ required: true, message: 'Please input your username!' }]"
+            :rules="[{ required: true, message: '请输入用户名' }]"
         >
           <a-input v-model:value="formState.username"/>
         </a-form-item>
 
         <a-form-item
             class="password_setting"
-            label="Password"
+            label="密码："
             name="password"
-            :rules="[{ required: true, message: 'Please input your password!' }]"
+            :rules="[{ required: true, message: '请输入密码' }]"
         >
           <a-input-password v-model:value="formState.password"/>
         </a-form-item>
 
-        <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+        <a-form-item :wrapper-col="{ offset: 5, span: 16 }">
           <a-button type="primary" html-type="submit">Submit</a-button>
         </a-form-item>
       </a-form>
     </div>
+
 
   </div>
 
@@ -47,14 +55,27 @@
 
 <script setup lang="ts">
 import {reactive} from "vue";
+import request from "@/util/axios";
+import userUserStore from "@/store/user";
+
+const user = userUserStore()
 
 const formState = reactive({
   username: '',
   password: '',
 })
 
-const onFinish = (values: any) => {
-  console.log('Success:', values);
+const onFinish = (data: any) => {
+  request.post('/api/login', data).then((res) => {
+    // 如果返回的状态码不是0
+    if (res.data.code !== 0) {
+      console.log('登录失败')
+      return
+    }
+    console.log(res)
+    user.updateToken(res.data.data.access_token)
+    console.log(user.token)
+  })
 };
 
 const onFinishFailed = (errorInfo: any) => {
@@ -67,19 +88,21 @@ const onFinishFailed = (errorInfo: any) => {
 <style scoped lang="less">
 .layout {
   height: 100vh;
-  background-color: cornflowerblue;
+  //background-color: cornflowerblue;
+  //线性渐变背景色，方向-起始颜色-终止颜色
+  background: linear-gradient(to bottom, cornflowerblue, rgb(190, 220, 238));
   display: flex;
+  justify-content: center; //水平布局
+  align-items: center; //垂直布局
 }
 
 .login-container {
-  margin: auto;
-  justify-content: center;
-  align-items: center;
   width: 500px;
   height: 400px;
-  background-color: #fff;
-  border-radius: 20px;
-  box-shadow: 0 21px 41px 0 rgba(0, 0, 0, 0.2);
+  //线性渐变背景色，方向-起始颜色-终止颜色
+  background: linear-gradient(to bottom, RGB(110, 169, 237), rgb(190, 220, 238));
+  border-radius: 20px; //边框圆角
+  box-shadow: 0 21px 41px 0 rgba(0, 0, 0, 0.3); //边框阴影
 }
 
 .chinese_title {
@@ -95,5 +118,10 @@ const onFinishFailed = (errorInfo: any) => {
 .my_form {
   margin: auto 50px auto 40px;
 }
+
+.test {
+  margin: auto;
+}
+
 
 </style>

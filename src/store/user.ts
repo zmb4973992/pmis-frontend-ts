@@ -3,7 +3,7 @@ import {defineStore} from "pinia";
 const userUserStore = defineStore({
     id: 'user',
     state: () => ({
-        token: 'fdsd',
+        token: '',
         username: '',
         roles:[],
     }),
