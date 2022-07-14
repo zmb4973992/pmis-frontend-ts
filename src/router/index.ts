@@ -5,7 +5,6 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from "vue-router";
 //进度条
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'
-import request from "@/util/axios";
 
 import {useRouter} from "vue-router";
 
