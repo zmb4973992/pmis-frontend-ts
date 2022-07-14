@@ -54,17 +54,20 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to,from) => {
+router.beforeEach((to, from) => {
     NProgress.start()
-    if (to.meta.requireAuth === true ) {
-        if (to.name === 'login') {
-            const token = localStorage.getItem('access_token')
-            if (token) {
-                console.log('发现本地有token，允许访问')
-            }
-            console.log('本地没有token，跳转到登录页')
+    // 先判断该页是否需要登录
+    if (to.meta.requireAuth === true) {
+        const token = localStorage.getItem('access_token')
+        // 如果本地有token
+        if (token) {
+            console.log('发现本地有token，允许访问')
+            return
         }
-        myRouter.push({name:'home'})
+        console.log('本地没有token，跳转到登录页')
+        //重定向到登录页
+        return {name: 'login'}
+
     }
 })
 
