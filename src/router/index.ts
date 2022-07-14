@@ -7,6 +7,10 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'
 import request from "@/util/axios";
 
+import {useRouter} from "vue-router";
+
+const myRouter = useRouter()
+
 //懒加载路由，避免一次性导入过多而卡顿
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 const routes: RouteRecordRaw[] = [
@@ -16,7 +20,7 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '首页',
-            requireAuth: false
+            requireAuth: true
         },
         component: () => import('@/pages/home.vue'),
     },
@@ -50,8 +54,18 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach(() => {
+router.beforeEach((to,from) => {
     NProgress.start()
+    if (to.meta.requireAuth === true ) {
+        if (to.name === 'login') {
+            const token = localStorage.getItem('access_token')
+            if (token) {
+                console.log('发现本地有token，允许访问')
+            }
+            console.log('本地没有token，跳转到登录页')
+        }
+        myRouter.push({name:'home'})
+    }
 })
 
 router.afterEach(() => {
