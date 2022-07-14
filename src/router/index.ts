@@ -5,6 +5,7 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from "vue-router";
 //进度条
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'
+import request from "@/util/axios";
 
 //懒加载路由，避免一次性导入过多而卡顿
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
@@ -20,14 +21,27 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/home.vue'),
     },
     {
+        path: '/test',
+        name: 'test',
+        //meta用于自定义页面信息
+        meta: {
+            title: '测试',
+            requireAuth: false
+        },
+        component: () => import('@/pages/home.vue'),
+    },
+    {
         path: '/login',
         name: 'login',
-        component: () => import('@/pages/login.vue')
+        component: () => import('@/pages/login.vue'),
+        beforeEnter: () => {
+            //如果已登录，就直接跳转到首页
+        }
     },
     {
         path: '/:pathMatch(.*)*',
         name: '404',
-        component: ()=> import('@/pages/404.vue')
+        component: () => import('@/pages/404.vue')
     },
 ]
 

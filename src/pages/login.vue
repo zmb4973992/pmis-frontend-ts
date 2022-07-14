@@ -17,8 +17,8 @@
           class="my_form"
           name="login"
           :model="formState"
-          :label-col="{ span: 6 }"
-          :wrapper-col="{ span: 18 }"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 19 }"
           autocomplete="off"
           @finish="onFinish"
           @finishFailed="onFinishFailed"
@@ -27,7 +27,7 @@
             class="username_setting"
             label="用户名："
             name="username"
-            :rules="[{ required: true, message: '请输入用户名' }]"
+            :rules="[{required: true, message: '请输入用户名'}]"
         >
           <a-input v-model:value="formState.username"/>
         </a-form-item>
@@ -57,8 +57,11 @@
 import {reactive} from "vue";
 import request from "@/util/axios";
 import userUserStore from "@/store/user";
+import {useRouter} from "vue-router";
+import {message} from "ant-design-vue";
 
 const user = userUserStore()
+const router = useRouter()
 
 const formState = reactive({
   username: '',
@@ -69,12 +72,14 @@ const onFinish = (data: any) => {
   request.post('/api/login', data).then((res) => {
     // 如果返回的状态码不是0
     if (res.data.code !== 0) {
-      console.log('登录失败')
+      message.error('用户名或密码错误')
       return
     }
-    console.log(res)
+    message.success('登录成功，正在跳转......', 1)
     user.updateToken(res.data.data.access_token)
-    console.log(user.token)
+    router.push({name: 'home'})
+    localStorage.setItem('access_token', res.data.data.access_token)
+    return;
   })
 };
 

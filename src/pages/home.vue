@@ -11,14 +11,22 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import userUserStore from "@/store/user";
+import request from "@/util/axios";
 
 const router = useRouter()
 
 let value = ref(3)
 const user = userUserStore()
+
+onMounted(() => {
+  request.post('/api/login', {
+    username: 'aaa',
+    password: 'sdfkj',
+  })
+})
 
 
 const jump = () => {
@@ -28,13 +36,13 @@ const jump = () => {
 }
 
 
-
 </script>
 
 <style scoped lang="less">
 .layout {
   height: 100vh;
 }
+
 .ant-layout-sider {
   background: burlywood;
 }
@@ -48,6 +56,6 @@ const jump = () => {
 }
 
 .ant-layout-footer {
-  background: cornsilk ;
+  background: cornsilk;
 }
 </style>

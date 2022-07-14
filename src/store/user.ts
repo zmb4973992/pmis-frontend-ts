@@ -14,7 +14,7 @@ const userUserStore = defineStore({
         updateToken(token: string) {
             this.token = token
         }
-    }
+    },
 })
 
 export default userUserStore
