@@ -19,7 +19,8 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '首页',
-            requireAuth: true
+            requireAuth: true,
+            permittedRoles:[],  //允许哪些角色访问
         },
         component: () => import('@/pages/home.vue'),
     },
@@ -29,13 +30,19 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '测试',
-            requireAuth: false
+            requireAuth: false,
+            permittedRoles:[],
         },
         component: () => import('@/pages/home.vue'),
     },
     {
         path: '/login',
         name: 'login',
+        meta: {
+            title: '登录',
+            requireAuth: false,
+            permittedRoles:[],
+        },
         component: () => import('@/pages/login.vue'),
         beforeEnter: () => {
             //如果已登录，就直接跳转到首页
@@ -44,6 +51,11 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/:pathMatch(.*)*',
         name: '404',
+        meta: {
+            title: '页面未找到',
+            requireAuth: false,
+            permittedRoles:[],
+        },
         component: () => import('@/pages/404.vue')
     },
 ]
@@ -55,7 +67,7 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     NProgress.start()
-    // 先判断该页是否需要登录
+    // 先判断该页是否需要登录。如果需要登录：
     if (to.meta.requireAuth === true) {
         const token = localStorage.getItem('access_token')
         // 如果本地有token
@@ -63,11 +75,11 @@ router.beforeEach((to, from) => {
             console.log('发现本地有token，允许访问')
             return
         }
+        //本地没有token，重定向到登录页
         console.log('本地没有token，跳转到登录页')
-        //重定向到登录页
         return {name: 'login'}
-
     }
+
 })
 
 router.afterEach(() => {

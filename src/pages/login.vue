@@ -77,6 +77,7 @@ const onFinish = (data: any) => {
     }
     message.success('登录成功，正在跳转......', 1)
     user.updateToken(res.data.data.access_token)
+    user.updateRoles(res.data.data.roles)
     router.push({name: 'home'})
     localStorage.setItem('access_token', res.data.data.access_token)
     return;

@@ -10,6 +10,7 @@ const user = userUserStore()
 
 //对发送的请求进行封装
 request.interceptors.request.use(config => {
+        // 在请求头添加access_token
         const token = localStorage.getItem('access_token')
         if (token) {
             config.headers!['access_token'] = token

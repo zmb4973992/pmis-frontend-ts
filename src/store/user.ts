@@ -5,14 +5,17 @@ const userUserStore = defineStore({
     state: () => ({
         token: '',
         username: '',
-        roles:[],
+        roles: [],
     }),
     getters: {
-        testToken: (state) => 'aaa' + state.token ,
+        testToken: (state) => 'aaa' + state.token,
     },
     actions: {
         updateToken(token: string) {
             this.token = token
+        },
+        updateRoles(roles: []) {
+            this.roles = roles
         }
     },
 })
