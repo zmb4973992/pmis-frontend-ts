@@ -59,6 +59,7 @@ import request from "@/util/axios";
 import userUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";
+import {ILoginData, login} from "@/api/login";
 
 const user = userUserStore()
 const router = useRouter()
@@ -68,8 +69,8 @@ const formState = reactive({
   password: '',
 })
 
-const onFinish = (data: any) => {
-  request.post('/api/login', data).then((res) => {
+const onFinish = (data: ILoginData) => {
+  login(data).then((res) => {
     // 如果返回的状态码不是0
     if (res.data.code !== 0) {
       message.error('用户名或密码错误')
