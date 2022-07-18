@@ -15,6 +15,7 @@ import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import userUserStore from "@/store/user";
 import request from "@/util/axios";
+import {getUserInfo} from "@/api/get_userinfo";
 
 const router = useRouter()
 
@@ -24,16 +25,10 @@ const user = userUserStore()
 onMounted(() => {
   request.post('/api/login', {
     username: 'aaa',
-    password: 'sdfkj',
-  })
+    password: 'bbb',
+  });
+  getUserInfo(14).then(res => (console.log(res.data.data.roles)))
 })
-
-
-const jump = () => {
-  router.push({name: 'test'})
-  user.updateToken('11111')
-  console.log(user.token)
-}
 
 
 </script>
