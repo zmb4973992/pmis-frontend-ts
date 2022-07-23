@@ -42,7 +42,7 @@
         </a-form-item>
 
         <a-form-item :wrapper-col="{ offset: 5, span: 16 }">
-          <a-button type="primary" html-type="submit">Submit</a-button>
+          <a-button type="primary" html-type="submit">登录</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -94,11 +94,13 @@ const onFinishFailed = (errorInfo: any) => {
 
 <style scoped lang="less">
 .layout {
-  height: 100vh;
+  height: 100vh; //vh=Viewport Height 视窗高度，按百分比计算
+  width: 100vw;  //vw=Viewport Width 视窗宽度，按百分比计算
   //background-color: cornflowerblue;
   //线性渐变背景色，方向-起始颜色-终止颜色
-  background: linear-gradient(to bottom, cornflowerblue, rgb(190, 220, 238));
-  display: flex;
+  //background: linear-gradient(to bottom, cornflowerblue, rgb(190, 220, 238));
+  background: linear-gradient(to bottom, rgb(13,56,57), rgb(190,228,238));
+  display: flex; //容器内的子元素实施弹性布局
   justify-content: center; //水平布局
   align-items: center; //垂直布局
 }

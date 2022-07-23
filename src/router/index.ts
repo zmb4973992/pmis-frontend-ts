@@ -19,8 +19,10 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '首页',
+            hiddenInSider:true,
             requireAuth: true,
             permittedRoles:[],  //允许哪些角色访问
+
         },
         component: () => import('@/pages/home.vue'),
     },
@@ -30,6 +32,7 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '测试',
+            hiddenInSider:false,
             requireAuth: false,
             permittedRoles:[],
         },
@@ -40,6 +43,7 @@ const routes: RouteRecordRaw[] = [
         name: 'login',
         meta: {
             title: '登录',
+            hiddenInSider: true,
             requireAuth: false,
             permittedRoles:[],
         },
@@ -53,6 +57,7 @@ const routes: RouteRecordRaw[] = [
         name: '404',
         meta: {
             title: '页面未找到',
+            hiddenInSider:true,
             requireAuth: false,
             permittedRoles:[],
         },

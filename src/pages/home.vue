@@ -36,6 +36,7 @@ onMounted(() => {
 <style scoped lang="less">
 .layout {
   height: 100vh;
+  width: 100vw;
 }
 
 .ant-layout-sider {
