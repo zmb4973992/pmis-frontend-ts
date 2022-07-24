@@ -50,6 +50,10 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/login.vue'),
         beforeEnter: () => {
             //如果已登录，就直接跳转到首页
+            const token = localStorage.getItem('access_token')
+            if (token) {
+                return {name:'home'}
+            }
         }
     },
     {
@@ -84,7 +88,6 @@ router.beforeEach((to, from) => {
         console.log('本地没有token，跳转到登录页')
         return {name: 'login'}
     }
-
 })
 
 router.afterEach(() => {
