@@ -1,9 +1,12 @@
 <template>
   <a-layout class="layout">
-    <a-layout-sider>Sider</a-layout-sider>
+    <a-layout-sider width="180px">
+      <Logo></Logo>
+      <Sider></Sider>
+    </a-layout-sider>
     <a-layout>
-      <a-layout-header>Header</a-layout-header>
-      <a-layout-content>Content</a-layout-content>
+      <a-layout-header>顶栏</a-layout-header>
+      <a-layout-content>内容区域</a-layout-content>
     </a-layout>
   </a-layout>
 
@@ -16,10 +19,12 @@ import {useRouter} from 'vue-router'
 import userUserStore from "@/store/user";
 import request from "@/util/axios";
 import {getUserInfo} from "@/api/get_userinfo";
+import Sider from '@/components/Sider.vue'  //侧边栏组件
+import Logo from '@/components/Logo.vue'
+
 
 const router = useRouter()
 
-let value = ref(3)
 const user = userUserStore()
 
 onMounted(() => {
@@ -27,9 +32,9 @@ onMounted(() => {
     username: 'aaa',
     password: 'bbb',
   });
-  getUserInfo(14).then(res => (console.log(res.data.data.roles)))
+  //测试
+  getUserInfo(14).then(res => (console.log(res.data.roles)))
 })
-
 
 </script>
 
@@ -37,14 +42,16 @@ onMounted(() => {
 .layout {
   height: 100vh;
   width: 100vw;
+  .ant-layout-sider {
+    background: burlywood;
+  }
 }
 
-.ant-layout-sider {
-  background: burlywood;
-}
+
 
 .ant-layout-header {
   background: cornflowerblue;
+  height: 50px;
 }
 
 .ant-layout-content {

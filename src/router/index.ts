@@ -21,10 +21,10 @@ const routes: RouteRecordRaw[] = [
             title: '首页',
             hiddenInSider:true,
             requireAuth: true,
-            permittedRoles:[],  //允许哪些角色访问
+            permittedRoles: [],  //允许哪些角色访问
 
         },
-        component: () => import('@/pages/home.vue'),
+        component: () => import('@/pages/layout.vue'),
     },
     {
         path: '/test',
@@ -34,9 +34,9 @@ const routes: RouteRecordRaw[] = [
             title: '测试',
             hiddenInSider:false,
             requireAuth: false,
-            permittedRoles:[],
+            permittedRoles: [],
         },
-        component: () => import('@/pages/home.vue'),
+        component: () => import('@/pages/layout.vue'),
     },
     {
         path: '/login',
@@ -45,11 +45,15 @@ const routes: RouteRecordRaw[] = [
             title: '登录',
             hiddenInSider: true,
             requireAuth: false,
-            permittedRoles:[],
+            permittedRoles: [],
         },
         component: () => import('@/pages/login.vue'),
         beforeEnter: () => {
             //如果已登录，就直接跳转到首页
+            const token = localStorage.getItem('access_token')
+            if (token) {
+                return {name:'home'}
+            }
         }
     },
     {
@@ -59,7 +63,7 @@ const routes: RouteRecordRaw[] = [
             title: '页面未找到',
             hiddenInSider:true,
             requireAuth: false,
-            permittedRoles:[],
+            permittedRoles: [],
         },
         component: () => import('@/pages/404.vue')
     },
@@ -77,14 +81,11 @@ router.beforeEach((to, from) => {
         const token = localStorage.getItem('access_token')
         // 如果本地有token
         if (token) {
-            console.log('发现本地有token，允许访问')
             return
         }
         //本地没有token，重定向到登录页
-        console.log('本地没有token，跳转到登录页')
         return {name: 'login'}
     }
-
 })
 
 router.afterEach(() => {

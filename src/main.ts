@@ -4,8 +4,7 @@ import router from "@/router";
 import store from "@/store";
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
-// import './permission';
-// test
+import 'normalize.css'
 
 
 const app = createApp(App)
