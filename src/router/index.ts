@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '首页',
-            hiddenInSider:true,
+            hiddenInSider: true,
             requireAuth: true,
             permittedRoles: [],  //允许哪些角色访问
 
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '测试',
-            hiddenInSider:false,
+            hiddenInSider: false,
             requireAuth: false,
             permittedRoles: [],
         },
@@ -52,7 +52,7 @@ const routes: RouteRecordRaw[] = [
             //如果已登录，就直接跳转到首页
             const token = localStorage.getItem('access_token')
             if (token) {
-                return {name:'home'}
+                return {name: 'home'}
             }
         }
     },
@@ -61,7 +61,7 @@ const routes: RouteRecordRaw[] = [
         name: '404',
         meta: {
             title: '页面未找到',
-            hiddenInSider:true,
+            hiddenInSider: true,
             requireAuth: false,
             permittedRoles: [],
         },
@@ -76,7 +76,7 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     NProgress.start()
-    // 先判断该页是否需要登录。如果需要登录：
+    //先判断该页是否需要登录。如果需要登录：
     if (to.meta.requireAuth === true) {
         const token = localStorage.getItem('access_token')
         // 如果本地有token
@@ -89,7 +89,7 @@ router.beforeEach((to, from) => {
 })
 
 router.afterEach(() => {
-    NProgress.done() // 进度条结束
+    NProgress.done() //进度条结束
 })
 
 // 进度条的配置项：ease可以设置css3动画，如ease，linear；speed是进度条从开始到结束的耗时

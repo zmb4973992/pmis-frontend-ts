@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 
+// @ts-ignore
 const userUserStore = defineStore({
     id: 'user',
     state: () => ({
@@ -7,8 +8,12 @@ const userUserStore = defineStore({
         username: '',
         roles: [],
     }),
+    //类似computed
     getters: {
-        testToken: (state) => 'aaa' + state.token,
+        testToken: (state) => ('aaa' + state.token),
+        test2(): string[] {
+            return ['a', 'b']
+        }
     },
     actions: {
         updateToken(token: string) {
@@ -16,6 +21,9 @@ const userUserStore = defineStore({
         },
         updateRoles(roles: []) {
             this.roles = roles
+        },
+        resetState() {
+            this.token = ''
         }
     },
 })
