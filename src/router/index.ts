@@ -22,7 +22,6 @@ const routes: RouteRecordRaw[] = [
             hiddenInSider: true,
             requireAuth: true,
             permittedRoles: [],  //允许哪些角色访问
-
         },
         component: () => import('@/pages/layout.vue'),
     },
@@ -74,7 +73,7 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach( (to, from) => {
     NProgress.start()
     //先判断该页是否需要登录。如果需要登录：
     if (to.meta.requireAuth === true) {

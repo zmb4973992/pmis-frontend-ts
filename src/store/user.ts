@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 
-// @ts-ignore
+//用来储存全局状态
 const userUserStore = defineStore({
     id: 'user',
     state: () => ({
