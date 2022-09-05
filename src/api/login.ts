@@ -6,5 +6,3 @@ export interface ILoginData {
 }
 
 export const login = (data: ILoginData) => request.post('/api/login', data)
-
-

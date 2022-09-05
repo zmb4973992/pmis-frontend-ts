@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import router from "@/router";
+import {reactive} from "vue";
 const backToHome = () => {
   router.push({name:'home'})
 }
