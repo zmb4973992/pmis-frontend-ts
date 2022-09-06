@@ -13,14 +13,18 @@ const GetRelatedParty = (relatedPartyID: number) => request.get(
     '/api/related_party/' + relatedPartyID
 )
 
-const UpdateRelatedParty = (id: number, param: IRelatedParty) => request.put(
-    '/api/related_party/' + id,
+const UpdateRelatedParty = (relatedPartyID: number, param: IRelatedParty) => request.put(
+    '/api/related_party/' + relatedPartyID,
     param,
 )
 
-const createRelatedParty = (param: IRelatedParty) => request.post(
+const CreateRelatedParty = (param: IRelatedParty) => request.post(
     '/api/related_party',
     param
 )
 
-export {GetRelatedParty, UpdateRelatedParty,createRelatedParty}
+const DeleteRelatedParty = (relatedPartyID: number) => request.delete(
+    '/api/related_party/' + relatedPartyID,
+)
+
+export {GetRelatedParty, UpdateRelatedParty, CreateRelatedParty, DeleteRelatedParty}
