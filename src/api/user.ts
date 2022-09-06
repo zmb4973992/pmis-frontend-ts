@@ -44,9 +44,9 @@ const DeleteUser = (userID: number) => request.delete(
     '/api/user/' + userID,
 )
 
-const GetUserList = (param: IUserList) => request.get(
+const GetUserList = (params: IUserList) => request.get(
     '/api/user/list',
-    param
+    {params}
 )
 
 export {GetUser, UpdateUser, CreateUser, DeleteUser, GetUserList}

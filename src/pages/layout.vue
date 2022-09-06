@@ -61,10 +61,10 @@ onMounted(() => {
   // UpdateUser(14, param).then(res => (console.log(res.data)))
   // CreateUser(param).then(res=>(console.log(res.data)))
   // DeleteUser(104).then(res=>(console.log(res.data)))
-  let param:IUserList = {
-    id_gte:90
+  let param: IUserList = {
+    page_size:10
   }
-  GetUserList(param).then(res=>(console.log(res.data)))
+  GetUserList(param).then(res => (console.log(res.data)))
 
   // let param: IRelatedParty = {
   //   chinese_name: '附件二123',
