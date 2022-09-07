@@ -33,7 +33,7 @@ import {
   GetRelatedParty,
   UpdateRelatedParty,
   CreateRelatedParty,
-  DeleteRelatedParty
+  DeleteRelatedParty, IRelatedPartyList, GetRelatedPartyList
 } from "@/api/related_party";
 
 
@@ -61,10 +61,11 @@ onMounted(() => {
   // UpdateUser(14, param).then(res => (console.log(res.data)))
   // CreateUser(param).then(res=>(console.log(res.data)))
   // DeleteUser(104).then(res=>(console.log(res.data)))
-  let param: IUserList = {
-    page_size:10
-  }
-  GetUserList(param).then(res => (console.log(res.data)))
+  // let param: IUserList = {
+  //   page_size:10
+  // }
+  // GetUserList(param).then(res => (console.log(res.data)))
+
 
   // let param: IRelatedParty = {
   //   chinese_name: '附件二123',
@@ -78,6 +79,10 @@ onMounted(() => {
 
   // CreateRelatedParty(param).then(res => (console.log(res.data)))
   // DeleteRelatedParty(67).then(res=>(console.log(res.data)))
+  let param :IRelatedPartyList = {
+    id_gte:60
+  }
+  GetRelatedPartyList(param).then(res=>(console.log(res.data)))
 
 })
 

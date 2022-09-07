@@ -49,7 +49,13 @@ const GetUserList = (params: IUserList) => request.get(
     {params}
 )
 
-export {GetUser, UpdateUser, CreateUser, DeleteUser, GetUserList}
+export {
+    GetUser,
+    UpdateUser,
+    CreateUser,
+    DeleteUser,
+    GetUserList
+}
 
 
 
