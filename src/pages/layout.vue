@@ -35,6 +35,15 @@ import {
   CreateRelatedParty,
   DeleteRelatedParty, IRelatedPartyList, GetRelatedPartyList
 } from "@/api/related_party";
+import {
+  GetDepartment,
+  UpdateDepartment,
+  CreateDepartment,
+  DeleteDepartment,
+  GetDepartmentList,
+  IDepartment,
+  IDepartmentList
+} from "@/api/department";
 
 
 const router = useRouter()
@@ -65,7 +74,7 @@ onMounted(() => {
   //   page_size:10
   // }
   // GetUserList(param).then(res => (console.log(res.data)))
-  GetRelatedParty(34)
+  // GetRelatedParty(34).then(res=>console.log(res))
 
 
   // let param: IRelatedParty = {
@@ -85,6 +94,14 @@ onMounted(() => {
   // }
   // GetRelatedPartyList(param).then(res=>(console.log(res.data)))
 
+  let param: IDepartmentList = {
+    name_include: '一',
+
+  }
+  let departmentID = 118
+  // GetDepartment(departmentID).then(res=>console.log(res))
+
+  GetDepartmentList(param).then(res => console.log(res))
 })
 
 </script>

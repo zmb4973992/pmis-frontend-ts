@@ -24,30 +24,63 @@ const GetRelatedParty = (relatedPartyID: number) => request.get(
     '/api/related_party/' + relatedPartyID
 ).then(
     res => {
+        //如果token无效，就删掉本地的token
         if (res.data.code === 3001) {
             localStorage.removeItem('access_token')
         }
-        console.log(res.data)
+        return res.data
     },
 )
 
 const UpdateRelatedParty = (relatedPartyID: number, param: IRelatedParty) => request.put(
     '/api/related_party/' + relatedPartyID,
     param,
+).then(
+    res => {
+        //如果token无效，就删掉本地的token
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        return res.data
+    },
 )
 
 const CreateRelatedParty = (param: IRelatedParty) => request.post(
     '/api/related_party',
     param
+).then(
+    res => {
+        //如果token无效，就删掉本地的token
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        return res.data
+    },
 )
 
 const DeleteRelatedParty = (relatedPartyID: number) => request.delete(
     '/api/related_party/' + relatedPartyID,
+).then(
+    res => {
+        //如果token无效，就删掉本地的token
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        return res.data
+    },
 )
 
 const GetRelatedPartyList = (params: IRelatedPartyList) => request.get(
     '/api/related_party/list',
     {params}
+).then(
+    res => {
+        //如果token无效，就删掉本地的token
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        return res.data
+    },
 )
 
 export {

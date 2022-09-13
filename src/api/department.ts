@@ -1,32 +1,22 @@
 import request from "@/util/axios";
 
 //接口只能一次性导出，不能先定义、再导出
-export interface IUpdateUser {
-    full_name: string
-    email_address: string
-    is_valid: boolean
-    mobile_phone_number: string
-    employee_number: string
+export interface IDepartment {
+    name: string
+    level: string
+    superior_id: number
 }
 
-export interface IUserList {
-    id_gte?: number,
-    id_lte?: number,
-    is_valid?: boolean,
-    username_include?: string,
+export interface IDepartmentList {
+    name_include?: string,
     page?: number,
     page_size?: number,
     order_by?: string,
     desc?: boolean,
 }
 
-export interface ICreateUser extends IUpdateUser {
-    username: string
-    password: string
-}
-
-const GetUser = (userID: number) => request.get(
-    '/api/user/' + userID
+const GetDepartment = (DepartmentID: number) => request.get(
+    '/api/department/' + DepartmentID
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -37,8 +27,8 @@ const GetUser = (userID: number) => request.get(
     },
 )
 
-const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
-    '/api/user/' + userID,
+const UpdateDepartment = (DepartmentID: number, param: IDepartment) => request.put(
+    '/api/department/' + DepartmentID,
     param,
 ).then(
     res => {
@@ -50,8 +40,8 @@ const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
     },
 )
 
-const CreateUser = (param: ICreateUser) => request.post(
-    '/api/user',
+const CreateDepartment = (param: IDepartment) => request.post(
+    '/api/department',
     param
 ).then(
     res => {
@@ -61,6 +51,10 @@ const CreateUser = (param: ICreateUser) => request.post(
         }
         return res.data
     },
+)
+
+const DeleteDepartment = (DepartmentID: number) => request.delete(
+    '/api/department/' + DepartmentID,
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -71,20 +65,8 @@ const CreateUser = (param: ICreateUser) => request.post(
     },
 )
 
-const DeleteUser = (userID: number) => request.delete(
-    '/api/user/' + userID,
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
-
-const GetUserList = (params: IUserList) => request.get(
-    '/api/user/list',
+const GetDepartmentList = (params: IDepartmentList) => request.get(
+    '/api/department/list',
     {params}
 ).then(
     res => {
@@ -97,12 +79,9 @@ const GetUserList = (params: IUserList) => request.get(
 )
 
 export {
-    GetUser,
-    UpdateUser,
-    CreateUser,
-    DeleteUser,
-    GetUserList
+    GetDepartment,
+    UpdateDepartment,
+    CreateDepartment,
+    DeleteDepartment,
+    GetDepartmentList
 }
-
-
-
