@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {onMounted, ref,reactive} from 'vue'
 import {useRouter} from 'vue-router'
 import userUserStore from "@/store/user";
 import request from "@/util/axios";
@@ -44,6 +44,16 @@ import {
   IDepartment,
   IDepartmentList
 } from "@/api/department";
+import {
+  GetDisassembly,
+    UpdateDisassembly,
+    CreateDisassembly,
+    CreateDisassemblyInBatches,
+    DeleteDisassembly,
+    GetDisassemblyList,
+    IDisassembly,
+    IDisassemblyList,
+} from "@/api/disassembly";
 
 
 const router = useRouter()
@@ -94,14 +104,46 @@ onMounted(() => {
   // }
   // GetRelatedPartyList(param).then(res=>(console.log(res.data)))
 
-  let param: IDepartmentList = {
-    name_include: '一',
+  // let param: IDepartmentList = {
+  //   name_include: '一',
+  //
+  // }
+  // let departmentID = 118
+  // // GetDepartment(departmentID).then(res=>console.log(res))
+  //
+  // GetDepartmentList(param).then(res => console.log(res))
 
-  }
-  let departmentID = 118
-  // GetDepartment(departmentID).then(res=>console.log(res))
-
-  GetDepartmentList(param).then(res => console.log(res))
+  // let param1 :IDisassembly = {
+  //   name: 'dfef3',
+  //   project_id: 1,
+  //   level: 3,
+  //   weight: 0.8,
+  //   superior_id: 33
+  // }
+  // let param2 : IDisassembly[] = [{
+  //   name: 'dfef3',
+  //   project_id: 1,
+  //   level: 3,
+  //   weight: 0.8,
+  //   superior_id: 33
+  // },{
+  //   name: 'dfef3',
+  //   project_id: 1,
+  //   level: 3,
+  //   weight: 0.8,
+  //   superior_id: 33
+  // }]
+  // let disassemblyID = 5
+  // let param3:IDepartmentList = {
+  // level_gte:40,
+  //   page:2,
+  //   page_size:2
+  // }
+  // GetDisassembly(disassemblyID).then(res => console.log(res))
+  // UpdateDisassembly(disassemblyID,param1).then(res => console.log(res))
+  // CreateDisassemblyInBatches(param2)
+  // DeleteDisassembly(19)
+  // GetDisassemblyList(param3).then(res => console.log(res))
 })
 
 </script>

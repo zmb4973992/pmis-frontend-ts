@@ -8,11 +8,15 @@ export interface IDepartment {
 }
 
 export interface IDepartmentList {
-    name_include?: string,
-    page?: number,
-    page_size?: number,
-    order_by?: string,
-    desc?: boolean,
+    project_id?: number
+    superior_id?: number
+    level?:number
+    level_gte?:number
+    level_lte?:number
+    page?: number
+    page_size?: number
+    order_by?: string
+    desc?: boolean
 }
 
 const GetDepartment = (DepartmentID: number) => request.get(

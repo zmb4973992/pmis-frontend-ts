@@ -11,13 +11,13 @@ export interface IRelatedParty {
 }
 
 export interface IRelatedPartyList {
-    id_gte?: number,
-    id_lte?: number,
-    chinese_name_include?: string,
-    page?: number,
-    page_size?: number,
-    order_by?: string,
-    desc?: boolean,
+    id_gte?: number
+    id_lte?: number
+    chinese_name_include?: string
+    page?: number
+    page_size?: number
+    order_by?: string
+    desc?: boolean
 }
 
 const GetRelatedParty = (relatedPartyID: number) => request.get(

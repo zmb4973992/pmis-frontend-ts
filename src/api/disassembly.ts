@@ -1,32 +1,28 @@
 import request from "@/util/axios";
 
 //接口只能一次性导出，不能先定义、再导出
-export interface IUpdateUser {
-    full_name: string
-    email_address: string
-    is_valid: boolean
-    mobile_phone_number: string
-    employee_number: string
+export interface IDisassembly {
+    name: string
+    project_id: number
+    level: number
+    weight :number
+    superior_id: number
 }
 
-export interface IUserList {
-    id_gte?: number
-    id_lte?: number
-    is_valid?: boolean
-    username_include?: string
+export interface IDisassemblyList {
+    project_id?: number
+    superior_id?: number
+    level?:number
+    level_gte?:number
+    level_lte?:number
     page?: number
     page_size?: number
     order_by?: string
     desc?: boolean
 }
 
-export interface ICreateUser extends IUpdateUser {
-    username: string
-    password: string
-}
-
-const GetUser = (userID: number) => request.get(
-    '/api/user/' + userID
+const GetDisassembly = (disassemblyID: number) => request.get(
+    '/api/disassembly/' + disassemblyID
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -37,8 +33,8 @@ const GetUser = (userID: number) => request.get(
     },
 )
 
-const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
-    '/api/user/' + userID,
+const UpdateDisassembly = (disassemblyID: number, param: IDisassembly) => request.put(
+    '/api/disassembly/' + disassemblyID,
     param,
 ).then(
     res => {
@@ -50,8 +46,8 @@ const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
     },
 )
 
-const CreateUser = (param: ICreateUser) => request.post(
-    '/api/user',
+const CreateDisassembly = (param: IDisassembly) => request.post(
+    '/api/disassembly',
     param
 ).then(
     res => {
@@ -61,6 +57,11 @@ const CreateUser = (param: ICreateUser) => request.post(
         }
         return res.data
     },
+)
+
+const CreateDisassemblyInBatches = (param: IDisassembly[]) => request.post(
+    '/api/disassembly/batch',
+    param
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -71,8 +72,8 @@ const CreateUser = (param: ICreateUser) => request.post(
     },
 )
 
-const DeleteUser = (userID: number) => request.delete(
-    '/api/user/' + userID,
+const DeleteDisassembly = (disassemblyID: number) => request.delete(
+    '/api/disassembly/' + disassemblyID,
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -83,8 +84,8 @@ const DeleteUser = (userID: number) => request.delete(
     },
 )
 
-const GetUserList = (params: IUserList) => request.get(
-    '/api/user/list',
+const GetDisassemblyList = (params: IDisassemblyList) => request.get(
+    '/api/disassembly/list',
     {params}
 ).then(
     res => {
@@ -97,12 +98,10 @@ const GetUserList = (params: IUserList) => request.get(
 )
 
 export {
-    GetUser,
-    UpdateUser,
-    CreateUser,
-    DeleteUser,
-    GetUserList
+    GetDisassembly,
+    UpdateDisassembly,
+    CreateDisassembly,
+    CreateDisassemblyInBatches,
+    DeleteDisassembly,
+    GetDisassemblyList
 }
-
-
-
