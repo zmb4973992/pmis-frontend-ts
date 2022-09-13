@@ -7,6 +7,7 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'
 
 import {useRouter} from "vue-router";
+import {ValidateToken} from "@/api/login";
 
 const myRouter = useRouter()
 
@@ -80,6 +81,7 @@ router.beforeEach( (to, from) => {
         const token = localStorage.getItem('access_token')
         // 如果本地有token
         if (token) {
+            // ValidateToken(token).then()
             return
         }
         //本地没有token，重定向到登录页

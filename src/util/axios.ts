@@ -27,8 +27,12 @@ request.interceptors.request.use(
 //对返回结果进行封装
 request.interceptors.response.use(
     //暂时不要只返回data，因为可能需要系统的状态码
-    // (res)=>{
-    //     return res.data
+    // (res) => {
+        // 如果返回结果的错误代码为3001（token无效），则删掉本地的token
+        // if (res.data.code! === 3001) {
+        //     localStorage.removeItem('access_token')
+        // }
+        // return res.data
     // },
     //error暂时可以不写，这里写上是为了占位
     // error => {

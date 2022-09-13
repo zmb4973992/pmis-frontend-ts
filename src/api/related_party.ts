@@ -22,6 +22,13 @@ export interface IRelatedPartyList {
 
 const GetRelatedParty = (relatedPartyID: number) => request.get(
     '/api/related_party/' + relatedPartyID
+).then(
+    res => {
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        console.log(res.data)
+    },
 )
 
 const UpdateRelatedParty = (relatedPartyID: number, param: IRelatedParty) => request.put(

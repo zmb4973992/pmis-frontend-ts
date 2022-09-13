@@ -66,8 +66,8 @@ const user = userUserStore()
 const router = useRouter()
 
 const formState = reactive({
-  username: '',
-  password: '',
+  username: 'a',
+  password: 'a',
 })
 
 const onFinish = (data: ILoginData) => {
@@ -76,7 +76,11 @@ const onFinish = (data: ILoginData) => {
       // 如果请求成功发出
       res => {
         // 如果返回的状态码不是0
-        if (res.data.code !== 0) {
+        console.log(res.data.code)
+        if (res.data.code == 0) {
+          console.log('ok')
+        }
+        if (res.data.code != 0) {
           message.error('用户名或密码错误')
           return
         }

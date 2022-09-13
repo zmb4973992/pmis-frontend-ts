@@ -43,8 +43,8 @@ const user = userUserStore()
 
 onMounted(() => {
   request.post('/api/login', {
-    username: 'aaa',
-    password: 'bbb',
+    username: 'a',
+    password: 'a',
   });
 
   //测试
@@ -65,6 +65,7 @@ onMounted(() => {
   //   page_size:10
   // }
   // GetUserList(param).then(res => (console.log(res.data)))
+  GetRelatedParty(34)
 
 
   // let param: IRelatedParty = {
@@ -79,10 +80,10 @@ onMounted(() => {
 
   // CreateRelatedParty(param).then(res => (console.log(res.data)))
   // DeleteRelatedParty(67).then(res=>(console.log(res.data)))
-  let param :IRelatedPartyList = {
-    id_gte:60
-  }
-  GetRelatedPartyList(param).then(res=>(console.log(res.data)))
+  // let param :IRelatedPartyList = {
+  //   id_gte:60
+  // }
+  // GetRelatedPartyList(param).then(res=>(console.log(res.data)))
 
 })
 
