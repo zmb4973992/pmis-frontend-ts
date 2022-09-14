@@ -6,10 +6,13 @@
       <!--中文标题-->
       <div class="chinese_title">
         中文标题
+        <div>
+          <up-outlined />
+        </div>
       </div>
       <!--英文标题-->
       <div class="english_title">
-        English Name
+        English Title
       </div>
       <br><br>
       <!--登录表单-->
@@ -43,7 +46,7 @@
         <a-form-item
             class="login-button"
             :wrapper-col="{ offset: 5, span: 16 }">
-          <a-button type="primary" html-type="submit">登录</a-button>
+          <a-button class="login-button" type="primary" html-type="submit">登录</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -61,6 +64,8 @@ import userUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";
 import {ILoginData, login} from "@/api/login";
+import {UpOutlined} from "@ant-design/icons-vue";
+
 
 const user = userUserStore()
 const router = useRouter()
@@ -76,11 +81,9 @@ const onFinish = (data: ILoginData) => {
       // 如果请求成功发出
       res => {
         // 如果返回的状态码不是0
-        console.log(res.data.code)
         if (res.data.code == 0) {
-          console.log('ok')
-        }
-        if (res.data.code != 0) {
+          console.log('登录成功')
+        } else if (res.data.code != 0) {
           message.error('用户名或密码错误')
           return
         }
@@ -89,13 +92,11 @@ const onFinish = (data: ILoginData) => {
         user.updateRoles(res.data.data.roles)
         router.push({name: 'home'})
         localStorage.setItem('access_token', res.data.data.access_token)
-        return;
       },
       //如果请求发送失败
       err => (console.log(err))
   )
 };
-
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
 };
@@ -142,13 +143,8 @@ const onFinishFailed = (errorInfo: any) => {
   .username_setting, .password_setting {
     height: 40px;
   }
-
-
 }
 
-.test {
-  margin: auto;
-}
 
 
 </style>
