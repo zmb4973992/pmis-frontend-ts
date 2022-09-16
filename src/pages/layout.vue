@@ -5,7 +5,11 @@
       <Sider></Sider>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header>顶栏</a-layout-header>
+      <a-layout-header>
+        <div class="test">
+          测试
+        </div>
+      </a-layout-header>
       <a-layout-content>内容区域</a-layout-content>
     </a-layout>
   </a-layout>

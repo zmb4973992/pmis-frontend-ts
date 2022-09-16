@@ -4,7 +4,6 @@ import vue from '@vitejs/plugin-vue'
 //用于设置别名
 const path = require('path');
 
-// https://vitejs.dev/config/
 export default defineConfig({
     plugins: [vue(),],
     server: {
