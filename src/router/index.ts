@@ -10,6 +10,9 @@ import {useRouter} from "vue-router";
 import {ValidateToken} from "@/api/login";
 import routes from "@/router/routes";
 
+//这里对routes进行过滤
+// routes.filter()
+
 const myRouter = useRouter()
 
 const router = createRouter({

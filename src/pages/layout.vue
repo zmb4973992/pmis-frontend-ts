@@ -64,11 +64,13 @@ const router = useRouter()
 
 const user = userUserStore()
 
+//不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {
   request.post('/api/login', {
     username: 'a',
     password: 'a',
   });
+
 
   //测试
   // let param: ICreateUser = {
