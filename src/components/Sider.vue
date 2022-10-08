@@ -10,21 +10,26 @@
       <template #icon>
         <MailOutlined/>
       </template>
-      Navigation One
+      栏目一
     </a-menu-item>
     <a-menu-item key="2">
       <template #icon>
         <CalendarOutlined/>
       </template>
-      Navigation Two
+      栏目二
     </a-menu-item>
     <a-sub-menu key="sub1">
       <template #icon>
         <AppstoreOutlined/>
       </template>
-      <template #title>Navigation Three</template>
-      <a-menu-item key="3">Option 3</a-menu-item>
-      <a-menu-item key="4">Option 4</a-menu-item>
+      <template #title>栏目三</template>
+
+      <a-menu-item key="3">
+        <router-link :to="{name:'table'}">表格测试</router-link>
+      </a-menu-item>
+
+
+      <a-menu-item key="4">选项2</a-menu-item>
       <a-sub-menu key="sub1-2" title="Submenu">
         <a-menu-item key="5">Option 5</a-menu-item>
         <a-menu-item key="6">Option 6</a-menu-item>

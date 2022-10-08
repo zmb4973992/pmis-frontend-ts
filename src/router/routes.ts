@@ -2,7 +2,7 @@
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 import {RouteRecordRaw} from "vue-router";
 
- const routes: RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'home',
@@ -14,6 +14,14 @@ import {RouteRecordRaw} from "vue-router";
             permittedRoles: [],  //允许哪些角色访问
         },
         component: () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/table',
+                name: 'table',
+                component: () => import('@/pages/table.vue'),
+            },
+        ]
+
     },
     {
         path: '/test',

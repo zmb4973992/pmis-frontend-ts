@@ -1,16 +1,11 @@
 <template>
-  <a-layout class="layout">
+  <a-layout class="general-layout">
     <a-layout-sider width="180px">
-      <Logo></Logo>
-      <Sider></Sider>
+      <Logo/>
+      <Sider/>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header>
-        <div class="test">
-          测试
-        </div>
-      </a-layout-header>
-      <a-layout-content>内容区域</a-layout-content>
+      <router-view/>
     </a-layout>
   </a-layout>
 
@@ -155,7 +150,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
-.layout {
+.general-layout {
   height: 100vh;
   width: 100vw;
 

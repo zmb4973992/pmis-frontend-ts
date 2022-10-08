@@ -1,6 +1,6 @@
 <template>
   <!--版面总图-->
-  <div class="layout">
+  <div class="general-layout">
     <!--登录框-->
     <div class="login-box">
       <!--中文标题-->
@@ -66,7 +66,6 @@ import {message} from "ant-design-vue";
 import {ILoginData, login} from "@/api/login";
 import {UpOutlined} from "@ant-design/icons-vue";
 
-
 const user = userUserStore()
 const router = useRouter()
 
@@ -105,7 +104,7 @@ const onFinishFailed = (errorInfo: any) => {
 </script>
 
 <style scoped lang="less">
-.layout {
+.general-layout {
   height: 100vh; //vh=Viewport Height 视窗高度，按百分比计算
   width: 100vw; //vw=Viewport Width 视窗宽度，按百分比计算
   //background-color: cornflowerblue;
