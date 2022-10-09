@@ -175,7 +175,11 @@ onMounted(() => {
 
 .ant-layout-header {
   background: cornflowerblue;
-  height: 50px;
+  height: 35px;
+  line-height: 35px;
+  padding: 0;
+  color: white;
+
 }
 
 .ant-layout-content {

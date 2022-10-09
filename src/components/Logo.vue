@@ -14,11 +14,11 @@
 
 <style scoped lang="less">
 .logo-layout {
-  height: 50px;
+  height: 35px;
 
   .chinese_title {
     font-size: 20px;
-    line-height: 50px //line-height = height时，行内文字垂直居中
+    line-height: 35px //line-height = height时，行内文字垂直居中
   }
 
   .english_title {
