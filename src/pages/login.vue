@@ -7,7 +7,7 @@
       <div class="chinese_title">
         中文标题
         <div>
-          <up-outlined />
+          <up-outlined/>
         </div>
       </div>
       <!--英文标题-->
@@ -143,7 +143,6 @@ const onFinishFailed = (errorInfo: any) => {
     height: 40px;
   }
 }
-
 
 
 </style>

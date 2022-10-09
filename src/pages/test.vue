@@ -1,6 +1,9 @@
 <template>
-  这是test组件
-  <button @click="test()"/>
+  <div>这是test.vue</div>
+  <div> &nbsp;</div>
+
+  <div><a-button type="primary">sdf</a-button></div>
+  <div>可以查看控制台日志</div>
 </template>
 
 <script setup lang="ts">

@@ -22,3 +22,5 @@ const ValidateToken = (token: string) => request.get(
 )
 
 export {login, ValidateToken}
+
+export default {login, ValidateToken}

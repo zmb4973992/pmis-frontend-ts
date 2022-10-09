@@ -1,24 +1,37 @@
 <template>
   <a-layout class="general-layout">
+    <!--    侧边栏-->
     <a-layout-sider width="180px">
       <Logo/>
       <Sider/>
     </a-layout-sider>
+
     <a-layout>
-      <router-view/>
+      <!--      header区域-->
+      <a-layout-header>
+        <Header/>
+      </a-layout-header>
+
+      <!--      content区域-->
+      <a-layout-content>
+        <router-view/>
+      </a-layout-content>
+
     </a-layout>
+
   </a-layout>
 
 
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref,reactive} from 'vue'
+import {onMounted, ref, reactive} from 'vue'
 import {useRouter} from 'vue-router'
 import userUserStore from "@/store/user";
 import request from "@/util/axios";
 import Sider from '@/components/Sider.vue'  //侧边栏组件
 import Logo from '@/components/Logo.vue'
+import Header from '@/components/header.vue'
 import {
   GetUser,
   IUpdateUser,
@@ -45,13 +58,13 @@ import {
 } from "@/api/department";
 import {
   GetDisassembly,
-    UpdateDisassembly,
-    CreateDisassembly,
-    CreateDisassemblyInBatches,
-    DeleteDisassembly,
-    GetDisassemblyList,
-    IDisassembly,
-    IDisassemblyList,
+  UpdateDisassembly,
+  CreateDisassembly,
+  CreateDisassemblyInBatches,
+  DeleteDisassembly,
+  GetDisassemblyList,
+  IDisassembly,
+  IDisassemblyList,
 } from "@/api/disassembly";
 
 

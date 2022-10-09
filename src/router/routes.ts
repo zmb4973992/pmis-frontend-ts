@@ -16,25 +16,34 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/layout.vue'),
         children: [
             {
-                path: '/table',
+                path:'',
+                name:'content',
+                component:()=>import('@/components/content.vue'),
+            },
+            {
+                path: 'table',
                 name: 'table',
+                meta: {
+                    title: '表格测试',
+                },
                 component: () => import('@/pages/table.vue'),
             },
-        ]
+            {
+                path: 'test',
+                name: 'test',
+                //meta用于自定义页面信息
+                meta: {
+                    title: '测试',
+                    hiddenInSider: false,
+                    requireAuth: false,
+                    permittedRoles: [],
+                },
+                component: () => import('@/pages/test.vue'),
+            },
+        ],
+    },
 
-    },
-    {
-        path: '/test',
-        name: 'test',
-        //meta用于自定义页面信息
-        meta: {
-            title: '测试',
-            hiddenInSider: false,
-            requireAuth: false,
-            permittedRoles: [],
-        },
-        component: () => import('@/pages/layout.vue'),
-    },
+
     {
         path: '/login',
         name: 'login',
