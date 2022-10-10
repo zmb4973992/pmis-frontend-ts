@@ -15,6 +15,8 @@
 <style scoped lang="less">
 .logo-layout {
   height: 35px;
+  background-color: #1890ff ;
+  color: white;
 
   .chinese_title {
     font-size: 20px;

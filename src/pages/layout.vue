@@ -1,18 +1,18 @@
 <template>
   <a-layout class="general-layout">
-    <!--    侧边栏-->
-    <a-layout-sider width="180px">
+    <!--侧边栏-->
+    <a-layout-sider v-model:collapsed="collapsed" collapsible class="layout-sider" width="180px">
       <Logo/>
       <Sider/>
     </a-layout-sider>
 
     <a-layout>
-      <!--      header区域-->
-      <a-layout-header>
+      <!--header区域-->
+      <a-layout-header class="layout-header">
         <Header/>
       </a-layout-header>
 
-      <!--      content区域-->
+      <!--content区域-->
       <a-layout-content>
         <router-view/>
       </a-layout-content>
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import {onMounted, ref, reactive} from 'vue'
 import {useRouter} from 'vue-router'
-import userUserStore from "@/store/user";
+import useUserStore from "@/store/user";
 import request from "@/util/axios";
 import Sider from '@/components/Sider.vue'  //侧边栏组件
 import Logo from '@/components/Logo.vue'
@@ -70,7 +70,10 @@ import {
 
 const router = useRouter()
 
-const user = userUserStore()
+const user = useUserStore()
+
+const collapsed = false
+
 
 //不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {
@@ -164,21 +167,27 @@ onMounted(() => {
 
 <style scoped lang="less">
 .general-layout {
+  //确保页面铺满视窗
   height: 100vh;
   width: 100vw;
 
-  .ant-layout-sider {
-    background: burlywood;
+  .layout-sider {
+    background-color: white;
   }
 }
 
 
-.ant-layout-header {
-  background: cornflowerblue;
+.layout-header {
+  background-color: #1890ff;
   height: 35px;
-  line-height: 35px;
+  //取消所有的内边距
   padding: 0;
-  color: white;
+  //该盒子实行弹性布局
+  display: flex;
+  //均匀排列每个元素
+  //首个元素放置于起点，末尾元素放置于终点
+  justify-content: space-between;
+  align-items: center;
 
 }
 
