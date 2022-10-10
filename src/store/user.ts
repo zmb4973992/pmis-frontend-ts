@@ -1,8 +1,7 @@
 import {defineStore} from "pinia";
 
 //用来储存全局状态
-const userUserStore = defineStore({
-    id: 'user',
+const useUserStore = defineStore('user', {
     state: () => ({
         token: '',
         username: '',
@@ -28,4 +27,4 @@ const userUserStore = defineStore({
     },
 })
 
-export default userUserStore
+export default useUserStore

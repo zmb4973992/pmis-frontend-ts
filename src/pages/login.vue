@@ -60,13 +60,13 @@
 <script setup lang="ts">
 import {reactive} from "vue";
 import request from "@/util/axios";
-import userUserStore from "@/store/user";
+import useUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";
 import {ILoginData, login} from "@/api/login";
 import {UpOutlined} from "@ant-design/icons-vue";
 
-const user = userUserStore()
+const user = useUserStore()
 const router = useRouter()
 
 const formState = reactive({
