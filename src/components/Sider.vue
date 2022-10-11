@@ -1,6 +1,5 @@
 <template>
   <a-menu
-      style="width: 180px"
       mode="vertical"
       @click="handleClick"
   >

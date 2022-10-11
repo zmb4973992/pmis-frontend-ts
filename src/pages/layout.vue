@@ -1,7 +1,7 @@
 <template>
   <a-layout class="general-layout">
     <!--侧边栏-->
-    <a-layout-sider v-model:collapsed="collapsed" collapsible class="layout-sider" width="180px">
+    <a-layout-sider v-model:collapsed="isCollapsed" class="layout-sider" :width=" isCollapsed ? '100px' : '64px' ">
       <Logo/>
       <Sider/>
     </a-layout-sider>
@@ -66,14 +66,14 @@ import {
   IDisassembly,
   IDisassemblyList,
 } from "@/api/disassembly";
+import {storeToRefs} from "pinia";
+import useLayoutStore from "@/store/layout";
 
 
 const router = useRouter()
-
 const user = useUserStore()
-
-const collapsed = false
-
+const layoutSettings = useLayoutStore()
+const {isCollapsed} = storeToRefs(layoutSettings)
 
 //不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {

@@ -1,30 +1,32 @@
 import {defineStore} from "pinia";
 
 //用来储存全局状态
-const useUserStore = defineStore('user', {
-    state: () => ({
-        token: '',
-        username: '',
-        roles: [],
-    }),
-    //类似computed
-    getters: {
-        testToken: (state) => ('aaa' + state.token),
-        test2(): string[] {
-            return ['a', 'b']
-        }
-    },
-    actions: {
-        updateToken(token: string) {
-            this.token = token
+const useUserStore = defineStore(
+    'user',
+    {
+        state: () => ({
+            token: '',
+            username: 'me',
+            roles: [],
+        }),
+        //类似computed
+        getters: {
+            testToken: (state) => ('aaa' + state.token),
+            test2(): string[] {
+                return ['a', 'b']
+            }
         },
-        updateRoles(roles: []) {
-            this.roles = roles
+        actions: {
+            updateToken(token: string) {
+                this.token = token
+            },
+            updateRoles(roles: []) {
+                this.roles = roles
+            },
+            resetState() {
+                this.token = ''
+            }
         },
-        resetState() {
-            this.token = ''
-        }
-    },
-})
+    })
 
 export default useUserStore
