@@ -1,10 +1,9 @@
 <template>
   <a-menu
       mode="vertical"
-      @click="handleClick"
   >
     <!--第一次遍历-->
-    <template v-for="item1 in list">
+    <template v-for="item1 in menuList">
       <!--如果没有子菜单，直接展示标签-->
       <a-menu-item v-if="item1.children.length === 0" :key="item1.name">
         <router-link :to="item1.path">
@@ -17,7 +16,7 @@
         <template v-for="item2 in item1.children">
           <!--如果没有子菜单，直接展示标签-->
           <a-menu-item v-if="item2.children.length === 0" :key="item2.name">
-            <router-link :to="item2.path">
+            <router-link :to="item1.path + item2.path">
               {{ item2.label }}
             </router-link>
           </a-menu-item>
@@ -27,51 +26,33 @@
             <div v-for="item3 in item2.children">
               <!--如果没有子菜单，直接展示标签-->
               <a-menu-item :key="item3.name">
-                <router-link :to="item3.path">
+                <router-link :to="item1.path + item2.path + item3.path">
                   {{ item3.label }}
                 </router-link>
               </a-menu-item>
             </div>
-
-
           </a-sub-menu>
-
         </template>
-
-
       </a-sub-menu>
-
-
     </template>
-
-
   </a-menu>
 </template>
 
 <script setup lang="ts">
 import {reactive, toRefs} from 'vue';
-import {
-  MailOutlined,
-  CalendarOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-} from '@ant-design/icons-vue';
-import type {MenuProps} from 'ant-design-vue';
+import router from "@/router";
+import {MenuProps} from "ant-design-vue";
 
 const state = reactive({
   selectedKeys: [],
   openKeys: [],
 });
-const handleClick: MenuProps['onClick'] = menuInfo => {
-  console.log('click ', menuInfo);
-};
 
-
-const list = [
+const menuList = [
   {
-    path: '/a',
+    path: '/test',
     name: 'test',
-    label: '我是a',
+    label: '测试',
     children: [],
   },
   {
@@ -101,11 +82,9 @@ const list = [
     ],
   },
   {
-    path: '/c',
+    path: '/table',
     name: 'table',
-    label: '我是c',
-    icon: 'anyondfe',
-    index: 3,
+    label: '图表',
     children: [],
   },
 ]

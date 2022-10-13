@@ -16,7 +16,8 @@
 
       <!--content区域-->
       <a-layout-content class="layout-content">
-        <router-view/>
+        <router-view>
+        </router-view>
       </a-layout-content>
 
     </a-layout>
@@ -70,11 +71,16 @@ import {
 } from "@/api/disassembly";
 import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
+import {log} from "util";
 
 
 const router = useRouter()
 const user = useUserStore()
 let layoutSettings = useLayoutStore()
+
+GetUser(14).then(res => {
+  console.log(res.data)
+})
 
 //不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {
@@ -97,26 +103,26 @@ onMounted(() => {
   .layout-sider {
     background-color: white;
   }
+
+  .layout-header {
+    background-color: #1890ff;
+    height: 35px;
+    //取消所有的内边距
+    padding: 0;
+    //该盒子实行弹性布局
+    display: flex;
+    //均匀排列每个元素
+    //首个元素放置于起点，末尾元素放置于终点
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .layout-content {
+    //内容区域以浅灰色为底色
+    background: rgba(255, 255, 255, 0.3);
+    padding: 10px;
+  }
 }
 
-
-.layout-header {
-  background-color: #1890ff;
-  height: 35px;
-  //取消所有的内边距
-  padding: 0;
-  //该盒子实行弹性布局
-  display: flex;
-  //均匀排列每个元素
-  //首个元素放置于起点，末尾元素放置于终点
-  justify-content: space-between;
-  align-items: center;
-}
-
-.layout-content {
-  //内容区域以浅灰色为底色
-  background: rgba(255, 255, 255, 0.3);
-  padding: 10px;
-}
 
 </style>

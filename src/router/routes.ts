@@ -9,7 +9,6 @@ const routes: RouteRecordRaw[] = [
         //meta用于自定义页面信息
         meta: {
             title: '首页',
-            hiddenInSider: true,
             requireAuth: true,
             permittedRoles: [],  //允许哪些角色访问
         },

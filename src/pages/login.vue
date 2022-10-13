@@ -6,9 +6,6 @@
       <!--中文标题-->
       <div class="chinese-title">
         中文标题
-        <div>
-          <up-outlined/>
-        </div>
       </div>
       <!--英文标题-->
       <div class="english_title">
