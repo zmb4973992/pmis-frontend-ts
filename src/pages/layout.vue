@@ -1,11 +1,13 @@
 <template>
-  <a-layout class="general-layout">
-    <!--侧边栏-->
-    <a-layout-sider v-model:collapsed="isCollapsed" class="layout-sider" :width=" isCollapsed ? '100px' : '64px' ">
+  <a-layout class="layout">
+    <!--左侧边栏-->
+    <a-layout-sider
+        class="layout-sider"
+        :width="layoutSettings.isCollapsed? '80px':'140px'">
       <Logo/>
       <Sider/>
     </a-layout-sider>
-
+    <!--右侧内容区域-->
     <a-layout>
       <!--header区域-->
       <a-layout-header class="layout-header">
@@ -13,7 +15,7 @@
       </a-layout-header>
 
       <!--content区域-->
-      <a-layout-content>
+      <a-layout-content class="layout-content">
         <router-view/>
       </a-layout-content>
 
@@ -72,101 +74,22 @@ import useLayoutStore from "@/store/layout";
 
 const router = useRouter()
 const user = useUserStore()
-const layoutSettings = useLayoutStore()
-const {isCollapsed} = storeToRefs(layoutSettings)
+let layoutSettings = useLayoutStore()
 
 //不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {
-  request.post('/api/login', {
-    username: 'a',
-    password: 'a',
-  });
+      request.post('/api/login', {
+        username: 'a',
+        password: 'a',
+      });
+    }
+)
 
-
-  //测试
-  // let param: ICreateUser = {
-  //   full_name: 'kdf',
-  //   email_address: "skdfk@kdfj.com",
-  //   is_valid: false,
-  //   mobile_phone_number: '3898493',
-  //   employee_number: '347384',
-  //   username: 'b',
-  //   password: 'bksdfjej83h&^@JHFH#IFIisjdf3uyg^G'
-  // }
-  // GetUser(14).then(res => (console.log(res.data.data)))
-  // UpdateUser(14, param).then(res => (console.log(res.data)))
-  // CreateUser(param).then(res=>(console.log(res.data)))
-  // DeleteUser(104).then(res=>(console.log(res.data)))
-  // let param: IUserList = {
-  //   page_size:10
-  // }
-  // GetUserList(param).then(res => (console.log(res.data)))
-  // GetRelatedParty(34).then(res=>console.log(res))
-
-
-  // let param: IRelatedParty = {
-  //   chinese_name: '附件二123',
-  //   english_name: 'fine111',
-  //   address: '看到飞机上的分1111开久了',
-  //   uniform_social_credit_code: '388d3kg712123kd',
-  //   telephone: '1383991111148374'
-  // }
-  // let relatedPartyID = 33
-  // UpdateRelatedParty(relatedPartyID, param).then(res => (console.log(res.data)))
-
-  // CreateRelatedParty(param).then(res => (console.log(res.data)))
-  // DeleteRelatedParty(67).then(res=>(console.log(res.data)))
-  // let param :IRelatedPartyList = {
-  //   id_gte:60
-  // }
-  // GetRelatedPartyList(param).then(res=>(console.log(res.data)))
-
-  // let param: IDepartmentList = {
-  //   name_include: '一',
-  //
-  // }
-  // let departmentID = 118
-  // // GetDepartment(departmentID).then(res=>console.log(res))
-  //
-  // GetDepartmentList(param).then(res => console.log(res))
-
-  // let param1 :IDisassembly = {
-  //   name: 'dfef3',
-  //   project_id: 1,
-  //   level: 3,
-  //   weight: 0.8,
-  //   superior_id: 33
-  // }
-  // let param2 : IDisassembly[] = [{
-  //   name: 'dfef3',
-  //   project_id: 1,
-  //   level: 3,
-  //   weight: 0.8,
-  //   superior_id: 33
-  // },{
-  //   name: 'dfef3',
-  //   project_id: 1,
-  //   level: 3,
-  //   weight: 0.8,
-  //   superior_id: 33
-  // }]
-  // let disassemblyID = 5
-  // let param3:IDepartmentList = {
-  // level_gte:40,
-  //   page:2,
-  //   page_size:2
-  // }
-  // GetDisassembly(disassemblyID).then(res => console.log(res))
-  // UpdateDisassembly(disassemblyID,param1).then(res => console.log(res))
-  // CreateDisassemblyInBatches(param2)
-  // DeleteDisassembly(19)
-  // GetDisassemblyList(param3).then(res => console.log(res))
-})
 
 </script>
 
 <style scoped lang="less">
-.general-layout {
+.layout {
   //确保页面铺满视窗
   height: 100vh;
   width: 100vw;
@@ -188,14 +111,12 @@ onMounted(() => {
   //首个元素放置于起点，末尾元素放置于终点
   justify-content: space-between;
   align-items: center;
-
 }
 
-.ant-layout-content {
-  background: antiquewhite;
+.layout-content {
+  //内容区域以浅灰色为底色
+  background: rgba(255, 255, 255, 0.3);
+  padding: 10px;
 }
 
-.ant-layout-footer {
-  background: cornsilk;
-}
 </style>

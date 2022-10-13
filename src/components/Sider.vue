@@ -110,13 +110,6 @@ const list = [
   },
 ]
 
-//过滤菜单的方法，已废弃
-const noChildren = () => {
-  return list.filter((item) => !item.children)
-}
-const hasChildren = () => {
-  return list.filter((item) => item.children)
-}
 
 </script>
 

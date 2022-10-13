@@ -1,8 +1,10 @@
 <template>
   <div class="left-header">
-    <a-button type="primary" style="margin: 0" @click="toggleCollapsed">
-      <MenuUnfoldOutlined v-if="!isCollapsed" style="color:white;font-size:18px"/>
-      <MenuFoldOutlined v-else style="color:white;font-size:18px"/>
+    <a-button type="primary" class="collapse-button" @click="layoutSettings.changeCollapseStatus()">
+      <!--如果折叠状态为否，就展示向内折叠的图标-->
+      <MenuFoldOutlined class="collapse-icon" v-if="!isCollapsed"/>
+      <!--如果折叠状态为是，就展示向外展开的图标-->
+      <MenuUnfoldOutlined class="collapse-icon" v-else/>
     </a-button>
   </div>
   <div class="right-header">
@@ -29,18 +31,33 @@
 </template>
 
 <script setup lang="ts">
-import {MenuFoldOutlined,MenuUnfoldOutlined, DownOutlined} from "@ant-design/icons-vue";
+import {MenuFoldOutlined, MenuUnfoldOutlined, DownOutlined} from "@ant-design/icons-vue";
 import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
 
 const layoutSettings = useLayoutStore()
 const {isCollapsed} = storeToRefs(layoutSettings)
+
+const changeCollapseStatus = () => {
+  layoutSettings.changeCollapseStatus()
+}
+
 </script>
 
 <style scoped lang="less">
 .left-header {
-  padding-left: 15px;
+  margin-left: 5px;
   display: flex;
+
+  .collapse-button {
+    margin: 0;
+    padding: 0 10px;
+
+    .collapse-icon {
+      color: white;
+      font-size: 18px
+    }
+  }
 }
 
 .right-header {
@@ -50,4 +67,6 @@ const {isCollapsed} = storeToRefs(layoutSettings)
     color: white;
   }
 }
+
+
 </style>

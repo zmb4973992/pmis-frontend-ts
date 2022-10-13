@@ -1,10 +1,10 @@
 <template>
   <!--版面总图-->
-  <div class="general-layout">
+  <div class="layout">
     <!--登录框-->
     <div class="login-box">
       <!--中文标题-->
-      <div class="chinese_title">
+      <div class="chinese-title">
         中文标题
         <div>
           <up-outlined/>
@@ -104,7 +104,7 @@ const onFinishFailed = (errorInfo: any) => {
 </script>
 
 <style scoped lang="less">
-.general-layout {
+.layout {
   height: 100vh; //vh=Viewport Height 视窗高度，按百分比计算
   width: 100vw; //vw=Viewport Width 视窗宽度，按百分比计算
   //background-color: cornflowerblue;
@@ -125,7 +125,7 @@ const onFinishFailed = (errorInfo: any) => {
   box-shadow: 0 21px 41px 0 rgba(0, 0, 0, 0.3); //边框阴影
 }
 
-.chinese_title {
+.chinese-title {
   margin-top: 20px;
   font-size: 30px;
 }
