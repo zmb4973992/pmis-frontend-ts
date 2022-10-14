@@ -71,16 +71,11 @@ import {
 } from "@/api/disassembly";
 import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
-import {log} from "util";
-
 
 const router = useRouter()
 const user = useUserStore()
 let layoutSettings = useLayoutStore()
 
-GetUser(14).then(res => {
-  console.log(res.data)
-})
 
 //不是所有功能都要放在onMounted下，直接放在外面一样可以运行
 onMounted(() => {

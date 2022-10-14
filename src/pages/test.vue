@@ -1,9 +1,5 @@
 <template>
   <div>这是test.vue</div>
-  <div> &nbsp;</div>
-
-  <div><a-button type="primary">sdf</a-button></div>
-  <div>可以查看控制台日志</div>
 </template>
 
 <script setup lang="ts">
@@ -12,13 +8,10 @@ import request from "@/util/axios";
 
 const user = useUserStore()
 
-function test(id: number = 30) {
-  request.get('/api/related_party/' + id)
-      .then(
-          (res) => {
-            console.log(res)
-          })
-}
+import {GetRoles} from "@/api/role_and_user"
+import {GetUser} from "@/api/user";
+
+
 
 </script>
 

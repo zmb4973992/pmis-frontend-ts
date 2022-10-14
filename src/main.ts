@@ -12,7 +12,7 @@ import '@/assets/styles/main.css'
 
 
 const app = createApp(App)
-app.use(router)
-    .use(store)
+app.use(store)
+    .use(router)
     .use(Antd)
     .mount('#app')

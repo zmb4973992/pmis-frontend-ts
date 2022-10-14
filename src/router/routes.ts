@@ -15,9 +15,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/layout.vue'),
         children: [
             {
-                path:'',
-                name:'content',
-                component:()=>import('@/components/content.vue'),
+                path: '',
+                name: 'content',
+                component: () => import('@/components/content.vue'),
             },
             {
                 path: 'table',
@@ -33,7 +33,6 @@ const routes: RouteRecordRaw[] = [
                 //meta用于自定义页面信息
                 meta: {
                     title: '测试',
-                    hiddenInSider: false,
                     requireAuth: false,
                     permittedRoles: [],
                 },
@@ -41,14 +40,11 @@ const routes: RouteRecordRaw[] = [
             },
         ],
     },
-
-
     {
         path: '/login',
         name: 'login',
         meta: {
             title: '登录',
-            hiddenInSider: true,
             requireAuth: false,
             permittedRoles: [],
         },
@@ -62,11 +58,20 @@ const routes: RouteRecordRaw[] = [
         }
     },
     {
+        path: '/403',
+        name: '403',
+        meta: {
+            title: '权限不足，无法访问',
+            requireAuth: false,
+            permittedRoles: [],
+        },
+        component: () => import('@/pages/403.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: '404',
         meta: {
             title: '页面未找到',
-            hiddenInSider: true,
             requireAuth: false,
             permittedRoles: [],
         },

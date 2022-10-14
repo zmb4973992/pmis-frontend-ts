@@ -1,12 +1,9 @@
 import axios from "axios";
-import useUserStore from "@/store/user";
 
 const request = axios.create({
     baseURL: 'http://127.0.0.1:8000',
     timeout: 5000,  //毫秒
 })
-
-const user = useUserStore()
 
 //对发送的请求进行封装
 request.interceptors.request.use(
