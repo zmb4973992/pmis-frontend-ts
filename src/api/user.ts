@@ -25,7 +25,19 @@ export interface ICreateUser extends IUpdateUser {
     password: string
 }
 
-const GetUser = (userID: number) => request.get(
+const GetUser = () => request.get(
+    '/api/user'
+).then(
+    res => {
+        //如果token无效，就删掉本地的token
+        if (res.data.code === 3001) {
+            localStorage.removeItem('access_token')
+        }
+        return res.data
+    },
+)
+
+const GetUserByID = (userID: number) => request.get(
     '/api/user/' + userID
 ).then(
     res => {
@@ -96,12 +108,15 @@ const GetUserList = (params: IUserList) => request.get(
     },
 )
 
+
 export {
-    GetUser,
+    GetUserByID,
     UpdateUser,
     CreateUser,
     DeleteUser,
-    GetUserList
+    GetUserList,
+
+    GetUser,
 }
 
 

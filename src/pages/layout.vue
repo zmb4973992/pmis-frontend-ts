@@ -3,7 +3,7 @@
     <!--左侧边栏-->
     <a-layout-sider
         class="layout-sider"
-        :width="layoutSettings.isCollapsed? '80px':'140px'">
+        :width="layoutSettings.isCollapsed? '80px':'120px'">
       <Logo/>
       <Sider/>
     </a-layout-sider>
@@ -16,8 +16,7 @@
 
       <!--content区域-->
       <a-layout-content class="layout-content">
-        <router-view>
-        </router-view>
+        <router-view/>
       </a-layout-content>
 
     </a-layout>
@@ -28,52 +27,15 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, reactive} from 'vue'
+import {onMounted} from 'vue'
 import {useRouter} from 'vue-router'
-import useUserStore from "@/store/user";
 import request from "@/util/axios";
 import Sider from '@/components/Sider.vue'  //侧边栏组件
 import Logo from '@/components/Logo.vue'
 import Header from '@/components/header.vue'
-import {
-  GetUser,
-  IUpdateUser,
-  ICreateUser,
-  UpdateUser,
-  CreateUser, DeleteUser, GetUserList, IUserList
-} from "@/api/user";
-
-import {
-  IRelatedParty,
-  GetRelatedParty,
-  UpdateRelatedParty,
-  CreateRelatedParty,
-  DeleteRelatedParty, IRelatedPartyList, GetRelatedPartyList
-} from "@/api/related_party";
-import {
-  GetDepartment,
-  UpdateDepartment,
-  CreateDepartment,
-  DeleteDepartment,
-  GetDepartmentList,
-  IDepartment,
-  IDepartmentList
-} from "@/api/department";
-import {
-  GetDisassembly,
-  UpdateDisassembly,
-  CreateDisassembly,
-  CreateDisassemblyInBatches,
-  DeleteDisassembly,
-  GetDisassemblyList,
-  IDisassembly,
-  IDisassemblyList,
-} from "@/api/disassembly";
-import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
 
 const router = useRouter()
-const user = useUserStore()
 let layoutSettings = useLayoutStore()
 
 

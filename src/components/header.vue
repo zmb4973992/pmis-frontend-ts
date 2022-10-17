@@ -10,7 +10,7 @@
   <div class="right-header">
     <a-dropdown>
       <a class="dropdown" @click.prevent>
-        个人信息
+        {{ full_name }}测试
         <DownOutlined/>
       </a>
       <template #overlay>
@@ -34,13 +34,22 @@
 import {MenuFoldOutlined, MenuUnfoldOutlined, DownOutlined} from "@ant-design/icons-vue";
 import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
+import useUserStore from "@/store/user";
+import {GetUser} from "@/api/user";
+import {onMounted} from "vue";
 
 const layoutSettings = useLayoutStore()
 const {isCollapsed} = storeToRefs(layoutSettings)
+let full_name: string
 
-const changeCollapseStatus = () => {
-  layoutSettings.changeCollapseStatus()
+async function getUserInfo() {
+  let userInfo = await GetUser()
+  let full_name = userInfo.data.full_name
+  console.log(full_name)
 }
+
+getUserInfo()
+
 
 </script>
 

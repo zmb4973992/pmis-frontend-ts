@@ -9,7 +9,7 @@ import request from "@/util/axios";
 const user = useUserStore()
 
 import {GetRoles} from "@/api/role_and_user"
-import {GetUser} from "@/api/user";
+import {GetUserByID} from "@/api/user";
 
 
 

@@ -28,13 +28,13 @@ router.beforeEach(async (to, from) => {
                 //开始判断用户是否有权限访问路由
                 let isPermitted: boolean = false
                 // 对用户所有的角色名称进行遍历
-                for (let item1 of rolesData.data.role_names) {
+                for (let roleName of rolesData.data.role_names) {
                     if (isPermitted) break;
                     // @ts-ignore
                     // 再对路由的允许访问角色进行遍历
-                    for (let item2 of to.meta.permittedRoles) {
+                    for (let permittedRole of to.meta.permittedRoles) {
                         //如果两边的权限有相同值，则允许访问
-                        if (item1 === item2) {
+                        if (roleName === permittedRole) {
                             isPermitted = true
                             break
                         }

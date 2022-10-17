@@ -7,6 +7,7 @@ const useUserStore = defineStore(
         state: () => ({
             token: '',
             username: 'me',
+            full_name:'fdf',
             roles: [],
         }),
         //类似computed
