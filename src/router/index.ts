@@ -21,8 +21,30 @@ router.beforeEach(async (to, from) => {
         const token = localStorage.getItem('access_token')
         // 如果本地有token
         if (token) {
-            console.log(await GetRoles())
-            return
+            // 获取登录用户的角色
+            const rolesData = await GetRoles()
+            // 如果登录用户有角色的话
+            if (rolesData.code === 0) {
+                //开始判断用户是否有权限访问路由
+                let isPermitted: boolean = false
+                // 对用户所有的角色名称进行遍历
+                for (let item1 of rolesData.data.role_names) {
+                    if (isPermitted) break;
+                    // @ts-ignore
+                    // 再对路由的允许访问角色进行遍历
+                    for (let item2 of to.meta.permittedRoles) {
+                        //如果两边的权限有相同值，则允许访问
+                        if (item1 === item2) {
+                            isPermitted = true
+                            break
+                        }
+                    }
+                }
+                //双层遍历后两边权限没有相同值，则跳转到403（无权访问页）
+                if (!isPermitted) {
+                    return {name: '403'}
+                }
+            }
         } else {
             //本地没有token，重定向到登录页
             return {name: 'login'}

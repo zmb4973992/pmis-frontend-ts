@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: '首页',
             requireAuth: true,
-            permittedRoles: [],  //允许哪些角色访问
+            permittedRoles: ['a','b','管理员'],  //允许哪些角色访问
         },
         component: () => import('@/pages/layout.vue'),
         children: [
@@ -63,7 +63,6 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: '权限不足，无法访问',
             requireAuth: false,
-            permittedRoles: [],
         },
         component: () => import('@/pages/403.vue')
     },
