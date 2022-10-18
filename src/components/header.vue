@@ -10,7 +10,7 @@
   <div class="right-header">
     <a-dropdown>
       <a class="dropdown" @click.prevent>
-        {{ full_name }}测试
+        你好，{{ full_name }}
         <DownOutlined/>
       </a>
       <template #overlay>
@@ -22,7 +22,7 @@
             <a href="javascript:">修改密码</a>
           </a-menu-item>
           <a-menu-item>
-            <a href="javascript:">退出登录</a>
+            <a href="javascript:" @click="logout">退出登录</a>
           </a-menu-item>
         </a-menu>
       </template>
@@ -36,19 +36,29 @@ import {storeToRefs} from "pinia";
 import useLayoutStore from "@/store/layout";
 import useUserStore from "@/store/user";
 import {GetUser} from "@/api/user";
-import {onMounted} from "vue";
+import {onBeforeMount, onMounted, ref} from "vue";
+import {GetRoles} from "@/api/role_and_user";
+import router from "@/router";
 
 const layoutSettings = useLayoutStore()
 const {isCollapsed} = storeToRefs(layoutSettings)
-let full_name: string
+let full_name = ref('')
 
-async function getUserInfo() {
-  let userInfo = await GetUser()
-  let full_name = userInfo.data.full_name
-  console.log(full_name)
+onMounted(
+    () => {
+      GetUser().then(
+          (res) => {
+            console.log(res.data.full_name);
+            full_name.value = res.data.full_name
+          }
+      )
+    }
+)
+
+const logout = () => {
+  localStorage.removeItem('access_token')
+  router.push({name: 'login'})
 }
-
-getUserInfo()
 
 
 </script>
@@ -56,10 +66,8 @@ getUserInfo()
 <style scoped lang="less">
 .left-header {
   margin-left: 5px;
-  display: flex;
 
   .collapse-button {
-    margin: 0;
     padding: 0 10px;
 
     .collapse-icon {
@@ -71,11 +79,11 @@ getUserInfo()
 
 .right-header {
   padding-right: 15px;
+  height: 35px;
+  line-height: 35px;
 
   .dropdown {
     color: white;
   }
 }
-
-
 </style>

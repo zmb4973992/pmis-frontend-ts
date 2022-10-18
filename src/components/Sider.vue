@@ -119,7 +119,5 @@ const menuList = [
 </script>
 
 <style scoped lang="less">
-.menu-item {
-  text-align: center;
-}
+
 </style>

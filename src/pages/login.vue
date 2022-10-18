@@ -67,8 +67,8 @@ const user = useUserStore()
 const router = useRouter()
 
 const formState = reactive({
-  username: 'a',
-  password: 'a',
+  username: '',
+  password: '',
 })
 
 const onFinish = (data: ILoginData) => {
@@ -78,16 +78,14 @@ const onFinish = (data: ILoginData) => {
       res => {
         // 如果返回的状态码不是0
         if (res.data.code == 0) {
-          console.log('登录成功')
-        } else if (res.data.code != 0) {
+          message.success('登录成功，正在跳转......', 1)
+          user.updateToken(res.data.data.access_token)
+          localStorage.setItem('access_token', res.data.data.access_token)
+          router.push({name: 'home'})
+        } else {
           message.error('用户名或密码错误')
-          return
         }
-        message.success('登录成功，正在跳转......', 1)
-        user.updateToken(res.data.data.access_token)
-        user.updateRoles(res.data.data.roles)
-        router.push({name: 'home'})
-        localStorage.setItem('access_token', res.data.data.access_token)
+
       },
       //如果请求发送失败
       err => (console.log(err))
@@ -125,9 +123,11 @@ const onFinishFailed = (errorInfo: any) => {
 .chinese-title {
   margin-top: 20px;
   font-size: 30px;
+  text-align: center;
 }
 
 .english_title {
+  text-align: center;
   margin-top: 20px;
   font-size: 15px;
 }

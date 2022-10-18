@@ -23,10 +23,10 @@ const layoutSettings = useLayoutStore()
   height: 35px;
   background-color: #1890ff ;
   color: white;
-  padding: 0 6px;
+  padding: 0 3px;
 
   .chinese-title {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 35px; //line-height = height时，行内文字垂直居中
     //默认居中对齐，所以不用text-align
   }
@@ -34,6 +34,7 @@ const layoutSettings = useLayoutStore()
   .english-title {
     font-size: 20px;
     line-height: 35px;
+    text-align: center;
   }
 }
 

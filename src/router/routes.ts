@@ -121,6 +121,26 @@ const routes: RouteRecordRaw[] = [
         component:
             () => import('@/pages/login.vue'),
     },
+    {
+        path: '/403',
+        name: '403',
+        meta: {
+            title: '权限不足，无法访问',
+            requireAuth: false,
+        },
+        component:
+            () => import('@/pages/403.vue'),
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: '404',
+        meta: {
+            title: '页面不存在',
+            requireAuth: false,
+        },
+        component:
+            () => import('@/pages/404.vue'),
+    },
 ]
 
 export default routes

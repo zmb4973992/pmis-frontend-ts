@@ -70,7 +70,7 @@ const DeleteRelatedParty = (relatedPartyID: number) => request.delete(
     },
 )
 
-const GetRelatedPartyList = (params: IRelatedPartyList) => request.get(
+const GetRelatedPartyList = (params?: IRelatedPartyList) => request.get(
     '/api/related_party/list',
     {params}
 ).then(
