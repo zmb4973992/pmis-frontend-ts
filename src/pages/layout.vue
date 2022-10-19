@@ -1,11 +1,13 @@
 <template>
   <a-layout class="layout">
     <!--左侧边栏-->
-    <a-layout-sider
-        class="left-layout"
-        :width="layoutSettings.isCollapsed? '80px':'120px'">
+    <a-layout-sider class="left-layout"
+                    :width="layoutSettings.isCollapsed? '80px':'120px'">
       <Logo/>
-      <Sider/>
+      <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
+      <div class="sider-wrapper">
+        <Sider class="siderBar"/>
+      </div>
     </a-layout-sider>
     <!--右侧内容区域-->
     <a-layout class="right-layout">
@@ -14,8 +16,8 @@
         <Header/>
       </a-layout-header>
       <!--content区域-->
-      <a-layout-content class="layout-content-wrap">
-        <!--这里包裹一层div，是为了修改margin、padding、滚动条等-->
+      <a-layout-content class="layout-content-wrapper">
+        <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
         <div class="layout-content">
           <router-view/>
         </div>
@@ -37,7 +39,7 @@ let layoutSettings = useLayoutStore()
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .layout {
   overflow: hidden;
   //确保页面铺满视窗
@@ -46,12 +48,13 @@ let layoutSettings = useLayoutStore()
   background: rgba(255, 255, 255, 0.3);
 
   .left-layout {
-    background-color: white;
+    .sider-wrapper {
+      overflow-x: hidden;
+      height: calc(100vh - 35px);
+    }
   }
 
   .right-layout {
-    height: 100%;
-
     .layout-header {
       background-color: #1890ff;
       height: 35px;
@@ -65,13 +68,12 @@ let layoutSettings = useLayoutStore()
       align-items: center;
     }
 
-    .layout-content-wrap {
+    .layout-content-wrapper {
       //内容区域以浅灰色为底色
       //margin: 6px;
       //padding: 5px;
       background-color: white;
       overflow-x: hidden;
-      overflow-y: visible;
 
       .layout-content {
         margin: 6px;

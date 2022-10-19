@@ -16,6 +16,6 @@ import {GetUserByID} from "@/api/user";
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>

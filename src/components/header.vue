@@ -63,7 +63,7 @@ const logout = () => {
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .left-header {
   margin-left: 5px;
 

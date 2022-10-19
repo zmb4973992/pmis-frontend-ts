@@ -18,7 +18,7 @@ import useLayoutStore from "@/store/layout";
 const layoutSettings = useLayoutStore()
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .logo-layout {
   height: 35px;
   background-color: #1890ff ;

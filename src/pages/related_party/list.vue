@@ -56,8 +56,6 @@ GetRelatedPartyList().then(
 
 </script>
 
-<style scoped lang="less">
-.test {
-  background-color: cornflowerblue;
-}
+<style scoped lang="scss">
+
 </style>

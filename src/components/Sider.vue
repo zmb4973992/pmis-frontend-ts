@@ -113,11 +113,143 @@ const menuList = [
       },
     ],
   },
+  {
+    path: '/related-party',
+    label:'重复测试1',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试1',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试2',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试2',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试3',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试3',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试4',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试4',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试5',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试5',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试6',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试6',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试7',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试7',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试8',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试8',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试9',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试9',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试10',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试10',
+        children: [],
+      },
+    ],
+  },
+  {
+    path: '/related-party',
+    label:'重复测试11',
+    children: [
+      {
+        path: '/list',
+        label: '重复测试11',
+        children: [],
+      },
+    ],
+  },
+  // {
+  //   path: '/related-party',
+  //   label:'重复测试12',
+  //   children: [
+  //     {
+  //       path: '/list',
+  //       label: '重复测试12',
+  //       children: [],
+  //     },
+  //   ],
+  // },
 ]
 
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 
 </style>

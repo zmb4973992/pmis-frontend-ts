@@ -48,7 +48,7 @@ const columns = [
 </script>
 
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .a {
   width: 90%;
   margin: 20px auto 0 ; //上 左右 下

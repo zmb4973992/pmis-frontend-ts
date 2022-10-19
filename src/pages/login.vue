@@ -98,7 +98,7 @@ const onFinishFailed = (errorInfo: any) => {
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .layout {
   height: 100vh; //vh=Viewport Height 视窗高度，按百分比计算
   width: 100vw; //vw=Viewport Width 视窗宽度，按百分比计算
