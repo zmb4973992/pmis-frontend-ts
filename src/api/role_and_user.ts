@@ -1,4 +1,4 @@
-import request from "@/util/axios";
+import request from "@/util/request";
 
 const GetRoles = () => request.get(
     '/api/role_and_user/by_token_in_header'

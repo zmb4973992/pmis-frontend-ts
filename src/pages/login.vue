@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import {reactive} from "vue";
-import request from "@/util/axios";
+import request from "@/util/request";
 import useUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";

@@ -32,11 +32,8 @@ import Header from '@/components/header.vue'
 import useLayoutStore from "@/store/layout";
 import useUserStore from "@/store/user";
 
-const router = useRouter()
 let layoutSettings = useLayoutStore()
 
-let userInfo = useUserStore()
-console.log(userInfo);
 
 </script>
 

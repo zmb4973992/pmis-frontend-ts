@@ -48,7 +48,6 @@ onMounted(
     () => {
       GetUser().then(
           (res) => {
-            console.log(res.data.full_name);
             full_name.value = res.data.full_name
           }
       )

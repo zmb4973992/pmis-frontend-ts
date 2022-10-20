@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import {reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
+import useUserStore from "@/store/user";
 
 let dataSource = ref([])
 let columns = ref([
@@ -51,6 +52,8 @@ GetRelatedPartyList().then(
       // console.log(dataSource.value[0]);
     }
 )
+
+let userInfo = useUserStore()
 
 
 </script>

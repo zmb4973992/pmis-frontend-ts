@@ -1,4 +1,4 @@
-import request from "@/util/axios";
+import request from "@/util/request";
 
 export interface ILoginData {
     username: string
