@@ -1,13 +1,11 @@
 <template>
   <a-layout class="layout">
     <!--左侧边栏-->
-    <a-layout-sider class="left-layout"
-                    :width="layoutSettings.isCollapsed? '80px':'120px'">
+    <a-layout-sider
+        class="left-layout"
+        :width="layoutSettings.isCollapsed? '80px':'120px'">
       <Logo/>
-      <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
-      <div class="sider-wrapper">
-        <Sider class="siderBar"/>
-      </div>
+      <Sider class="sider-bar"/>
     </a-layout-sider>
     <!--右侧内容区域-->
     <a-layout class="right-layout">
@@ -32,23 +30,36 @@ import Sider from '@/components/Sider.vue'
 import Logo from '@/components/Logo.vue'
 import Header from '@/components/header.vue'
 import useLayoutStore from "@/store/layout";
-import {onBeforeMount} from "vue";
+import useUserStore from "@/store/user";
 
 const router = useRouter()
 let layoutSettings = useLayoutStore()
 
+let userInfo = useUserStore()
+console.log(userInfo);
+
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/styles/variables.scss";
+
 .layout {
   overflow: hidden;
   //确保页面铺满视窗
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.3);
+  background-color: $background-color;
 
   .left-layout {
-    .sider-wrapper {
+    background-color: $background-color;
+
+    //左侧边栏的滚动条要细一点，不应用全局样式
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    .sider-bar {
       overflow-x: hidden;
       height: calc(100vh - 35px);
     }
@@ -78,7 +89,6 @@ let layoutSettings = useLayoutStore()
       .layout-content {
         margin: 6px;
       }
-
     }
   }
 

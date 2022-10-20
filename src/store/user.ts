@@ -1,13 +1,13 @@
 import {defineStore} from "pinia";
 
-//用来储存全局状态
+//用来储存用户信息
 const useUserStore = defineStore(
     'user',
     {
         state: () => ({
             token: '',
-            username: 'me',
-            full_name:'fdf',
+            username: '',
+            full_name:'',
             roles: [],
         }),
         //类似computed

@@ -11,9 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
-
 
 let dataSource = ref([])
 let columns = ref([
@@ -49,7 +48,7 @@ let columns = ref([
 GetRelatedPartyList().then(
     (res) => {
       dataSource.value = res.data
-      console.log(dataSource.value);
+      // console.log(dataSource.value[0]);
     }
 )
 
