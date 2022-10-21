@@ -1,26 +1,29 @@
 import request from "@/util/request";
+import {message} from "ant-design-vue";
+import useUserStore from "@/store/user";
 
-export interface ILoginData {
+export interface ILogin {
     username: string
     password: string
 }
 
-const login = (data: ILoginData) => request.post('/api/login', data)
+let user = useUserStore()
 
-const ValidateToken = (token: string) => request.get(
-    '/api/validate_token/' + token,
-).then(
-    res => {
-        if (res.data.code === 3001) {
-            console.log('token无效，已经删除本地的token')
-            localStorage.removeItem('access_token')
-            return;
-        } else {
-            return
-        }
-    }
-)
+const login = (data: ILogin) =>
+    request.post('/api/login', data).then(
+        // 如果请求成功发出、收到结果
+        res => {
+            // 如果返回的状态码不是0
+            if (res.data.code == 0) {
+                //更新本地的access_token
+                localStorage.setItem('access_token', res.data.data.access_token)
+                //更新store里的token
+                user.updateToken(res.data.data.access_token)
+            }
+            return res.data
+        },
+        //如果请求发送失败
+        err => (console.log(err))
+    )
 
-export {login, ValidateToken}
-
-export default {login, ValidateToken}
+export {login}

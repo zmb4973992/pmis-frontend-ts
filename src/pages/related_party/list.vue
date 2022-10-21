@@ -2,9 +2,6 @@
   <div class="a">
     <a-table class="table" :data-source="dataSource" :columns="columns">
     </a-table>
-    <div>1</div>
-    <div class="test">1</div>
-    <div>1</div>
 
   </div>
 

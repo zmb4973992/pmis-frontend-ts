@@ -41,6 +41,18 @@ import {reactive, toRefs} from 'vue';
 import router from "@/router";
 import {MenuProps} from "ant-design-vue";
 import {createFromIconfontCN} from "@ant-design/icons-vue";
+import routes from '@/router/routes'
+import useUserStore from "@/store/user";
+
+let routes_test = routes
+const roleInfo = useUserStore()
+
+routes_test.filter((item) => {
+  const x = item.meta!.permittedRoles as []
+
+  return item.meta!.requireAuth === true && item.meta!.permitterRoles
+})
+console.log(routes_test);
 
 
 const state = reactive({
@@ -90,7 +102,7 @@ const menuList = [
         label: '项目列表',
         children: [],
       },
-        {
+      {
         path: '/performance',
         label: '历史业绩',
         children: [],
@@ -104,7 +116,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'相关方',
+    label: '相关方',
     children: [
       {
         path: '/list',
@@ -115,7 +127,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试1',
+    label: '重复测试1',
     children: [
       {
         path: '/list',
@@ -126,7 +138,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试2',
+    label: '重复测试2',
     children: [
       {
         path: '/list',
@@ -137,7 +149,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试3',
+    label: '重复测试3',
     children: [
       {
         path: '/list',
@@ -148,7 +160,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试4',
+    label: '重复测试4',
     children: [
       {
         path: '/list',
@@ -159,7 +171,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试5',
+    label: '重复测试5',
     children: [
       {
         path: '/list',
@@ -170,7 +182,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试6',
+    label: '重复测试6',
     children: [
       {
         path: '/list',
@@ -181,7 +193,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试7',
+    label: '重复测试7',
     children: [
       {
         path: '/list',
@@ -192,7 +204,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试8',
+    label: '重复测试8',
     children: [
       {
         path: '/list',
@@ -203,7 +215,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试9',
+    label: '重复测试9',
     children: [
       {
         path: '/list',
@@ -214,7 +226,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试10',
+    label: '重复测试10',
     children: [
       {
         path: '/list',
@@ -225,7 +237,7 @@ const menuList = [
   },
   {
     path: '/related-party',
-    label:'重复测试11',
+    label: '重复测试11',
     children: [
       {
         path: '/list',

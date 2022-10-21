@@ -24,6 +24,7 @@ const useUserStore = defineStore(
                 const token = localStorage.getItem('access_token')
                 if (token) {
                     this.token = token
+                    //获取基本的用户信息
                     request.get(
                         '/api/user'
                     ).then(
@@ -33,12 +34,24 @@ const useUserStore = defineStore(
                             if (res.data.code === 0) {
                                 this.username = res.data.data.username
                                 this.full_name = res.data.data.full_name
-                                this.roles = res.data.data.roles
-                                this.departments = res.data.data.departments
                             } else {
                                 localStorage.removeItem('access_token')
                             }
                         },
+                    )
+                    //获取用户角色
+                    request.get(
+                        '/api/role_and_user/by_token_in_header'
+                    ).then(
+                        res => {
+                            //如果token有效，就保留到store；
+                            //如果token无效，就删掉本地的token
+                            if (res.data.code === 0) {
+                                this.roles = res.data.data.role_names
+                            } else {
+                                localStorage.removeItem('access_token')
+                            }
+                        }
                     )
                 }
 

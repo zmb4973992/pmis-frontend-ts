@@ -2,6 +2,7 @@
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 import {RouteRecordRaw} from "vue-router";
 
+
 const routes: RouteRecordRaw[] = [
     {
         path: '/',

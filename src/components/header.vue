@@ -1,11 +1,11 @@
 <template>
   <div class="left-header">
-    <a-button type="primary" class="collapse-button" @click="layoutSettings.changeCollapseStatus()">
+    <div class="collapse-button" @click="layoutSettings.changeCollapseStatus()">
       <!--如果折叠状态为否，就展示向内折叠的图标-->
-      <MenuFoldOutlined class="collapse-icon" v-if="!isCollapsed"/>
+      <MenuFoldOutlined v-if="!isCollapsed"/>
       <!--如果折叠状态为是，就展示向外展开的图标-->
-      <MenuUnfoldOutlined class="collapse-icon" v-else/>
-    </a-button>
+      <MenuUnfoldOutlined v-else/>
+    </div>
   </div>
   <div class="right-header">
     <a-dropdown>
@@ -63,16 +63,14 @@ const logout = () => {
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/styles/variables.scss";
+
 .left-header {
-  margin-left: 5px;
+  margin-left: 10px;
+  font-size: 21px;
 
   .collapse-button {
-    padding: 0 10px;
-
-    .collapse-icon {
-      color: white;
-      font-size: 18px
-    }
+    color: #1890ff;
   }
 }
 
@@ -82,7 +80,7 @@ const logout = () => {
   line-height: 35px;
 
   .dropdown {
-    color: white;
+    color: #222222;
   }
 }
 </style>

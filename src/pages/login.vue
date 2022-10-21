@@ -60,7 +60,7 @@ import request from "@/util/request";
 import useUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";
-import {ILoginData, login} from "@/api/login";
+import {ILogin, login} from "@/api/login";
 import {UpOutlined} from "@ant-design/icons-vue";
 
 const user = useUserStore()
@@ -71,21 +71,18 @@ const formState = reactive({
   password: '',
 })
 
-const onFinish = (data: ILoginData) => {
+const onFinish = (data: ILogin) => {
   // axios可以把fulfilled和rejected同时放在then里，相当于promise的then+catch
   login(data).then(
       // 如果请求成功发出
       res => {
         // 如果返回的状态码不是0
-        if (res.data.code == 0) {
+        if (res.code == 0) {
           message.success('登录成功，正在跳转......', 1)
-          user.updateToken(res.data.data.access_token)
-          localStorage.setItem('access_token', res.data.data.access_token)
           router.push({name: 'home'})
         } else {
           message.error('用户名或密码错误')
         }
-
       },
       //如果请求发送失败
       err => (console.log(err))

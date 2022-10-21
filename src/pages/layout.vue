@@ -14,12 +14,14 @@
         <Header/>
       </a-layout-header>
       <!--content区域-->
-      <a-layout-content class="layout-content-wrapper">
-        <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
-        <div class="layout-content">
-          <router-view/>
-        </div>
-      </a-layout-content>
+      <div class="layout-content-wrapper">
+        <a-layout-content>
+          <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
+          <div class="layout-content">
+            <router-view/>
+          </div>
+        </a-layout-content>
+      </div>
     </a-layout>
   </a-layout>
 </template>
@@ -49,6 +51,8 @@ let layoutSettings = useLayoutStore()
 
   .left-layout {
     background-color: $background-color;
+    border-right-width: 1px;
+    border-radius: 10px;
 
     //左侧边栏的滚动条要细一点，不应用全局样式
     ::-webkit-scrollbar {
@@ -59,12 +63,19 @@ let layoutSettings = useLayoutStore()
     .sider-bar {
       overflow-x: hidden;
       height: calc(100vh - 35px);
+      border-right: red;
+      box-shadow: 1px 0 4px rgba(0,21,41,.08);
+      //控制该区块的显示层级，越大的越靠前显示
+      //加了才能显示header的阴影效果，否则会被下面的div覆盖
+      z-index: 1;
     }
   }
 
   .right-layout {
+    background-color: $background-color;
+
     .layout-header {
-      background-color: #1890ff;
+      background-color: white;
       height: 35px;
       //取消所有的内边距
       padding: 0;
@@ -74,13 +85,15 @@ let layoutSettings = useLayoutStore()
       //首个元素放置于起点，末尾元素放置于终点
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 1px 4px rgba(0,21,41,.08);
+      //控制该区块的显示层级，越大的越靠前显示
+      //加了才能显示header的阴影效果，否则会被下面的div覆盖
+      z-index: 1;
     }
 
     .layout-content-wrapper {
       //内容区域以浅灰色为底色
-      //margin: 6px;
-      //padding: 5px;
-      background-color: white;
+      background-color: #f3f3f4;
       overflow-x: hidden;
 
       .layout-content {
