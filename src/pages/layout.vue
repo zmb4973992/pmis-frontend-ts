@@ -56,8 +56,8 @@ let layoutSettings = useLayoutStore()
 
     //左侧边栏的滚动条要细一点，不应用全局样式
     ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+      width: 3px;
+      height: 3px;
     }
 
     .sider-bar {
