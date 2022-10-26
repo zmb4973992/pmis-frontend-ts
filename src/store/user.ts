@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import request from "@/util/request";
+import request from "@/api/request";
 
 //用来储存用户信息
 const useUserStore = defineStore(

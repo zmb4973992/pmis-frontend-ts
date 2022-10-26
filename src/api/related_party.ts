@@ -1,4 +1,4 @@
-import request from "@/util/request";
+import request from "@/api/request";
 import internal from "stream";
 
 //接口只能一次性导出，不能先定义、再导出
@@ -74,7 +74,9 @@ const GetRelatedPartyList = (params?: IRelatedPartyList) => request.get(
     '/api/related_party/list',
     {params}
 ).then(
+
     res => {
+        console.log(res);
         //如果token无效，就删掉本地的token
         if (res.data.code === 3001) {
             localStorage.removeItem('access_token')

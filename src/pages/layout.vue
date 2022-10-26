@@ -28,11 +28,10 @@
 
 <script setup lang="ts">
 import {useRouter} from 'vue-router'
-import Sider from '@/components/Sider.vue'
-import Logo from '@/components/Logo.vue'
+import Sider from '@/components/sider.vue'
+import Logo from '@/components/logo.vue'
 import Header from '@/components/header.vue'
 import useLayoutStore from "@/store/layout";
-import useUserStore from "@/store/user";
 
 let layoutSettings = useLayoutStore()
 

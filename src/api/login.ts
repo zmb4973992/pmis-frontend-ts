@@ -1,5 +1,4 @@
-import request from "@/util/request";
-import {message} from "ant-design-vue";
+import request from "@/api/request";
 import useUserStore from "@/store/user";
 
 export interface ILogin {
@@ -22,8 +21,6 @@ const login = (data: ILogin) =>
             }
             return res.data
         },
-        //如果请求发送失败
-        err => (console.log(err))
     )
 
 export {login}

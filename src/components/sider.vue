@@ -49,10 +49,9 @@ const roleInfo = useUserStore()
 
 routes_test.filter((item) => {
   const x = item.meta!.permittedRoles as []
-
   return item.meta!.requireAuth === true && item.meta!.permitterRoles
 })
-console.log(routes_test);
+// console.log(routes_test);
 
 
 const state = reactive({

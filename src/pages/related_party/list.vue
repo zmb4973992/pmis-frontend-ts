@@ -1,10 +1,5 @@
 <template>
-  <div class="filter">
-    <span class="label" style="width: 150px">相关方中文名称</span>
-    <a-input style="width: 180px;">
-    </a-input>
-
-  </div>
+  <Search_bar/>
   <a-table class="ant-table-striped"
            :data-source="dataSource"
            :columns="columns" size="small"
@@ -16,8 +11,8 @@
 <script setup lang="ts">
 import {reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
-import {DownOutlined} from "@ant-design/icons-vue";
-import {TableProps} from "ant-design-vue";
+import '@/pages/related_party/search_bar.vue'
+import Search_bar from "@/pages/related_party/search_bar.vue";
 
 let dataSource = ref([])
 let columns = ref([
@@ -42,17 +37,11 @@ GetRelatedPartyList({page_size: 100}).then(
 </script>
 
 <style scoped lang="scss">
-.filter {
+
+.search-bar {
   background-color: white;
   margin-bottom: 6px;
   padding: 10px;
-
-  .label {
-    text-align: right;
-    margin: {
-      right: 10px;
-    }
-  }
 }
 
 //修改鼠标悬浮行的样式

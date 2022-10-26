@@ -1,4 +1,4 @@
-import request from "@/util/request";
+import request from "@/api/request";
 
 const GetRoles = () => request.get(
     '/api/role_and_user/by_token_in_header'

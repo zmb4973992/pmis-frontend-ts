@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import useUserStore from "@/store/user";
-import request from "@/util/request";
+import request from "@/api/request";
 
 const user = useUserStore()
 

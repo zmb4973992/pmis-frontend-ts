@@ -1,4 +1,4 @@
-import request from "@/util/request";
+import request from "@/api/request";
 
 //接口只能一次性导出，不能先定义、再导出
 export interface IDepartment {
