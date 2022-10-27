@@ -1,9 +1,10 @@
 import {defineStore} from "pinia";
+import {ILayoutStoreState} from "@/store/interface";
 
 const useLayoutStore = defineStore(
     'layout',
     {
-        state: () => ({
+        state: ():ILayoutStoreState => ({
             isCollapsed: false,
         }),
         getters: {},

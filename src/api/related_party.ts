@@ -1,4 +1,4 @@
-import request from "@/api/request";
+import request from "@/utils/request";
 import internal from "stream";
 
 //接口只能一次性导出，不能先定义、再导出

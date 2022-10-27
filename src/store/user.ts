@@ -1,11 +1,12 @@
 import {defineStore} from "pinia";
-import request from "@/api/request";
+import request from "@/utils/request";
+import {userState} from "@/store/interface";
 
 //用来储存用户信息
 const useUserStore = defineStore(
     'user',
     {
-        state: () => ({
+        state: ():userState => ({
             token: '',
             username: '',
             full_name: '',
@@ -20,6 +21,7 @@ const useUserStore = defineStore(
             }
         },
         actions: {
+            //向后端请求userInfo，并并更新到store
             updateUserInfo() {
                 const token = localStorage.getItem('access_token')
                 if (token) {
