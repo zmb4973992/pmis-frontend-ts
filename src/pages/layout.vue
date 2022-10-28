@@ -3,7 +3,7 @@
     <!--左侧边栏-->
     <a-layout-sider
         class="left-layout"
-        :width="layoutSettings.isCollapsed? '80px':'120px'">
+        :width="isCollapsed? '80px':'120px'">
       <Logo/>
       <Sider class="sider-bar"/>
     </a-layout-sider>
@@ -27,13 +27,16 @@
 </template>
 
 <script setup lang="ts">
-import {useRouter} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import Sider from '@/components/sider.vue'
 import Logo from '@/components/logo.vue'
 import Header from '@/components/header.vue'
-import useLayoutStore from "@/store/layout";
+import useGlobalStore from "@/store/global";
+import {computed} from "vue";
 
-let layoutSettings = useLayoutStore()
+const globalStore = useGlobalStore()
+//这里的值是函数，使用计算属性可以利用缓存、提高性能
+const isCollapsed = computed(() => globalStore.isCollapsed)
 
 
 </script>
@@ -63,7 +66,7 @@ let layoutSettings = useLayoutStore()
       overflow-x: hidden;
       height: calc(100vh - 35px);
       border-right: red;
-      box-shadow: 1px 0 4px rgba(0,21,41,.08);
+      box-shadow: 1px 0 4px rgba(0, 21, 41, .08);
       //控制该区块的显示层级，越大的越靠前显示
       //加了才能显示header的阴影效果，否则会被下面的div覆盖
       z-index: 1;
@@ -84,7 +87,7 @@ let layoutSettings = useLayoutStore()
       //首个元素放置于起点，末尾元素放置于终点
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0,21,41,.08);
+      box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       //控制该区块的显示层级，越大的越靠前显示
       //加了才能显示header的阴影效果，否则会被下面的div覆盖
       z-index: 1;

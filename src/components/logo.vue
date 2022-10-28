@@ -1,7 +1,7 @@
 <template>
   <div class="logo-layout">
 
-    <div v-if="!layoutSettings.isCollapsed" class="chinese-title">
+    <div v-if="!isCollapsed" class="chinese-title">
       项目管理信息系统
     </div>
     <div v-else class="english-title">
@@ -13,15 +13,17 @@
 </template>
 
 <script setup lang="ts">
-import useLayoutStore from "@/store/layout";
+import useGlobalStore from "@/store/global";
+import {computed} from "vue";
 
-const layoutSettings = useLayoutStore()
+const globalStore = useGlobalStore()
+const isCollapsed = computed(() => globalStore.isCollapsed)
 </script>
 
 <style scoped lang="scss">
 .logo-layout {
   height: 35px;
-  background-color: #1890ff ;
+  background-color: #1890ff;
   color: white;
   padding: 0 3px;
 

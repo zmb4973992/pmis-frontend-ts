@@ -1,4 +1,9 @@
 <template>
+  <div>
+    <a-button @click="test">
+      测试
+    </a-button>
+  </div>
   <Search_bar/>
   <a-table class="ant-table-striped"
            :data-source="dataSource"
@@ -9,10 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
 import '@/pages/related_party/search_bar.vue'
 import Search_bar from "@/pages/related_party/search_bar.vue";
+import router from '@/router'
 
 let dataSource = ref([])
 let columns = ref([

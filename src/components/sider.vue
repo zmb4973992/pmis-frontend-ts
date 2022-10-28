@@ -3,7 +3,7 @@
     <!--第一次遍历-->
     <template v-for="item1 in menuList">
       <!--如果没有子菜单，直接展示标签-->
-      <a-menu-item class="menu-item" v-if="item1.children.length === 0" :key="item1.label">
+      <a-menu-item class="menu-item" v-if="!item1.children" :key="item1.label">
         <router-link :to="item1.path">
           {{ item1.label }}
         </router-link>
@@ -13,13 +13,13 @@
         <!--如果有子菜单，就进行第二次遍历-->
         <template v-for="item2 in item1.children">
           <!--如果没有子菜单，直接展示标签-->
-          <a-menu-item class="menu-item" v-if="item2.children.length === 0" :key="item2.label">
+          <a-menu-item class="menu-item" v-if="!item2.children" :key="item2.label">
             <router-link :to="item1.path + item2.path">
               {{ item2.label }}
             </router-link>
           </a-menu-item>
           <!--如果有子菜单，就进行第三次遍历-->
-          <a-sub-menu v-else :key="item2.name">
+          <a-sub-menu v-else :key="item2.label">
             <template #title>{{ item2.label }}</template>
             <div v-for="item3 in item2.children">
               <!--如果没有子菜单，直接展示标签-->
@@ -37,226 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, toRefs} from 'vue';
-import router from "@/router";
-import {MenuProps} from "ant-design-vue";
-import {createFromIconfontCN} from "@ant-design/icons-vue";
-import routes from '@/router/routes'
-import useUserStore from "@/store/user";
-
-let routes_test = routes
-const roleInfo = useUserStore()
-
-routes_test.filter((item) => {
-  const x = item.meta!.permittedRoles as []
-  return item.meta!.requireAuth === true && item.meta!.permitterRoles
-})
-// console.log(routes_test);
+import {menuList} from "@/components/menu";
 
 
-const state = reactive({
-  selectedKeys: [],
-  openKeys: [],
-});
-
-//如果没有子菜单，记得加上children: []，否则报错
-const menuList = [
-  {
-    path: '/progress',
-    label: '进度',
-    children: [
-      {
-        path: '/disassembly',
-        label: '拆解项目',
-        children: [],
-      },
-      {
-        path: '/status',
-        label: '当前情况',
-        children: [],
-      },
-      {
-        path: '/snapshot',
-        label: '历史快照',
-        children: [],
-      },
-      {
-        path: '/warning',
-        label: '进度预警',
-        children: [],
-      },
-      {
-        path: '/update_log',
-        label: '更新日志',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/project',
-    label: '项目',
-    children: [
-      {
-        path: '/list',
-        label: '项目列表',
-        children: [],
-      },
-      {
-        path: '/performance',
-        label: '历史业绩',
-        children: [],
-      },
-      {
-        path: '/member',
-        label: '成员管理',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '相关方',
-    children: [
-      {
-        path: '/list',
-        label: '相关方列表',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试1',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试1',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试2',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试2',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试3',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试3',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试4',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试4',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试5',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试5',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试6',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试6',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试7',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试7',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试8',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试8',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试9',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试9',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试10',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试10',
-        children: [],
-      },
-    ],
-  },
-  {
-    path: '/related-party',
-    label: '重复测试11',
-    children: [
-      {
-        path: '/list',
-        label: '重复测试11',
-        children: [],
-      },
-    ],
-  },
-  // {
-  //   path: '/related-party',
-  //   label:'重复测试12',
-  //   children: [
-  //     {
-  //       path: '/list',
-  //       label: '重复测试12',
-  //       children: [],
-  //     },
-  //   ],
-  // },
-]
 
 
 </script>

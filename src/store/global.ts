@@ -1,10 +1,10 @@
 import {defineStore} from "pinia";
-import {ILayoutStoreState} from "@/store/interface";
+import {globalState} from "@/store/interface";
 
-const useLayoutStore = defineStore(
-    'layout',
+const useGlobalStore = defineStore(
+    'global',
     {
-        state: ():ILayoutStoreState => ({
+        state: ():globalState => ({
             isCollapsed: false,
         }),
         getters: {},
@@ -16,4 +16,4 @@ const useLayoutStore = defineStore(
     }
 )
 
-export default useLayoutStore
+export default useGlobalStore

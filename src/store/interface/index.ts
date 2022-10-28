@@ -8,6 +8,6 @@ export interface userState {
     departments: string[],
 }
 
-export interface ILayoutStoreState {
+export interface globalState {
     isCollapsed: boolean,
 }
