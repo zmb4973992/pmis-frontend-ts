@@ -37,10 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import {menuList} from "@/components/menu";
-
-
-
+import {menuList} from "@/components/sider/menu";
 
 </script>
 

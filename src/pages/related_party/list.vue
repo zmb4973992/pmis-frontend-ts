@@ -8,8 +8,7 @@
   <a-table class="ant-table-striped"
            :data-source="dataSource"
            :columns="columns" size="small"
-           :pagination="pagination"
-  >
+           :pagination="pagination">
   </a-table>
 </template>
 
@@ -38,7 +37,6 @@ GetRelatedPartyList({page_size: 100}).then(
       dataSource.value = res.data
     }
 )
-
 
 </script>
 
