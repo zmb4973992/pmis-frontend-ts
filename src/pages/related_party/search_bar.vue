@@ -1,66 +1,43 @@
 <template>
   <div class="search-bar">
-    <a-form class="test"
-            :layout="layout"
-            :model="formState"
-            name="basic"
-            :label-col="{ span: 8 }"
-            :wrapper-col="{ span: 16 }"
-            @finish="onFinish"
-            @finishFailed="onFinishFailed"
-    >
-      <a-form-item
-          label="Username"
-          name="username"
-          :rules="[{ required: true, message: 'Please input your username!' }]"
-      >
-        <a-input v-model:value="formState.username"/>
-      </a-form-item>
-
-      <a-form-item
-          label="Username"
-          name="username"
-          :rules="[{ required: true, message: 'Please input your username!' }]"
-      >
-        <a-input v-model:value="formState.username"/>
-      </a-form-item>
-
-      <a-form-item
-          label="Username"
-          name="username"
-          :rules="[{ required: true, message: 'Please input your username!' }]"
-      >
-        <a-input v-model:value="formState.username"/>
-      </a-form-item>
-
-
-
-      <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-        <a-button type="primary" html-type="submit">Submit</a-button>
-      </a-form-item>
-    </a-form>
+    <a-input id="chinese-name" placeholder="相关方中文名称">
+    </a-input>
+    <a-input id="english-name" placeholder="相关方英文名称">
+    </a-input>
+    <a-button class="button" type="primary" @click="a">
+      <template #icon>
+        <SearchOutlined/>
+      </template>
+      搜索
+    </a-button>
+    <a-button class="button" type="primary">
+      <template #icon>
+        <RedoOutlined/>
+      </template>
+      重置
+    </a-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import {reactive} from "vue";
-
-const layout = 'inline'
-
-const formState = reactive({
-  username: '',
-  password: '',
-  remember: true,
-});
-const onFinish = (values: any) => {
-  console.log('Success:', values);
-};
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
-};
+import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
+const a = () => alert('test ok')
 </script>
 
 <style scoped lang="scss">
+.search-bar{
+  #chinese-name, #english-name {
+    width: 160px;
+    margin: {
+      left: 0;
+      right: 10px;
+    }
+  }
+  .button {
+    margin-right: 10px;
+  }
+}
+
+
 
 </style>

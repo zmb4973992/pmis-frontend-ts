@@ -1,24 +1,17 @@
 <template>
-  <div>
-    <a-button @click="test">
-      测试
-    </a-button>
-  </div>
   <Search_bar/>
   <a-table class="ant-table-striped"
            :data-source="dataSource"
            :columns="columns" size="small"
-           :pagination="pagination"
-  >
+           :pagination="pagination">
   </a-table>
 </template>
 
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
-import '@/pages/related_party/search_bar.vue'
-import Search_bar from "@/pages/related_party/search_bar.vue";
-import router from '@/router'
+import Search_bar from '@/pages/related_party/search_bar.vue'
+
 
 let dataSource = ref([])
 let columns = ref([
@@ -38,7 +31,6 @@ GetRelatedPartyList({page_size: 100}).then(
       dataSource.value = res.data
     }
 )
-
 
 </script>
 
