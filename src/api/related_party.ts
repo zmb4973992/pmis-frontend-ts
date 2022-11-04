@@ -85,7 +85,6 @@ const GetRelatedPartyList = (paramIn: IRelatedPartyList) => {
     if (paramIn.page_size) {
         paramOut.page_size = paramIn.page_size
     }
-    console.log(paramOut)
     return request.get(
         '/api/related_party/list',
         {params: paramOut}

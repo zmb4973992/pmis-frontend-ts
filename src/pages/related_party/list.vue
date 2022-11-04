@@ -22,7 +22,25 @@
   <!--  表格主体-->
   <a-table :data-source="data.dataList" :columns="columns"
            size="small" :pagination="false">
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.dataIndex === 'action'">
 
+        <a>详情</a>
+        <a-divider type="vertical"/>
+        <a>修改</a>
+        <a-divider type="vertical"/>
+        <a-popconfirm class="pop-confirm"
+                      title="确认要删除吗？"
+                      ok-text="确认"
+                      cancel-text="取消"
+                      placement="topRight"
+                      @confirm="deleteRecord(record.id)"
+        >
+          <a>删除</a>
+        </a-popconfirm>
+      </template>
+    </template>
+    >
   </a-table>
 
   <!--  分页器-->
@@ -35,12 +53,14 @@
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-
-const a = () => alert('test ok')
+import {DeleteRelatedParty} from "@/api/related_party";
 
 
 import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
+import {log} from "util";
+import {message} from "ant-design-vue";
+import {useRouter} from "vue-router";
 
 const pageSizeOptions = ['12', '20', '25', '30']
 
@@ -53,10 +73,10 @@ let data = reactive({
 })
 
 let columns = ref([
-  {title: '中文名称', dataIndex: 'chinese_name', key: 'chinese_name', className: 'chinese_name'},
-  {title: '英文名称', dataIndex: 'english_name', key: 'english_name', width: '10%', ellipsis: true},
-  {title: '统一社会信用代码', dataIndex: 'uniform_social_credit_code', key: 'uniform_social_credit_code'},
-  {title: '操作', key: 'action'},
+  {title: '中文名称', dataIndex: 'chinese_name', className: 'chinese_name'},
+  {title: '英文名称', dataIndex: 'english_name', className: 'english_name', width: '10%', ellipsis: true},
+  {title: '统一社会信用代码', className: 'uniform_social_credit_code', dataIndex: 'uniform_social_credit_code'},
+  {title: '操作', className: 'action', dataIndex: 'action', width: '150px'},
 ])
 
 
@@ -86,6 +106,32 @@ const reset = () => {
   search()
 }
 
+// const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
+//     res => {
+//       data.dataList.splice(id,1)
+//       message.success('删除成功')
+//       console.log(res)
+//
+//     }
+// )
+
+
+const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
+    res => {
+      //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
+      message.success('删除成功',2)
+      GetRelatedPartyList(queryCondition).then(
+          (res) => {
+            data.dataList = res.data
+            data.totalPages = res.paging.total_pages
+            data.totalRecords = res.paging.total_records
+          },
+      )
+    }
+)
+
+
+
 </script>
 
 <style scoped lang="scss">
@@ -104,8 +150,14 @@ const reset = () => {
   }
 }
 
-:deep(th.chinese_name, td.chinese_name) {
-  text-align: center !important;
+
+//表格内容居中
+:deep(.ant-table) {
+  th.chinese_name, td.chinese_name, th.english_name, td.english_name,
+  th.uniform_social_credit_code, td.uniform_social_credit_code,
+  th.action, td.action {
+    text-align: center;
+  }
 }
 
 //修改鼠标悬浮行的样式
