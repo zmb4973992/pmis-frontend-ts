@@ -24,10 +24,6 @@ const GetRelatedParty = (relatedPartyID: number) => request.get(
     '/api/related_party/' + relatedPartyID
 ).then(
     res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
         return res.data
     },
 )
@@ -71,20 +67,23 @@ const DeleteRelatedParty = (relatedPartyID: number) => request.delete(
     },
 )
 
-const GetRelatedPartyList = (paramIn: IRelatedPartyList) => {
+const GetRelatedPartyList = (paramIn?: IRelatedPartyList) => {
     const paramOut: IRelatedPartyList = {}
-    if (paramIn.chinese_name_include) {
-        paramOut.chinese_name_include = paramIn.chinese_name_include
+    if (paramIn) {
+        if (paramIn.chinese_name_include) {
+            paramOut.chinese_name_include = paramIn.chinese_name_include
+        }
+        if (paramIn.english_name_include) {
+            paramOut.english_name_include = paramIn.english_name_include
+        }
+        if (paramIn.page) {
+            paramOut.page = paramIn.page
+        }
+        if (paramIn.page_size) {
+            paramOut.page_size = paramIn.page_size
+        }
     }
-    if (paramIn.english_name_include) {
-        paramOut.english_name_include = paramIn.english_name_include
-    }
-    if (paramIn.page) {
-        paramOut.page = paramIn.page
-    }
-    if (paramIn.page_size) {
-        paramOut.page_size = paramIn.page_size
-    }
+
     return request.get(
         '/api/related_party/list',
         {params: paramOut}
