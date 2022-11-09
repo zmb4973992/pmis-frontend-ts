@@ -3,10 +3,10 @@
   <div class="search-bar">
     <a-select id="department-id-in" show-search mode="multiple" :filter-option="filterOption"
               :max-tag-count="1" :max-tag-text-length="2" placeholder="请选择部门"
-              v-model:value="queryCondition.department_id_in" :options="options1"
-              style="width:150px;margin-right: 10px" >
+              v-model:value="queryCondition.department_id_in" :options="departmentOptions"
+              style="width:150px;margin-right: 10px">
     </a-select>
-    <a-input id="project-name" v-model:value="queryCondition.chinese_name_include" placeholder="项目名称">
+    <a-input id="department-name-like" v-model:value="queryCondition.department_name_like" placeholder="部门名称">
     </a-input>
 
     <a-button class="button" type="primary" @click="search">
@@ -21,14 +21,17 @@
       </template>
       重置
     </a-button>
+    {{ queryCondition.department_id_in }}
   </div>
 
   <!--  表格主体-->
   <a-table :data-source="data.dataList" :columns="columns"
            size="small" :pagination="false">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.dataIndex === 'action'">
-
+    <template #bodyCell="{column,record,index}">
+      <template v-if="column.dataIndex === 'line_number'">
+        {{ index + 1 }}
+      </template>
+      <template v-else-if="column.dataIndex === 'action'">
         <a>详情</a>
         <a-divider type="vertical"/>
         <a>修改</a>
@@ -58,25 +61,28 @@
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
 import {DeleteRelatedParty} from "@/api/related_party";
-import {onBeforeMount, onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
 import {message} from "ant-design-vue";
-import {useRouter} from "vue-router";
-import {CreateProject, DeleteProject, GetProject, GetProjectList, IProjectList, UpdateProject} from "@/api/project";
+import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
-import {log} from "util";
 
 const queryCondition = reactive<IProjectList>({
   page: 1, page_size: 12, order_by: '', desc: false,
   department_id_in: [], department_name_like: '',
 })
 
-const options1 = ref([
-  {value: 'aa', label: '我是aa'},
-  {value: 'ab', label: '我是ab'},
-  {value: 'bc', label: '我是bc'}
-])
-const change = (value: any) => console.log(value)
+let departmentOptions = ref<{ value: number; label: string }[]>([])
+
+//更新部门数组
+GetDepartmentList({page_size: 100}).then(
+    res => {
+      const departmentList = res.data.filter((item: any) => item.level === '部门')
+      for (let item of departmentList) {
+        departmentOptions.value.push({value: item.id, label: item.name})
+      }
+    })
+
 const filterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
     || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -88,9 +94,13 @@ let data = reactive({
 })
 
 let columns = ref([
-  {title: '中文名称', dataIndex: 'chinese_name', className: 'chinese_name'},
-  {title: '英文名称', dataIndex: 'english_name', className: 'english_name', width: '10%', ellipsis: true},
-  {title: '统一社会信用代码', className: 'uniform_social_credit_code', dataIndex: 'uniform_social_credit_code'},
+  {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px'},
+  {title: '项目简称', dataIndex: 'project_short_name', className: 'project_short_name', width: '15%', ellipsis: true},
+  {title: '项目号', dataIndex: 'project_code', className: 'project_code', width: '10%', ellipsis: true},
+  {title: '项目类型', className: 'project_type', dataIndex: 'project_type', width: '10%', ellipsis: true},
+  {title: '所属部门', className: 'department', dataIndex: ['department', 'name'], width: '15%', ellipsis: true},
+  {title: '金额', className: 'amount', dataIndex: 'amount', width: '80px'},
+  {title: '币种', className: 'currency', dataIndex: 'currency', width: '60px', ellipsis: true},
   {title: '操作', className: 'action', dataIndex: 'action', width: '150px'},
 ])
 
@@ -98,12 +108,8 @@ GetProjectList(queryCondition).then(res => console.log(res))
 
 onMounted(() => search())
 
-onBeforeMount(()=>{
-  GetDepartmentList({page_size:100}).then(res => console.log(res))
-})
-
 const search = () => {
-  GetRelatedPartyList(queryCondition).then(
+  GetProjectList(queryCondition).then(
       (res) => {
         data.dataList = res.data
         data.totalPages = res.paging.total_pages
@@ -119,8 +125,8 @@ const paginationChange = (page: number, pageSize: number) => {
 }
 
 const reset = () => {
-  queryCondition.chinese_name_include = ''
-  queryCondition.english_name_include = ''
+  queryCondition.department_id_in = []
+  queryCondition.department_name_like = ''
   queryCondition.page = 1
   queryCondition.page_size = 12
   search()
@@ -136,19 +142,23 @@ const reset = () => {
 // )
 
 
-const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
-    res => {
-      //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
-      message.success('删除成功', 2)
-      GetRelatedPartyList(queryCondition).then(
-          (res) => {
-            data.dataList = res.data
-            data.totalPages = res.paging.total_pages
-            data.totalRecords = res.paging.total_records
-          },
-      )
-    }
-)
+const deleteRecord = (projectID: number) => {
+  console.log(projectID)
+  DeleteProject(projectID).then(
+      res => {
+        console.log(res)
+        //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
+        message.success('删除成功', 2)
+        GetProjectList(queryCondition).then(
+            (res) => {
+              data.dataList = res.data
+              data.totalPages = res.paging.total_pages
+              data.totalRecords = res.paging.total_records
+            },
+        )
+      }
+  )
+}
 
 
 </script>
@@ -159,7 +169,7 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
   padding: 7px;
   margin-bottom: 7px;
 
-  #department-id-in, #project-name {
+  #department-id-in, #department-name-like {
     width: 180px;
     margin-right: 10px;
   }
@@ -172,10 +182,15 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
 
 //表格内容居中
 :deep(.ant-table) {
-  th.chinese_name, td.chinese_name, th.english_name, td.english_name,
-  th.uniform_social_credit_code, td.uniform_social_credit_code,
+  th.line_number, td.line_number, th.project_short_name, td.project_short_name,
+  th.project_code, td.project_code, th.project_type, td.project_type,
+  th.department, td.department, th.amount, th.currency, td.currency,
   th.action, td.action {
     text-align: center;
+  }
+
+  td.amount {
+    text-align: right;
   }
 }
 

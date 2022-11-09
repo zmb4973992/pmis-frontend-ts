@@ -22,80 +22,22 @@ export interface IDisassemblyList {
 }
 
 const GetDisassembly = (disassemblyID: number) => request.get(
-    '/api/disassembly/' + disassemblyID
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly/' + disassemblyID).then(res => res.data,)
 
 const UpdateDisassembly = (disassemblyID: number, param: IDisassembly) => request.put(
-    '/api/disassembly/' + disassemblyID,
-    param,
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly/' + disassemblyID, param).then(res => res.data,)
 
 const CreateDisassembly = (param: IDisassembly) => request.post(
-    '/api/disassembly',
-    param
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly', param).then(res => res.data,)
 
 const CreateDisassemblyInBatches = (param: IDisassembly[]) => request.post(
-    '/api/disassembly/batch',
-    param
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly/batch', param).then(res => res.data,)
 
 const DeleteDisassembly = (disassemblyID: number) => request.delete(
-    '/api/disassembly/' + disassemblyID,
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly/' + disassemblyID,).then(res => res.data,)
 
 const GetDisassemblyList = (params: IDisassemblyList) => request.get(
-    '/api/disassembly/list',
-    {params}
-).then(
-    res => {
-        //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
-        }
-        return res.data
-    },
-)
+    '/api/disassembly/list', {params}).then(res =>  res.data,)
 
 export {
     GetDisassembly,
