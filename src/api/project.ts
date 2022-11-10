@@ -17,7 +17,7 @@ export interface IProject {
 
 export interface IProjectList {
     department_id_in?: number[]
-    department_name_like?: string
+    project_name_like?: string
     page?: number
     page_size?: number
     order_by?: string

@@ -6,7 +6,7 @@
               v-model:value="queryCondition.department_id_in" :options="departmentOptions"
               style="width:150px;margin-right: 10px">
     </a-select>
-    <a-input id="department-name-like" v-model:value="queryCondition.department_name_like" placeholder="部门名称">
+    <a-input id="project-name-like" v-model:value="queryCondition.project_name_like" placeholder="项目名称">
     </a-input>
 
     <a-button class="button" type="primary" @click="search">
@@ -21,7 +21,12 @@
       </template>
       重置
     </a-button>
-    {{ queryCondition.department_id_in }}
+    <a-button class="button" type="primary" @click="create">
+      <template #icon>
+        <PlusOutlined/>
+      </template>
+      添加项目
+    </a-button>
   </div>
 
   <!--  表格主体-->
@@ -59,22 +64,21 @@
 </template>
 
 <script setup lang="ts">
-import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
+import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {DeleteRelatedParty} from "@/api/related_party";
 import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
-
+//表格的查询条件
 const queryCondition = reactive<IProjectList>({
   page: 1, page_size: 12, order_by: '', desc: false,
-  department_id_in: [], department_name_like: '',
+  department_id_in: [], project_name_like: '',
 })
-
+//部门选项，value为真实值，label为显示值
 let departmentOptions = ref<{ value: number; label: string }[]>([])
-
-//更新部门数组
+//获取部门选项的值
 GetDepartmentList({page_size: 100}).then(
     res => {
       const departmentList = res.data.filter((item: any) => item.level === '部门')
@@ -82,11 +86,12 @@ GetDepartmentList({page_size: 100}).then(
         departmentOptions.value.push({value: item.id, label: item.name})
       }
     })
-
+//部门选项的过滤器（下拉框搜索）
 const filterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
     || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
+//分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
 
 let data = reactive({
@@ -117,7 +122,7 @@ const search = () => {
       },
   )
 }
-
+//页码变化时的回调函数
 const paginationChange = (page: number, pageSize: number) => {
   queryCondition.page = page
   queryCondition.page_size = pageSize
@@ -126,21 +131,11 @@ const paginationChange = (page: number, pageSize: number) => {
 
 const reset = () => {
   queryCondition.department_id_in = []
-  queryCondition.department_name_like = ''
+  queryCondition.project_name_like = ''
   queryCondition.page = 1
   queryCondition.page_size = 12
   search()
 }
-
-// const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
-//     res => {
-//       data.dataList.splice(id,1)
-//       message.success('删除成功')
-//       console.log(res)
-//
-//     }
-// )
-
 
 const deleteRecord = (projectID: number) => {
   console.log(projectID)
@@ -169,7 +164,7 @@ const deleteRecord = (projectID: number) => {
   padding: 7px;
   margin-bottom: 7px;
 
-  #department-id-in, #department-name-like {
+  #department-id-in, #project-name-like {
     width: 180px;
     margin-right: 10px;
   }

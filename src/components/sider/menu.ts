@@ -129,36 +129,6 @@ const menuList: menu[] = [
             },
         ],
     },
-    {
-        path: '/related-party',
-        label: '重复测试9',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试9',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试10',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试10',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试11',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试11',
-            },
-        ],
-    },
 ]
 
 export {menuList}
