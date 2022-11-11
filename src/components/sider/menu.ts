@@ -4,6 +4,7 @@ const menuList: menu[] = [
     {
         path: '/progress',
         label: '进度',
+        icon:'send-outlined',
         children: [
             {
                 path: '/disassembly',
@@ -56,14 +57,8 @@ const menuList: menu[] = [
         ],
     },
     {
-        path: '/related-party',
-        label: '重复测试1',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试1',
-            },
-        ],
+        path: '/message',
+        label: '消息中心',
     },
     {
         path: '/related-party',

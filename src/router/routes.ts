@@ -107,6 +107,17 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import('@/pages/related_party/list.vue')
             },
+            //以下为消息中心
+            {
+                path:'/message',
+                name:'消息中心',
+                meta:{
+                    title:'消息中心',
+                    requireAuth: true,
+                    permittedRoles: ['管理员'],
+                },
+                component: () => import('@/pages/message/index.vue')
+            },
 
         ],
     },

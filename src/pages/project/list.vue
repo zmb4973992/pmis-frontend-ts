@@ -46,13 +46,11 @@
                       ok-text="确认"
                       cancel-text="取消"
                       placement="topRight"
-                      @confirm="deleteRecord(record.id)"
-        >
+                      @confirm="deleteRecord(record.id)">
           <a>删除</a>
         </a-popconfirm>
       </template>
     </template>
-    >
   </a-table>
 
   <!--  分页器-->
@@ -65,9 +63,7 @@
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import {DeleteRelatedParty} from "@/api/related_party";
 import {onMounted, reactive, ref} from "vue";
-import {GetRelatedPartyList} from "@/api/related_party";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
@@ -109,8 +105,6 @@ let columns = ref([
   {title: '操作', className: 'action', dataIndex: 'action', width: '150px'},
 ])
 
-GetProjectList(queryCondition).then(res => console.log(res))
-
 onMounted(() => search())
 
 const search = () => {
@@ -141,7 +135,6 @@ const deleteRecord = (projectID: number) => {
   console.log(projectID)
   DeleteProject(projectID).then(
       res => {
-        console.log(res)
         //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
         message.success('删除成功', 2)
         GetProjectList(queryCondition).then(
@@ -155,6 +148,7 @@ const deleteRecord = (projectID: number) => {
   )
 }
 
+const create = () => console.log('点击了create')
 
 </script>
 
