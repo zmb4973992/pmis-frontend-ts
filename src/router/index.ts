@@ -17,6 +17,6 @@ router.afterEach(() => {
 })
 
 // 进度条的配置项：ease可以设置css3动画，如ease，linear；speed是进度条从开始到结束的耗时
-NProgress.configure({});
+NProgress.configure({showSpinner: false,});
 
 export default router

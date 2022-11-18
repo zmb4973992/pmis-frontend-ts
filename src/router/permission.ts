@@ -19,9 +19,8 @@ router.beforeEach(async (to, from) => {
                 // 对用户所有的角色名称进行遍历
                 for (let roleName of rolesData.data.role_names) {
                     if (isPermitted) break;
-                    // @ts-ignore
                     // 再对路由的允许访问角色进行遍历
-                    for (let permittedRole of to.meta.permittedRoles) {
+                    for (let permittedRole of to.meta.permittedRoles as string[]) {
                         //如果两边的权限有相同值，则允许访问
                         if (roleName === permittedRole) {
                             isPermitted = true
@@ -36,7 +35,7 @@ router.beforeEach(async (to, from) => {
             }
         } else {
             //本地没有token，重定向到登录页
-            return {name: 'login'}
+            return {name: '登录'}
         }
     }
 

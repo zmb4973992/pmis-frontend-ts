@@ -18,7 +18,7 @@
         <a-layout-content>
           <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
           <div class="layout-content">
-            <router-view/>
+              <router-view/>
           </div>
         </a-layout-content>
       </div>
@@ -32,12 +32,16 @@ import Sider from '@/components/sider/sider.vue'
 import Logo from '@/components/logo.vue'
 import Header from '@/components/header/header.vue'
 import useGlobalStore from "@/store/global";
-import {computed} from "vue";
+import {computed, ref} from "vue";
+import {GetRelatedPartyList} from "@/api/related_party";
 
 const globalStore = useGlobalStore()
 //这里的值是函数，使用计算属性可以利用缓存、提高性能
 const isCollapsed = computed(() => globalStore.isCollapsed)
 
+const spinning = ref(true)
+
+const a = () => GetRelatedPartyList().then(() => spinning.value = false)
 
 </script>
 
@@ -76,6 +80,7 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
   .right-layout {
     background-color: $background-color;
 
+
     .layout-header {
       background-color: white;
       height: 35px;
@@ -96,15 +101,14 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
     .layout-content-wrapper {
       //内容区域以浅灰色为底色
       background-color: #f3f3f4;
-      overflow-x: hidden;
+      height: calc(100vh - 35px);
+      overflow-x: auto;
 
       .layout-content {
         margin: 6px;
       }
     }
   }
-
-
 }
 
 </style>

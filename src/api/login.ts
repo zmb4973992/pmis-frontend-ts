@@ -12,7 +12,7 @@ const login = (data: ILogin) =>
     request.post('/api/login', data).then(
         // 如果请求成功发出、收到结果
         res => {
-            // 如果返回的状态码不是0
+            // 如果返回的状态码是0
             if (res.data.code == 0) {
                 //更新本地的access_token
                 localStorage.setItem('access_token', res.data.data.access_token)

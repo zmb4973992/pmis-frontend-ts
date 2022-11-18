@@ -1,5 +1,5 @@
 <template>
-  <a-menu mode="vertical">
+  <a-menu mode="vertical" theme="dark">
       <!--第一次遍历-->
       <template v-for="item1 in menuList">
         <!--如果没有子菜单，直接展示标签-->

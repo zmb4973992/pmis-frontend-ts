@@ -1,6 +1,6 @@
 <template>
   <LeftHeader/>
-  <right-header/>
+  <RightHeader/>
 </template>
 
 <script setup lang="ts">

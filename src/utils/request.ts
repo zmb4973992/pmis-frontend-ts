@@ -1,4 +1,6 @@
 import axios from "axios";
+import {message} from "ant-design-vue";
+import router from "@/router"
 
 const request = axios.create({
     baseURL: 'http://127.0.0.1:8000',
@@ -16,8 +18,9 @@ request.interceptors.request.use(
         return config
     },
     //error暂时可以不写，这里写上是为了占位
-    error => {
-        return Promise.reject(error)
+    err => {
+        console.log('发送请求错误'+err)
+        return Promise.reject(err)
     }
 )
 
@@ -25,9 +28,13 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     //暂时不要只返回data，因为ts下使用res.XXX会报错，只能使用res.data.XXX
     (res) => {
-        // 如果返回结果的错误代码为3001（token无效），则删掉本地的token
+        // 如果返回结果的错误代码为3001（token无效），则清除本地缓存
         if (res.data.code === 3001) {
-            localStorage.removeItem('access_token')
+            // localStorage.removeItem('access_token')
+            localStorage.clear()
+            message.error('登录超时，请重新登录')
+            router.push({name:'登录'})
+            return
         }
         return res
     },

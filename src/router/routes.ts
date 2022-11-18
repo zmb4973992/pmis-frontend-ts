@@ -123,7 +123,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: '/login',
-        name: 'login',
+        name: '登录',
         meta: {
             title: '登录',
             requireAuth: false,

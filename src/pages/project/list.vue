@@ -15,13 +15,13 @@
       </template>
       搜索
     </a-button>
-    <a-button class="button" type="primary" @click="reset">
+    <a-button class="button" @click="reset">
       <template #icon>
         <RedoOutlined/>
       </template>
       重置
     </a-button>
-    <a-button class="button" type="primary" @click="create">
+    <a-button class="button" @click="create">
       <template #icon>
         <PlusOutlined/>
       </template>
