@@ -5,16 +5,16 @@ export interface IDisassembly {
     name: string
     project_id: number
     level: number
-    weight :number
+    weight: number
     superior_id: number
 }
 
 export interface IDisassemblyList {
     project_id?: number
     superior_id?: number
-    level?:number
-    level_gte?:number
-    level_lte?:number
+    level?: number
+    level_gte?: number
+    level_lte?: number
     page?: number
     page_size?: number
     order_by?: string
@@ -23,6 +23,9 @@ export interface IDisassemblyList {
 
 const GetDisassembly = (disassemblyID: number) => request.get(
     '/api/disassembly/' + disassemblyID).then(res => res.data,)
+
+const GetDisassemblyTree = (disassemblyID: number) => request.post(
+    '/api/disassembly/tree',{id:disassemblyID}).then(res => res.data,)
 
 const UpdateDisassembly = (disassemblyID: number, param: IDisassembly) => request.put(
     '/api/disassembly/' + disassemblyID, param).then(res => res.data,)
@@ -37,10 +40,11 @@ const DeleteDisassembly = (disassemblyID: number) => request.delete(
     '/api/disassembly/' + disassemblyID,).then(res => res.data,)
 
 const GetDisassemblyList = (params: IDisassemblyList) => request.get(
-    '/api/disassembly/list', {params}).then(res =>  res.data,)
+    '/api/disassembly/list', {params}).then(res => res.data,)
 
 export {
     GetDisassembly,
+    GetDisassemblyTree,
     UpdateDisassembly,
     CreateDisassembly,
     CreateDisassemblyInBatches,

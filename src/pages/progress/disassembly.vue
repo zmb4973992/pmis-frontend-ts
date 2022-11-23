@@ -3,9 +3,10 @@
     <div class="left-column">
       <a-select class="project-selector" v-model:value="project_ids"></a-select>
       <a-divider id="divider"/>
-      <a-tree class="tree" :show-icon="true" :tree-data="treeData"
-              v-model:selectedKeys="selectedKeys">
-        <template #title="{title,key}">
+      <div class="tree">
+      <a-tree v-if="treeData.length" :show-icon="true" :tree-data="treeData"
+              v-model:selectedKeys="selectedKeys" :default-expand-all="true">
+        <template #title="{title,key}" >
           <span class="title">
             {{ title }}
             <span class="actions">
@@ -17,6 +18,7 @@
           </span>
         </template>
       </a-tree>
+      </div>
     </div>
 
 
@@ -47,28 +49,23 @@ import {onMounted, ref, watch} from "vue";
 
 const project_ids = ref([])
 
+let c= true
+
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
 
-let treeData = ref([
-  {
-    title: '我是a',
-    key: 'a',
-    children: [
-      {
-        title: '我是a1',
-        key: 'a1'
-      },
-      {
-        title: '我是a2',
-        key: 'a2'
-      }
-    ]
-  },
-  {
-    title: '我是b',
-    key: 'b'
-  }
-])
+interface treeData {
+  title:string
+  key:number
+  children?:treeData[]
+}
+
+let treeData = ref<treeData[]>([])
+
+GetDisassemblyTree(21).then(res => {
+  treeData.value= res.data.children
+  c = true
+})
+
 
 const click = () => treeData.value.push({title: 'ccc', key: 'c'})
 
@@ -86,6 +83,7 @@ watch(selectedKeys, () => {
 // })
 
 import * as echarts from 'echarts';
+import {GetDisassemblyTree} from "@/api/disassembly";
 
 onMounted(() => {
   let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
@@ -201,6 +199,7 @@ const delete1 = () => console.log('触发了delete1')
   .left-column {
     float: left;
     width: 220px;
+
     background-color: white;
     margin-right: 10px;
     padding: 4px 10px 8px 10px;
@@ -211,6 +210,7 @@ const delete1 = () => console.log('触发了delete1')
         top: 4px;
       }
     }
+
 
     .title {
       .actions {
@@ -225,7 +225,7 @@ const delete1 = () => console.log('触发了delete1')
 
     .title:hover {
       .actions {
-        display: inline
+        display: inline;
       }
     }
 
@@ -263,5 +263,25 @@ const delete1 = () => console.log('触发了delete1')
   }
 }
 
+.tree {
+  max-height: 500px;
+  max-width: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+::-webkit-scrollbar {
+  /* 滚动条整体样式 */
+  width: 6px;
+  height: 10px;
+  /* 宽高分别对应横竖滚动条的尺寸 */
+  /*border-radius: 1px;*/
+}
+
+::-webkit-scrollbar-thumb {
+  /* 滚动条里的小方块 */
+  border-radius: 5px;
+  background: #c9c9c9 ;
+}
 
 </style>

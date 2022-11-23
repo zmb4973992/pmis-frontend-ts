@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: '首页',
             requireAuth: true,
-            permittedRoles: ['a', 'b', '管理员'],  //允许哪些角色访问
+            permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],  //允许哪些角色访问
         },
         component: () => import('@/pages/layout.vue'),
         children: [
@@ -21,7 +21,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '拆解项目',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/disassembly.vue')
             },
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '当前情况',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/status.vue')
             },
@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '历史快照',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/historical_snapshot.vue'),
             },
@@ -51,7 +51,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '历史快照',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/historical_snapshot.vue'),
             },
@@ -61,7 +61,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '更新日志',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/update_log.vue'),
             },
@@ -72,7 +72,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '项目列表',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/project/list.vue'),
             },
@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '成员管理',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/project/member_management.vue'),
             },
@@ -92,7 +92,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '历史业绩',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/project/historical_performance.vue'),
             },
@@ -103,7 +103,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '相关方列表',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/related_party/list.vue')
             },
@@ -114,9 +114,20 @@ const routes: RouteRecordRaw[] = [
                 meta:{
                     title:'消息中心',
                     requireAuth: true,
-                    permittedRoles: ['管理员'],
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/message/index.vue')
+            },
+            //以下为用户管理
+            {
+                path:'/user_management/organization_structure',
+                name:'组织结构',
+                meta:{
+                    title:'组织结构',
+                    requireAuth: true,
+                    permittedRoles: ['管理员'],
+                },
+                component: ()=>import('@/pages/user_management/organization_structure.vue')
             },
 
         ],

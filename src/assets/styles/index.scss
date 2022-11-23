@@ -7,14 +7,24 @@
   /* 宽高分别对应横竖滚动条的尺寸 */
   /*border-radius: 1px;*/
 }
+
 ::-webkit-scrollbar-thumb {
   /* 滚动条里的小方块 */
-  border-radius: 10px;
+  border-radius: 5px;
   background: #bebbbb ;
 }
 ::-webkit-scrollbar-track {
   /* 滚动条里面的轨道 */
   -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
-  border-radius: 1px;
+  border-radius: 5px;
 }
 
+//调整tree子项的缩进距离
+:deep(.ant-tree-indent-unit) {
+  width: 1em;
+}
+
+//调整tree展开/收缩图标的宽度
+:deep(.ant-tree-switcher) {
+  width: 10px;
+}

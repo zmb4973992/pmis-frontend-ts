@@ -61,6 +61,16 @@ const menuList: menu[] = [
         label: '消息中心',
     },
     {
+        path:'/user_management',
+        label:'用户管理',
+        children:[
+            {
+                path: '/organization_structure',
+                label: '组织结构',
+            },
+        ],
+    },
+    {
         path: '/related-party',
         label: '重复测试2',
         children: [
