@@ -7,10 +7,10 @@
         <template #title="{title,key}">
           <span class="title">
             {{ title }}
-            <span class="actions">
-              <a @click.stop="create" @mouseenter="floatSelect({title:title,key:key})"><PlusOutlined class="action"/></a>
-              <a @click.stop="edit"><EditOutlined class="action"/></a>
-              <a @click.stop="delete1"><DeleteOutlined class="action"/></a>
+            <span class="buttons">
+              <a @click.stop="create" @mouseenter="floatSelect({title:title,key:key})"><PlusOutlined class="button"/></a>
+              <a @click.stop="edit"><EditOutlined class="button"/></a>
+              <a @click.stop="delete1"><DeleteOutlined class="button"/></a>
           </span>
           </span>
         </template>
@@ -124,10 +124,10 @@ watch(selectedKeys, () => {
     }
 
     .title {
-      .actions {
+      .buttons {
         display: none;
 
-        .action {
+        .button {
           margin-left: 6px;
         }
 
@@ -135,7 +135,7 @@ watch(selectedKeys, () => {
     }
 
     .title:hover {
-      .actions {
+      .buttons {
         display: inline
       }
     }

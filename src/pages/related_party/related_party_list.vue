@@ -19,15 +19,16 @@
     </a-button>
   </div>
 
-  <!--  表格主体-->
+  <!--表格主体-->
   <a-table :data-source="data.dataList" :columns="columns"
+           :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
            size="small" :pagination="false">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'action'">
 
         <a>详情</a>
         <a-divider type="vertical"/>
-        <a>修改</a>
+        <a @click="update(record.id)">修改</a>
         <a-divider type="vertical"/>
         <a-popconfirm class="pop-confirm"
                       title="确认要删除吗？"
@@ -43,22 +44,31 @@
     >
   </a-table>
 
-  <!--  分页器-->
+  <!--分页器-->
   <a-pagination v-model:pageSize="queryCondition.page_size" :total="data.totalRecords"
                 showSizeChanger :pageSizeOptions="pageSizeOptions"
                 showQuickJumper @change="paginationChange"
                 :show-total="total=>`共${total}条记录`"
                 id="paginator"/>
+  <!--抽屉-->
+  <a-drawer v-model:visible="visible" title="修改相关方信息">
+    <template #extra>
+      <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+      <a-button type="primary" @click="onClose">确认</a-button>
+    </template>
+    <a-input placeholder="中文名称" style="margin-bottom: 15px" v-model:value="relatedParty.chineseName"></a-input>
+    <a-input placeholder="英文名称" style="margin-bottom: 15px" v-model:value="relatedParty.englishName"></a-input>
+    <a-input placeholder="统一社会信用代码" style="margin-bottom: 15px" v-model:value="relatedParty.uniformSocialCreditCode"></a-input>
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-import {DeleteRelatedParty} from "@/api/related_party";
+import {DeleteRelatedParty, GetRelatedParty} from "@/api/related_party";
 
 
 import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
-import {log} from "util";
 import {message} from "ant-design-vue";
 import {useRouter} from "vue-router";
 
@@ -106,20 +116,33 @@ const reset = () => {
   search()
 }
 
-// const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
-//     res => {
-//       data.dataList.splice(id,1)
-//       message.success('删除成功')
-//       console.log(res)
-//
-//     }
-// )
+const visible = ref(false)
 
+let relatedParty = reactive({
+  chineseName: '',
+  englishName: '',
+  uniformSocialCreditCode:'',
+})
+
+
+const update = (id: number) => {
+  visible.value = true
+  GetRelatedParty(id).then(
+      res => {
+        relatedParty.chineseName = res.data.chinese_name
+        relatedParty.englishName = res.data.english_name
+        relatedParty.uniformSocialCreditCode = res.data.uniform_social_credit_code
+      }
+  )
+}
+
+
+const onClose = () => visible.value = false
 
 const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
     res => {
       //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
-      message.success('删除成功',2)
+      message.success('删除成功', 2)
       GetRelatedPartyList(queryCondition).then(
           (res) => {
             data.dataList = res.data
@@ -129,7 +152,6 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
       )
     }
 )
-
 
 
 </script>
@@ -155,16 +177,8 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
 :deep(.ant-table) {
   th.chinese_name, td.chinese_name, th.english_name, td.english_name,
   th.uniform_social_credit_code, td.uniform_social_credit_code,
-  th.action, td.action {
+  th.button, td.button {
     text-align: center;
-  }
-}
-
-//修改鼠标悬浮行的样式
-//由于style为scoped，所以需要使用vue3的:deep()深度穿透
-:deep(.ant-table-tbody) {
-  > tr:hover > td {
-    background-color: #f0f0f0;
   }
 }
 

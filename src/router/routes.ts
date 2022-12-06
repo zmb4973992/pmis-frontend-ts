@@ -74,7 +74,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/project/list.vue'),
+                component: () => import('@/pages/project/project_list.vue'),
             },
             {
                 path: '/project/member',
@@ -105,7 +105,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/related_party/list.vue')
+                component: () => import('@/pages/related_party/related_party_list.vue')
             },
             //以下为消息中心
             {

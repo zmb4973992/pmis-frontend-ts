@@ -74,7 +74,7 @@ let columns = ref([
 //表格内容居中
 :deep(.ant-table) {
   th.title, th.date_time, td.date_time,
-  th.action, td.action {
+  th.button, td.button {
     text-align: center;
   }
 

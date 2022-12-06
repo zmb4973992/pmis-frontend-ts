@@ -31,7 +31,9 @@
 
   <!--  表格主体-->
   <a-table :data-source="data.dataList" :columns="columns"
-           size="small" :pagination="false">
+           size="small" :pagination="false" :scroll="{x:1500}"
+           :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
+  >
     <template #bodyCell="{column,record,index}">
       <template v-if="column.dataIndex === 'line_number'">
         {{ index + 1 }}
@@ -53,7 +55,7 @@
     </template>
   </a-table>
 
-  <!--  分页器-->
+  <!--分页器-->
   <a-pagination v-model:pageSize="queryCondition.page_size" :total="data.totalRecords"
                 showSizeChanger :pageSizeOptions="pageSizeOptions"
                 showQuickJumper @change="paginationChange"
@@ -95,14 +97,34 @@ let data = reactive({
 })
 
 let columns = ref([
-  {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px'},
-  {title: '项目简称', dataIndex: 'project_short_name', className: 'project_short_name', width: '15%', ellipsis: true},
-  {title: '项目号', dataIndex: 'project_code', className: 'project_code', width: '10%', ellipsis: true},
-  {title: '项目类型', className: 'project_type', dataIndex: 'project_type', width: '10%', ellipsis: true},
-  {title: '所属部门', className: 'department', dataIndex: ['department', 'name'], width: '15%', ellipsis: true},
-  {title: '金额', className: 'amount', dataIndex: 'amount', width: '80px'},
+  {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px', fixed: 'left'},
+  {
+    title: '项目简称',
+    dataIndex: 'project_short_name',
+    className: 'project_short_name',
+    width: '200px',
+    ellipsis: true,
+    fixed: 'left'
+  },
+  {
+    title: '项目号',
+    dataIndex: 'project_code',
+    className: 'project_code',
+    width: '150px',
+    ellipsis: true,
+    sorter: (a: any, b: any) => a.project_code - b.project_code
+  },
+  {title: '项目类型', className: 'project_type', dataIndex: 'project_type', width: '300px', ellipsis: true},
+  {title: '所属部门', className: 'department', dataIndex: ['department', 'name'], width: '300px', ellipsis: true},
+  {
+    title: '金额',
+    className: 'amount',
+    dataIndex: 'amount',
+    width: '280px',
+    sorter: (a: any, b: any) => a.amount - b.amount
+  },
   {title: '币种', className: 'currency', dataIndex: 'currency', width: '60px', ellipsis: true},
-  {title: '操作', className: 'action', dataIndex: 'action', width: '150px'},
+  {title: '操作', className: 'action', dataIndex: 'action', width: '150px', fixed: 'right'},
 ])
 
 onMounted(() => search())
@@ -148,8 +170,8 @@ const deleteRecord = (projectID: number) => {
   )
 }
 
-const create = () => console.log('点击了create')
-
+const create = () =>
+    message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
 </script>
 
 <style scoped lang="scss">
@@ -168,18 +190,37 @@ const create = () => console.log('点击了create')
   }
 }
 
-
 //表格内容居中
 :deep(.ant-table) {
   th.line_number, td.line_number, th.project_short_name, td.project_short_name,
   th.project_code, td.project_code, th.project_type, td.project_type,
   th.department, td.department, th.amount, th.currency, td.currency,
-  th.action, td.action {
+  th.button, td.button {
     text-align: center;
   }
 
   td.amount {
     text-align: right;
+  }
+
+  ::-webkit-scrollbar {
+    /* 滚动条整体样式 */
+    width: 10px;
+    height: 10px;
+    /* 宽高分别对应横竖滚动条的尺寸 */
+    /*border-radius: 1px;*/
+  }
+
+  ::-webkit-scrollbar-thumb {
+    /* 滚动条里的小方块 */
+    border-radius: 5px;
+    background: #c9c9c9;
+  }
+
+  ::-webkit-scrollbar-track {
+    /* 滚动条里面的轨道 */
+    -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
   }
 }
 
@@ -187,7 +228,7 @@ const create = () => console.log('点击了create')
 //由于style为scoped，所以需要使用vue3的:deep()深度穿透
 :deep(.ant-table-tbody) {
   > tr:hover > td {
-    background-color: #f0f0f0;
+    background-color: #e7e7e7;
   }
 }
 

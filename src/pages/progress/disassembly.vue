@@ -3,22 +3,21 @@
     <div class="left-column">
       <a-select class="project-selector" v-model:value="project_ids"></a-select>
       <a-divider id="divider"/>
-      <div class="tree">
-      <a-tree v-if="treeData.length" :show-icon="true" :tree-data="treeData"
-              v-model:selectedKeys="selectedKeys" :default-expand-all="true">
-        <template #title="{title,key}" >
-          <span class="title">
-            {{ title }}
-            <span class="actions">
-              <a @click.stop="create">
-            <PlusOutlined class="action"/></a>
-              <a @click.stop="edit"><EditOutlined class="action"/></a>
-              <a @click.stop="delete1"><DeleteOutlined class="action"/></a>
+        <div class="tree">
+          <a-tree v-if="treeData.length" :show-icon="true" :tree-data="treeData"
+                  v-model:selectedKeys="selectedKeys" :default-expand-all="true">
+            <template #title="{title,key,level}">
+          <span class="title" >
+            <span>{{ title }}</span>
+            <span class="buttons" v-if="level !== 1">
+              <a  @click.stop="create"><PlusOutlined class="button"/></a>
+              <a @click.stop="edit"><EditOutlined class="button"/></a>
+              <a @click.stop="delete1"><DeleteOutlined class="button"/></a>
           </span>
           </span>
-        </template>
-      </a-tree>
-      </div>
+            </template>
+          </a-tree>
+        </div>
     </div>
 
 
@@ -44,43 +43,28 @@
 </template>
 
 <script setup lang="ts">
-import {TreeProps} from "ant-design-vue";
 import {onMounted, ref, watch} from "vue";
 
 const project_ids = ref([])
 
-let c= true
-
+let c = true
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
-
-interface treeData {
-  title:string
-  key:number
-  children?:treeData[]
+interface treeDataFormat {
+  title: string
+  key: number
+  children?: treeDataFormat[]
 }
-
-let treeData = ref<treeData[]>([])
-
+let treeData = ref<treeDataFormat[]>([])
 GetDisassemblyTree(21).then(res => {
-  treeData.value= res.data.children
+  treeData.value = res.data
   c = true
 })
-
-
-const click = () => treeData.value.push({title: 'ccc', key: 'c'})
-
 const selectedKeys = ref([]);
 const activeKey = ref('1')
 
 watch(selectedKeys, () => {
   console.log(selectedKeys.value[0])
 });
-
-// 会有抖动，待解决
-// watch(activeKey, () => {
-//   let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-//   setTimeout(() => chart1.resize(), 0)
-// })
 
 import * as echarts from 'echarts';
 import {GetDisassemblyTree} from "@/api/disassembly";
@@ -198,7 +182,7 @@ const delete1 = () => console.log('触发了delete1')
 
   .left-column {
     float: left;
-    width: 220px;
+    width: 260px;
 
     background-color: white;
     margin-right: 10px;
@@ -211,20 +195,25 @@ const delete1 = () => console.log('触发了delete1')
       }
     }
 
+    .tree {
+      max-height: 500px;
+      overflow-x: auto;
+    }
 
     .title {
-      .actions {
+      .buttons {
         display: none;
 
-        .action {
+        .button {
           margin-left: 6px;
         }
 
       }
     }
 
-    .title:hover {
-      .actions {
+    //鼠标移入节点时，显示相关操作
+    .ant-tree-treenode:hover {
+      .buttons {
         display: inline;
       }
     }
@@ -238,8 +227,8 @@ const delete1 = () => console.log('触发了delete1')
   }
 
   .right-column {
-    margin-left: 230px;
-    width: calc(100% - 230px);
+    margin-left: 270px;
+    width: calc(100% - 270px);
     background-color: white;
 
 
@@ -263,12 +252,6 @@ const delete1 = () => console.log('触发了delete1')
   }
 }
 
-.tree {
-  max-height: 500px;
-  max-width: 300px;
-  overflow-y: auto;
-  overflow-x: auto;
-}
 
 ::-webkit-scrollbar {
   /* 滚动条整体样式 */
@@ -281,7 +264,7 @@ const delete1 = () => console.log('触发了delete1')
 ::-webkit-scrollbar-thumb {
   /* 滚动条里的小方块 */
   border-radius: 5px;
-  background: #c9c9c9 ;
+  background: #c9c9c9;
 }
 
 </style>
