@@ -26,7 +26,7 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'action'">
 
-        <a>详情</a>
+        <a @click="detail(record.id)">详情</a>
         <a-divider type="vertical"/>
         <a @click="update(record.id)">修改</a>
         <a-divider type="vertical"/>
@@ -53,45 +53,52 @@
   <!--抽屉-->
   <a-drawer v-model:visible="visible" title="修改相关方信息">
     <template #extra>
-      <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
-      <a-button type="primary" @click="onClose">确认</a-button>
+      <!--UI推荐将操作放在这里，不接受推荐，因为不符合操作直觉-->
     </template>
-    <a-input placeholder="中文名称" style="margin-bottom: 15px" v-model:value="relatedParty.chineseName"></a-input>
-    <a-input placeholder="英文名称" style="margin-bottom: 15px" v-model:value="relatedParty.englishName"></a-input>
-    <a-input placeholder="统一社会信用代码" style="margin-bottom: 15px" v-model:value="relatedParty.uniformSocialCreditCode"></a-input>
+    <div style="margin-bottom: 5px;color: #848587">中文名称：</div>
+    <a-input style="margin-bottom: 10px" v-model:value="relatedParty.chineseName"></a-input>
+    <div style="margin-bottom: 5px;color: #848587">英文名称：</div>
+    <a-input  style="margin-bottom: 10px" v-model:value="relatedParty.englishName"></a-input>
+    <div style="margin-bottom: 5px;color: #848587">统一社会信用代码：</div>
+    <a-input style="margin-bottom: 10px"
+             v-model:value="relatedParty.uniformSocialCreditCode"></a-input>
+    <div style="margin-bottom: 5px;color: #848587">地址：</div>
+    <a-input style="margin-bottom: 10px" v-model:value="relatedParty.address"></a-input>
+    <div style="margin-bottom: 5px;color: #848587">电话：</div>
+    <a-input style="margin-bottom: 10px" v-model:value="relatedParty.telephone"></a-input>
+    <div class="buttons" style="float: right">
+    <a-button style="margin-right: 10px" @click="cancel">取消</a-button>
+    <a-button style="" type="primary" @click="confirm(relatedParty.id,relatedParty)">确认</a-button>
+    </div>
   </a-drawer>
 </template>
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-import {DeleteRelatedParty, GetRelatedParty} from "@/api/related_party";
-
-
+import {DeleteRelatedParty, GetRelatedParty, IRelatedParty, UpdateRelatedParty} from "@/api/related_party";
 import {onMounted, reactive, ref} from "vue";
 import {GetRelatedPartyList} from "@/api/related_party";
 import {message} from "ant-design-vue";
-import {useRouter} from "vue-router";
-
+//分页条数
 const pageSizeOptions = ['12', '20', '25', '30']
-
+//表格查询条件
 const queryCondition = reactive({
   page: 1, page_size: 12, chinese_name_include: '', english_name_include: '',
 })
-
+//查到的数据集
 let data = reactive({
   dataList: [], totalPages: 1, totalRecords: 1,
 })
-
+//表格栏目
 let columns = ref([
   {title: '中文名称', dataIndex: 'chinese_name', className: 'chinese_name'},
   {title: '英文名称', dataIndex: 'english_name', className: 'english_name', width: '10%', ellipsis: true},
   {title: '统一社会信用代码', className: 'uniform_social_credit_code', dataIndex: 'uniform_social_credit_code'},
   {title: '操作', className: 'action', dataIndex: 'action', width: '150px'},
 ])
-
-
+//加载完组件后，开始查询数据，用于显示
 onMounted(() => search())
-
+//查询数据集，赋值给上面的data
 const search = () => {
   GetRelatedPartyList(queryCondition).then(
       (res) => {
@@ -101,13 +108,13 @@ const search = () => {
       },
   )
 }
-
+//当页码或单页数据条数发生变化时，更新查询条件，重新查询
 const paginationChange = (page: number, pageSize: number) => {
   queryCondition.page = page
   queryCondition.page_size = pageSize
   search()
 }
-
+//重置所有的查询条件，重新查询
 const reset = () => {
   queryCondition.chinese_name_include = ''
   queryCondition.english_name_include = ''
@@ -115,30 +122,57 @@ const reset = () => {
   queryCondition.page_size = 12
   search()
 }
-
+//用于修改单条信息的抽屉是否可见
 const visible = ref(false)
-
+//单条记录
 let relatedParty = reactive({
+  id: 0,
   chineseName: '',
   englishName: '',
-  uniformSocialCreditCode:'',
+  address: '',
+  uniformSocialCreditCode: '',
+  telephone: '',
 })
+//查看单条记录的详情
+function detail(id:number) {
+  message.success('数据记录id为：'+id+'，等待完善',2)
+}
 
-
+//打开抽屉，开启修改单条信息的界面
 const update = (id: number) => {
   visible.value = true
   GetRelatedParty(id).then(
       res => {
+        relatedParty.id = res.data.id
         relatedParty.chineseName = res.data.chinese_name
         relatedParty.englishName = res.data.english_name
         relatedParty.uniformSocialCreditCode = res.data.uniform_social_credit_code
       }
   )
 }
-
-
-const onClose = () => visible.value = false
-
+//关闭抽屉
+const cancel = () => visible.value = false
+//确认修改，发送更新请求
+const confirm = (id: number, params: any) => {
+  //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
+  visible.value = false
+  message.success('修改成功', 2)
+  UpdateRelatedParty(id, {
+    chinese_name: relatedParty.chineseName,
+    english_name: relatedParty.englishName,
+    address: relatedParty.address,
+    uniform_social_credit_code: relatedParty.uniformSocialCreditCode,
+    telephone: relatedParty.telephone,
+  }).then(
+      () => GetRelatedPartyList(queryCondition).then(
+          (res) => {
+            data.dataList = res.data
+            data.totalPages = res.paging.total_pages
+            data.totalRecords = res.paging.total_records
+          },
+      ))
+}
+//删除单条记录
 const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
     res => {
       //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
@@ -152,8 +186,6 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
       )
     }
 )
-
-
 </script>
 
 <style scoped lang="scss">
@@ -171,7 +203,6 @@ const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
     margin-right: 10px;
   }
 }
-
 
 //表格内容居中
 :deep(.ant-table) {
