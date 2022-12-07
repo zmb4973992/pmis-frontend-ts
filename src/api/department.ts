@@ -7,7 +7,7 @@ export interface IDepartment {
     superior_id: number
 }
 
-export interface IDepartmentList {
+export interface DepartmentListParams {
     project_id?: number
     superior_id?: number
     level?: number
@@ -17,6 +17,7 @@ export interface IDepartmentList {
     page_size?: number
     order_by?: string
     desc?: boolean
+    verify_role?:boolean
 }
 
 const GetDepartment = (DepartmentID: number) => request.get(
@@ -31,7 +32,7 @@ const CreateDepartment = (param: IDepartment) => request.post(
 const DeleteDepartment = (DepartmentID: number) => request.delete(
     '/api/department/' + DepartmentID).then(res => res.data,)
 
-const GetDepartmentList = (data?: IDepartmentList) => {
+const GetDepartmentList = (data?: DepartmentListParams) => {
     if (data) {
         return request.post('/api/department/list', data)
             .then(res => res.data,)

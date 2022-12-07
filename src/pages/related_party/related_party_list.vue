@@ -28,7 +28,7 @@
 
         <a @click="detail(record.id)">详情</a>
         <a-divider type="vertical"/>
-        <a @click="update(record.id)">修改</a>
+        <a @click="updateRecord(record.id)">修改</a>
         <a-divider type="vertical"/>
         <a-popconfirm class="pop-confirm"
                       title="确认要删除吗？"
@@ -58,7 +58,7 @@
     <div style="margin-bottom: 5px;color: #848587">中文名称：</div>
     <a-input style="margin-bottom: 10px" v-model:value="relatedParty.chineseName"></a-input>
     <div style="margin-bottom: 5px;color: #848587">英文名称：</div>
-    <a-input  style="margin-bottom: 10px" v-model:value="relatedParty.englishName"></a-input>
+    <a-input style="margin-bottom: 10px" v-model:value="relatedParty.englishName"></a-input>
     <div style="margin-bottom: 5px;color: #848587">统一社会信用代码：</div>
     <a-input style="margin-bottom: 10px"
              v-model:value="relatedParty.uniformSocialCreditCode"></a-input>
@@ -67,8 +67,8 @@
     <div style="margin-bottom: 5px;color: #848587">电话：</div>
     <a-input style="margin-bottom: 10px" v-model:value="relatedParty.telephone"></a-input>
     <div class="buttons" style="float: right">
-    <a-button style="margin-right: 10px" @click="cancel">取消</a-button>
-    <a-button style="" type="primary" @click="confirm(relatedParty.id,relatedParty)">确认</a-button>
+      <a-button style="margin-right: 10px" @click="cancel">取消</a-button>
+      <a-button style="" type="primary" @click="confirm(relatedParty.id,relatedParty)">确认</a-button>
     </div>
   </a-drawer>
 </template>
@@ -133,13 +133,14 @@ let relatedParty = reactive({
   uniformSocialCreditCode: '',
   telephone: '',
 })
+
 //查看单条记录的详情
-function detail(id:number) {
-  message.success('数据记录id为：'+id+'，等待完善',2)
+function detail(id: number) {
+  message.success('数据记录id为：' + id + '，等待完善', 2)
 }
 
 //打开抽屉，开启修改单条信息的界面
-const update = (id: number) => {
+const updateRecord = (id: number) => {
   visible.value = true
   GetRelatedParty(id).then(
       res => {
@@ -172,20 +173,23 @@ const confirm = (id: number, params: any) => {
           },
       ))
 }
+
 //删除单条记录
-const deleteRecord = (id: number) => DeleteRelatedParty(id).then(
-    res => {
-      //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
-      message.success('删除成功', 2)
-      GetRelatedPartyList(queryCondition).then(
-          (res) => {
-            data.dataList = res.data
-            data.totalPages = res.paging.total_pages
-            data.totalRecords = res.paging.total_records
-          },
-      )
-    }
-)
+function deleteRecord(id: number) {
+  DeleteRelatedParty(id).then(
+      res => {
+        //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
+        message.success('删除成功', 2)
+        GetRelatedPartyList(queryCondition).then(
+            (res) => {
+              data.dataList = res.data
+              data.totalPages = res.paging.total_pages
+              data.totalRecords = res.paging.total_records
+            },
+        )
+      }
+  )
+}
 </script>
 
 <style scoped lang="scss">

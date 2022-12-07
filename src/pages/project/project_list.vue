@@ -41,7 +41,7 @@
       <template v-else-if="column.dataIndex === 'action'">
         <a>详情</a>
         <a-divider type="vertical"/>
-        <a>修改</a>
+        <a @click="updateRecord(record.id)">修改</a>
         <a-divider type="vertical"/>
         <a-popconfirm class="pop-confirm"
                       title="确认要删除吗？"
@@ -61,6 +61,12 @@
                 showQuickJumper @change="paginationChange"
                 :show-total="total=>`共${total}条记录`"
                 id="paginator"/>
+
+  <!--修改项目信息的模态框-->
+  <a-modal v-model:visible="visible" title="修改项目" width="1000px">
+
+  </a-modal>
+
 </template>
 
 <script setup lang="ts">
@@ -77,7 +83,7 @@ const queryCondition = reactive<IProjectList>({
 //部门选项，value为真实值，label为显示值
 let departmentOptions = ref<{ value: number; label: string }[]>([])
 //获取部门选项的值
-GetDepartmentList({page_size: 100}).then(
+GetDepartmentList({page_size: 100, verify_role: true}).then(
     res => {
       const departmentList = res.data.filter((item: any) => item.level === '部门')
       for (let item of departmentList) {
@@ -87,7 +93,6 @@ GetDepartmentList({page_size: 100}).then(
 //部门选项的过滤器（下拉框搜索）
 const filterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    || option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
@@ -151,6 +156,21 @@ const reset = () => {
   queryCondition.page = 1
   queryCondition.page_size = 12
   search()
+}
+//修改项目信息的模态框是否可见
+const visible = ref(false)
+
+const project = reactive({
+  projectFullName: '', projectShortName: '', departmentID: 0,
+  projectCode: '', projectType: '', segmentedProjectType: '',
+  amount: 0, currency: '', exchangeRate: 0, projectStatus: '',
+  relatedPartyID: 0, country: '', duration: 0, signingDate: '',
+  effectiveDate: '', commissioningDate: '', task: '',
+})
+
+//点击修改，准备修改项目信息
+function updateRecord(projectID: number) {
+  visible.value = true
 }
 
 const deleteRecord = (projectID: number) => {
