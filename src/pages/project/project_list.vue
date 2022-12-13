@@ -3,7 +3,7 @@
   <div class="search-bar">
     <a-select id="department-id-in" show-search mode="multiple" :filter-option="filterOption"
               :max-tag-count="1" :max-tag-text-length="2" placeholder="请选择部门"
-              v-model:value="queryCondition.department_id_in" :options="departmentOptions"
+              v-model:value="queryCondition.department_id_in" :options="limitedDepartmentOptions"
               style="width:150px;margin-right: 10px">
     </a-select>
     <a-input id="project-name-like" v-model:value="queryCondition.project_name_like" placeholder="项目名称">
@@ -63,8 +63,41 @@
                 id="paginator"/>
 
   <!--修改项目信息的模态框-->
-  <a-modal v-model:visible="visible" title="修改项目" width="1000px">
-
+  <a-modal v-model:visible="visible" title="修改项目" width="1000px" @ok="submitUpdate">
+    <a-form>
+      <a-row>
+        <a-col :span="10">
+          <a-form-item label="项目全称">
+            <a-input v-model:value="project.projectFullName"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="7" style="padding-left: 10px">
+          <a-form-item label="项目简称">
+            <a-input v-model:value="project.projectShortName"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="7" style="padding-left: 10px">
+          <a-form-item label="归属部门">
+            <a-select id="project-department" v-model:value="project.departmentID"
+                      :options="departmentOptions">
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="8">
+          <a-form-item label="项目编号">
+            <a-input v-model:value="project.projectCode"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="项目类型">
+            <a-select v-model:value="project.projectType" :options="projectTypeOptions"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">3</a-col>
+      </a-row>
+    </a-form>
   </a-modal>
 
 </template>
@@ -75,19 +108,25 @@ import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
+import Update_project from "@/pages/project/component/update_project.vue";
+
 //表格的查询条件
 const queryCondition = reactive<IProjectList>({
   page: 1, page_size: 12, order_by: '', desc: false,
   department_id_in: [], project_name_like: '',
 })
 //部门选项，value为真实值，label为显示值
-let departmentOptions = ref<{ value: number; label: string }[]>([])
+//这里是受限制的选项，只显示有权限看到的值
+let limitedDepartmentOptions = ref<{ value: number; label: string }[]>([])
+//这是所有的值，无限制
+const departmentOptions = ref<{ value: number; label: string }[]>([])
+const projectTypeOptions = ref<{ label: string }[]>([])
 //获取部门选项的值
 GetDepartmentList({page_size: 100, verify_role: true}).then(
     res => {
       const departmentList = res.data.filter((item: any) => item.level === '部门')
       for (let item of departmentList) {
-        departmentOptions.value.push({value: item.id, label: item.name})
+        limitedDepartmentOptions.value.push({value: item.id, label: item.name})
       }
     })
 //部门选项的过滤器（下拉框搜索）
@@ -171,6 +210,19 @@ const project = reactive({
 //点击修改，准备修改项目信息
 function updateRecord(projectID: number) {
   visible.value = true
+  GetDepartmentList().then(res => {
+    for (let item of res.data) {
+      departmentOptions.value.push({value: item.id, label: item.name})
+    }
+  })
+
+}
+
+//确认修改信息
+function submitUpdate() {
+  message.success('成功提交')
+  visible.value = false
+
 }
 
 const deleteRecord = (projectID: number) => {
@@ -261,4 +313,10 @@ const create = () =>
     right: 10px;
   }
 }
+
+:deep(.ant-row) {
+  margin-bottom: 10px;
+}
+
+
 </style>

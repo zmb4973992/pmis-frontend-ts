@@ -17,7 +17,7 @@ export interface DepartmentListParams {
     page_size?: number
     order_by?: string
     desc?: boolean
-    verify_role?:boolean
+    verify_role?: boolean  //是否鉴权？如果是，就只显示有权限看到的内容；如果不是，就显示全部内容
 }
 
 const GetDepartment = (DepartmentID: number) => request.get(
