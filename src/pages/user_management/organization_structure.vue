@@ -117,7 +117,7 @@ watch(selectedKeys, () => {
     padding: 4px 10px 8px 10px;
 
     .project-selector {
-      width: 200px;
+      width: 100%;
       margin: {
         top: 4px;
       }

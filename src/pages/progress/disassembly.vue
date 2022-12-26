@@ -1,16 +1,17 @@
 <template>
-  <div id="layout1">
+  <div class="layout1">
     <div class="left-column">
-      <a-select class="project-selector" v-model:value="project_ids"></a-select>
+      <a-select class="project-selector" v-model:value="ks" :options="projectOptions"></a-select>
       <a-divider id="divider"/>
-        <div class="tree">
+      <div class="tree-wrapper-outside">
+        <div class="tree-wrapper-inside">
           <a-tree v-if="treeData.length" :show-icon="true" :tree-data="treeData"
                   v-model:selectedKeys="selectedKeys" :default-expand-all="true">
             <template #title="{title,key,level}">
-          <span class="title" >
+          <span class="title">
             <span>{{ title }}</span>
             <span class="buttons" v-if="level !== 1">
-              <a  @click.stop="create"><PlusOutlined class="button"/></a>
+              <a @click.stop="create"><PlusOutlined class="button"/></a>
               <a @click.stop="edit"><EditOutlined class="button"/></a>
               <a @click.stop="delete1"><DeleteOutlined class="button"/></a>
           </span>
@@ -18,22 +19,26 @@
             </template>
           </a-tree>
         </div>
+      </div>
     </div>
 
 
     <div class="right-column">
-      <a-tabs id="tabs" v-model:activeKey="activeKey">
+      <a-tabs id="tabs" v-model:activeKey="activeKey" @change="change(activeKey)">
         <a-tab-pane key="1" tab="Tab 1">
+          <div id="chart1"></div>
+
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="Tab 2" force-render>
           <div id="chart2"></div>
 
         </a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2" force-render v-if="1">
-          <div id="chart1"></div>
-
-
-        </a-tab-pane>
         <a-tab-pane key="3" tab="Tab 3">
-          Content of Tab Pane 3
+          <div id="chart3"></div>
+        </a-tab-pane>
+
+        <a-tab-pane key="4" tab="Tab 4">
+          Content of Tab Pane 4
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -45,15 +50,17 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
 
-const project_ids = ref([])
+const projectOptions = ref<{value: number; label: string}[]>([])
 
 let c = true
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
+
 interface treeDataFormat {
   title: string
   key: number
   children?: treeDataFormat[]
 }
+
 let treeData = ref<treeDataFormat[]>([])
 GetDisassemblyTree(21).then(res => {
   treeData.value = res.data
@@ -69,9 +76,27 @@ watch(selectedKeys, () => {
 import * as echarts from 'echarts';
 import {GetDisassemblyTree} from "@/api/disassembly";
 
+import {GetProjectList} from "@/api/project";
+
+GetProjectList({verify_role: true, page_size: 100}).then(res => {
+  for (let item of res.data) {
+    projectOptions.value.push({label:item.project_full_name,value:item.id})
+  }
+  console.log(projectOptions.value)
+})
+
+const change = (key: any) => {
+  console.log(key)
+  setTimeout(() => {
+    let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
+    chart2.resize()
+  }, 10)
+}
+
 onMounted(() => {
   let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
   let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
+
 
   chart1.setOption({
     tooltip: {
@@ -164,6 +189,7 @@ onMounted(() => {
   })
 })
 
+
 const create = () => console.log('触发了create')
 const edit = () => console.log('触发了edit')
 const delete1 = () => console.log('触发了delete1')
@@ -172,12 +198,7 @@ const delete1 = () => console.log('触发了delete1')
 </script>
 
 <style scoped lang="scss">
-:deep(.tree) {
-  width: 100%;
-  padding-bottom: 4px;
-}
-
-#layout1 {
+.layout1 {
   overflow-x: auto;
 
   .left-column {
@@ -189,16 +210,31 @@ const delete1 = () => console.log('触发了delete1')
     padding: 4px 10px 8px 10px;
 
     .project-selector {
-      width: 200px;
+      width: 100%;
       margin: {
         top: 4px;
       }
     }
 
-    .tree {
-      max-height: 500px;
-      overflow-x: auto;
+    .tree-wrapper-outside {
+      height: calc(100vh - 117px);
+
+      .tree-wrapper-inside {
+        overflow: auto;
+        max-height: calc(100vh - 117px);
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      &:hover {
+        ::-webkit-scrollbar {
+          display: block;
+        }
+      }
     }
+
 
     .title {
       .buttons {
@@ -207,7 +243,6 @@ const delete1 = () => console.log('触发了delete1')
         .button {
           margin-left: 6px;
         }
-
       }
     }
 
@@ -220,8 +255,8 @@ const delete1 = () => console.log('触发了delete1')
 
     #divider {
       margin: {
-        top: 15px;
-        bottom: 15px;
+        top: 10px;
+        bottom: 10px;
       };
     }
   }
@@ -240,8 +275,8 @@ const delete1 = () => console.log('触发了delete1')
       }
 
       #chart1 {
-        height: 400px;
         width: 100%;
+        height: 400px;
       }
 
       #chart2 {
@@ -252,19 +287,5 @@ const delete1 = () => console.log('触发了delete1')
   }
 }
 
-
-::-webkit-scrollbar {
-  /* 滚动条整体样式 */
-  width: 6px;
-  height: 10px;
-  /* 宽高分别对应横竖滚动条的尺寸 */
-  /*border-radius: 1px;*/
-}
-
-::-webkit-scrollbar-thumb {
-  /* 滚动条里的小方块 */
-  border-radius: 5px;
-  background: #c9c9c9;
-}
 
 </style>

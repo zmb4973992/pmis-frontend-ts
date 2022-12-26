@@ -275,14 +275,6 @@ const create = () =>
     text-align: right;
   }
 
-  ::-webkit-scrollbar {
-    /* 滚动条整体样式 */
-    width: 10px;
-    height: 10px;
-    /* 宽高分别对应横竖滚动条的尺寸 */
-    /*border-radius: 1px;*/
-  }
-
   ::-webkit-scrollbar-thumb {
     /* 滚动条里的小方块 */
     border-radius: 5px;
@@ -303,6 +295,8 @@ const create = () =>
     background-color: #e7e7e7;
   }
 }
+
+
 
 #paginator {
   background-color: white;

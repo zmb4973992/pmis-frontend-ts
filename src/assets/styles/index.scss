@@ -1,22 +1,22 @@
 //该文件已经在vite.config.ts里被引用，不需要重复导入了
 
-/* 滚动条整体样式 */
+/* 默认的滚动条整体样式 */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
   /* 宽高分别对应横竖滚动条的尺寸 */
+  width: 8px;
+  height: 8px;
   /*border-radius: 1px;*/
 }
 
 /* 滚动条里的小方块 */
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background: #c9c9c9 ;
+  background: #c9c9c9;
 }
 
 /* 滚动条里面的轨道 */
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }
 
@@ -38,9 +38,36 @@
   }
 }
 
-//修改鼠标悬浮行的样式
+//修改鼠标悬浮行的样式;
 :deep(.ant-table-tbody) {
   > tr:hover > td {
-    background-color: #e7e7e7;
+    background-color: #e7e7e7
+  }
+}
+
+//滚动条样式，默认不显示表格的滚动条
+:deep(.ant-table) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  //由于滚动条默认不显示，这里需要给滚动条预留边界，否则鼠标移入表格时会影响下面内容的排布
+  .ant-table-content {
+    padding-bottom: 8px;
+  }
+}
+
+//滚动条样式，鼠标移入表格后显示滚动条
+:deep(.ant-table:hover) {
+  ::-webkit-scrollbar {
+    /* 滚动条整体样式 */
+    width: 8px;
+    height: 8px;
+    display: block;
+  }
+
+  //由于这里显示了滚动条，所以之前预留的padding需要取消
+  .ant-table-content {
+    padding-bottom: 0;
   }
 }
