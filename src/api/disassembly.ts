@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {log} from "echarts/types/src/util/log";
 
 //接口只能一次性导出，不能先定义、再导出
 export interface IDisassembly {
@@ -24,8 +25,8 @@ export interface IDisassemblyList {
 const GetDisassembly = (disassemblyID: number) => request.get(
     '/api/disassembly/' + disassemblyID).then(res => res.data,)
 
-const GetDisassemblyTree = (disassemblyID: number) => request.post(
-    '/api/disassembly/tree',{id:disassemblyID}).then(res => res.data,)
+const GetDisassemblyTree = (projectID: number) => request.post(
+    '/api/disassembly/tree', {project_id: projectID}).then(res => res.data,)
 
 const UpdateDisassembly = (disassemblyID: number, param: IDisassembly) => request.put(
     '/api/disassembly/' + disassemblyID, param).then(res => res.data,)

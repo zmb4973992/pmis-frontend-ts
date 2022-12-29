@@ -45,29 +45,4 @@
   }
 }
 
-//滚动条样式，默认不显示表格的滚动条
-:deep(.ant-table) {
-  ::-webkit-scrollbar {
-    display: none;
-  }
 
-  //由于滚动条默认不显示，这里需要给滚动条预留边界，否则鼠标移入表格时会影响下面内容的排布
-  .ant-table-content {
-    padding-bottom: 8px;
-  }
-}
-
-//滚动条样式，鼠标移入表格后显示滚动条
-:deep(.ant-table:hover) {
-  ::-webkit-scrollbar {
-    /* 滚动条整体样式 */
-    width: 8px;
-    height: 8px;
-    display: block;
-  }
-
-  //由于这里显示了滚动条，所以之前预留的padding需要取消
-  .ant-table-content {
-    padding-bottom: 0;
-  }
-}
