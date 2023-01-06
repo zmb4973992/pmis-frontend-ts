@@ -28,9 +28,15 @@
             <template #title="{title,key,level}">
           <span class="title">
             <span>{{ title }}</span>
-              <a @click.stop="createDisassembly(key)"><PlusOutlined class="button"/></a>
-              <a v-if="level !== 1" @click.stop="editDisassembly(key)"><EditOutlined class="button"/></a>
-              <a v-if="level !== 1" @click.stop="deleteDisassembly(key)"><DeleteOutlined class="button"/></a>
+              <a @click.stop="openModalForCreatingDisassembly(key)">
+                <PlusOutlined class="button"/>
+              </a>
+              <a v-if="level !== 1" @click.stop="openModalForEditingDisassembly(key)">
+                <EditOutlined class="button"/>
+              </a>
+              <a v-if="level !== 1" @click.stop="openModalForDeletingDisassembly(key)">
+                  <DeleteOutlined class="button"/>
+              </a>
           </span>
             </template>
           </a-tree>
@@ -39,28 +45,29 @@
     </div>
 
     <!--添加子项目的模态框-->
-    <a-modal v-model:visible="visibilityOfModalForCreatingDisassembly" :after-close="resetForm"
-             @ok="submitForm" style="width: 450px;">
+    <a-modal v-model:visible="visibilityOfModalForCreatingDisassembly"
+             :after-close="resetFormOfCreatingDisassembly" title="添加子项"
+             @ok="submitFormDataForCreatingDisassembly"
+             style="width: 400px;">
 
-      <a-form ref="formForCreateDisassembly" :model="dataForCreatingDisassembly"
-              @finish="onFinish">
+      <a-form ref="formForCreateDisassembly" :model="disassemblyData">
         <div style="margin-bottom: 5px">
           <span style="margin-right: 127px">名称：</span>
           <span>权重：</span>
         </div>
-        <a-space v-for="(disassemblyItem, index) in dataForCreatingDisassembly.disassemblyItems"
-                 style="display: flex; margin-bottom: 0" align="baseline">
-          <a-form-item :name="['disassemblyItems', index, 'name']" style="width: 160px"
+        <a-space v-for="(disassemblyItem, index) in disassemblyData.disassemblySubitems"
+                 style="display: flex; margin-bottom: 0;" align="baseline">
+          <a-form-item :name="['disassemblySubitems', index, 'name']" style="width: 160px"
                        :rules="{required: true, message: '请填写名称'}">
             <a-input v-model:value="disassemblyItem.name"/>
           </a-form-item>
-          <a-form-item :name="['disassemblyItems', index, 'weight']"
+          <a-form-item :name="['disassemblySubitems', index, 'weight']"
                        :rules="{required: true, message: '请填写权重'}">
             <a-input-number v-model:value="disassemblyItem.weight" :controls="false"
-                            id="a1" addon-after="%" min="0" max="100"/>
+                            id="a1" addon-after="%" :min="0" :max="100" :precision="1"/>
           </a-form-item>
 
-          <MinusCircleOutlined v-if="dataForCreatingDisassembly.disassemblyItems.length > 1"
+          <MinusCircleOutlined v-if="disassemblyData.disassemblySubitems.length > 1"
                                @click="removeItem(disassemblyItem)"/>
         </a-space>
         <a-form-item>
@@ -70,32 +77,47 @@
           </a-button>
         </a-form-item>
 
-        <div> 选中的disassembly_id：{{ selected_key }}</div>
-        {{ dataForCreatingDisassembly.disassemblyItems }}
+        {{ disassemblyData.disassemblySubitems }}
       </a-form>
 
     </a-modal>
 
     <!--修改单项的模态框-->
-    <a-modal v-model:visible="visibilityOfModalForUpdatingDisassembly" @ok="">
-      <a-form-item label="名称：">
-        <a-input v-model:value="dataForUpdatingDisassembly.name"></a-input>
-      </a-form-item>
-      <a-form-item label="权重：">
-        <a-input-number v-model:value="dataForUpdatingDisassembly.weight">
-        </a-input-number>
-      </a-form-item>
+    <a-modal v-model:visible="visibilityOfModalForUpdatingDisassembly"
+             :after-close="resetFormOfUpdatingDisassembly" title="修改拆解项"
+             @ok="submitFormForUpdatingDisassembly" style="width: 400px">
+      <a-form ref="formForUpdatingDisassembly" :model="disassemblyData.disassemblyItem">
+        <a-form-item label="名称：" name="name"
+                     :rules="{required: true, message: '请填写名称'}">
+          <a-input v-model:value="disassemblyData.disassemblyItem.name"></a-input>
+        </a-form-item>
+        <a-form-item label="权重：" name="weight"
+                     :rules="{required: true, message: '请填写权重'}">
+          <a-input-number id="a2" v-model:value="disassemblyData.disassemblyItem.weight"
+                          :controls="false" addon-after="%" :min="0" :max="100"
+                          :precision="1">
+          </a-input-number>
+        </a-form-item>
+        {{ disassemblyData.disassemblyItem }}
+      </a-form>
+    </a-modal>
 
+    <!--删除单项的模态框-->
+    <a-modal v-model:visible="visibilityOfModalForDeletingDisassembly"
+             title="删除" @ok="submitFormForDeletingDisassembly" style="width: 300px">
+      <div>确定要删除“{{ disassemblyData.disassemblyItem.name }}”吗？</div>
+      <div>该分类和它的子分类都会被删除！</div>
     </a-modal>
 
 
     <div class="right-column">
-      <a-tabs id="tabs" v-model:activeKey="activeKey" @change="change(activeKey)">
+      <a-tabs id="tabs" v-model:activeKey="activeKey"
+      @tab-click="change()">
         <a-tab-pane key="1" tab="Tab 1">
           <div id="chart1"></div>
 
         </a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2" force-render>
+        <a-tab-pane key="2" tab="Tab 2">
           <div id="chart2"></div>
 
         </a-tab-pane>
@@ -117,7 +139,13 @@ import {FormInstance, message} from "ant-design-vue";
 import {onMounted, reactive, ref, watch} from "vue";
 import {DeleteOutlined, EditOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
-import {GetDisassembly, GetDisassemblyTree} from "@/api/disassembly";
+import {
+  CreateDisassemblyInBatches, DeleteDisassemblyWithSubitems,
+  GetDisassembly,
+  GetDisassemblyTree,
+  IDisassembly,
+  UpdateDisassembly
+} from "@/api/disassembly";
 
 import {GetProjectList} from "@/api/project";
 
@@ -166,20 +194,60 @@ GetProjectList({verify_role: true, page_size: 100}).then(res => {
   console.log(projectOptions.value)
 })
 
-const change = (key: any) => {
-  console.log(key)
+const change = () => {
+  console.log(activeKey.value)
   setTimeout(() => {
     let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
-    chart2.resize()
-  }, 10)
+    // chart2.resize()
+    chart2.setOption({
+      tooltip: {
+        trigger: 'axis',
+      },
+      legend: {
+        show: true,
+        data: ['boys', 'girls'],
+      },
+      xAxis: {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: 'boys',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          type: 'line',
+          smooth: true
+        },
+        {
+          name: 'girls',
+          data: [480, 932, 401, 534, 1190, 1530, 1520],
+          type: 'line',
+          smooth: true
+        },
+      ],
+      dataZoom: [
+        {
+          type: 'slider',
+        },
+        {
+          type: 'inside',
+        }
+      ],
+
+    })
+  }, 1)
 }
 
 const visibilityOfModalForCreatingDisassembly = ref(false)
 const visibilityOfModalForUpdatingDisassembly = ref(false)
+const visibilityOfModalForDeletingDisassembly = ref(false)
 
 onMounted(() => {
   let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-  let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
+  // let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
   chart1.setOption({
     tooltip: {
       trigger: 'item'
@@ -224,124 +292,214 @@ onMounted(() => {
       }
     ]
   })
-  chart2.setOption({
-    tooltip: {
-      trigger: 'axis',
-    },
-    legend: {
-      show: true,
-      data: ['boys', 'girls'],
-    },
-    xAxis: {
-      type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: 'boys',
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-        smooth: true
-      },
-      {
-        name: 'girls',
-        data: [480, 932, 401, 534, 1190, 1530, 1520],
-        type: 'line',
-        smooth: true
-      },
-    ],
-    dataZoom: [
-      {
-        type: 'slider',
-      },
-      {
-        type: 'inside',
-      }
-    ],
-
-  })
+  // chart2.setOption({
+  //   tooltip: {
+  //     trigger: 'axis',
+  //   },
+  //   legend: {
+  //     show: true,
+  //     data: ['boys', 'girls'],
+  //   },
+  //   xAxis: {
+  //     type: 'category',
+  //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  //   },
+  //   yAxis: {
+  //     type: 'value'
+  //   },
+  //   series: [
+  //     {
+  //       name: 'boys',
+  //       data: [820, 932, 901, 934, 1290, 1330, 1320],
+  //       type: 'line',
+  //       smooth: true
+  //     },
+  //     {
+  //       name: 'girls',
+  //       data: [480, 932, 401, 534, 1190, 1530, 1520],
+  //       type: 'line',
+  //       smooth: true
+  //     },
+  //   ],
+  //   dataZoom: [
+  //     {
+  //       type: 'slider',
+  //     },
+  //     {
+  //       type: 'inside',
+  //     }
+  //   ],
+  //
+  // })
   window.addEventListener('resize', () => {
     chart1.resize()
-    chart2.resize()
+    // chart2.resize()
   })
 })
 
-let selected_key = ref<number>()
-
-const createDisassembly = (key: number) => {
-  console.log('key:', key, '，触发了create')
-  visibilityOfModalForCreatingDisassembly.value = true
-  dataForCreatingDisassembly.disassemblyItems = [{name: '', weight: null}]
-  selected_key.value = key
+function openModalForCreatingDisassembly(disassemblyID: number) {
+  GetDisassembly(disassemblyID).then(res => {
+    disassemblyData.disassemblyItem.disassembly_id = res.data.id
+    disassemblyData.disassemblyItem.level = res.data.level
+    disassemblyData.disassemblyItem.name = res.data.name
+    disassemblyData.disassemblyItem.project_id = res.data.project_id
+    disassemblyData.disassemblyItem.superior_id = res.data.superior_id
+    disassemblyData.disassemblyItem.weight = res.data.weight
+    if (disassemblyData.disassemblyItem.level > 0 && disassemblyData.disassemblyItem.level < 5) {
+      visibilityOfModalForCreatingDisassembly.value = true
+      disassemblyData.disassemblySubitems = [{
+        name: '',
+        project_id: 0,
+        superior_id: 0,
+        level: 0,
+        disassembly_id: 0,
+      }]
+    } else {
+      message.error('系统最高支持拆分到5层，当前已经是第5层，无法继续拆分了', 5)
+    }
+  })
 }
-const editDisassembly = (key: number) => {
-  console.log('key:', key, '，触发了edit')
+
+function openModalForEditingDisassembly(disassemblyID: number) {
+  // console.log('key:', key, '，触发了edit')
   visibilityOfModalForUpdatingDisassembly.value = true
-  GetDisassembly(key).then(
+  disassemblyData.disassemblyItem.disassembly_id = disassemblyID
+  GetDisassembly(disassemblyID).then(
       res => {
-        dataForUpdatingDisassembly.value = res.data
-        console.log(dataForUpdatingDisassembly.value)
+        if (res.data) {
+          disassemblyData.disassemblyItem.name = res.data.name
+          disassemblyData.disassemblyItem.weight = res.data.weight * 100
+          disassemblyData.disassemblyItem.project_id = res.data.project_id
+          disassemblyData.disassemblyItem.level = res.data.level
+          disassemblyData.disassemblyItem.superior_id = res.data.superior_id
+        }
       }
   )
 }
-const deleteDisassembly = (key: number) => console.log('key:', key, '，触发了delete1')
 
-interface disassemblyItem {
-  name: string,
-  weight: number | null
-}
-
-const formForCreateDisassembly = ref<FormInstance>();
-const dataForCreatingDisassembly = reactive<{ disassemblyItems: disassemblyItem[] }>({
-  disassemblyItems: [],
-});
-
-const dataForUpdatingDisassembly = ref<disassemblyItem>(
-    {
-      name: '',
-      weight: null
-    }
-)
-
-const removeItem = (item: disassemblyItem) => {
-  let index = dataForCreatingDisassembly.disassemblyItems.indexOf(item);
-  if (index !== -1) {
-    dataForCreatingDisassembly.disassemblyItems.splice(index, 1);
-  }
-};
-const addItem = () => {
-  dataForCreatingDisassembly.disassemblyItems.push({
-    name: '',
-    weight: null,
-  });
-};
-const onFinish = (values: any) => {
-  console.log('Received values of form:', values);
-  console.log('dynamicValidateForm.users:', dataForCreatingDisassembly.disassemblyItems);
-};
-
-
-const resetForm = () => {
-  formForCreateDisassembly.value!.clearValidate();
-}
-
-function submitForm() {
-  formForCreateDisassembly.value!.validateFields().then(
-      (res) => {
-        console.log('结果是：')
-        console.log(res)
-      },
+function openModalForDeletingDisassembly(disassemblyID: number) {
+  visibilityOfModalForDeletingDisassembly.value = true
+  disassemblyData.disassemblyItem.disassembly_id = disassemblyID
+  GetDisassembly(disassemblyID).then(
+      res => {
+        if (res.data) {
+          disassemblyData.disassemblyItem.name = res.data.name
+          disassemblyData.disassemblyItem.weight = res.data.weight * 100
+          disassemblyData.disassemblyItem.project_id = res.data.project_id
+          disassemblyData.disassemblyItem.level = res.data.level
+          disassemblyData.disassemblyItem.superior_id = res.data.superior_id
+        }
+      }
   )
 }
 
-function percentToDecimal(value: string) {
-  let str = value.replace('%', '')
-  let res = Number(str)
-  res = res / 100
-  return res
+// const deleteDisassembly = (key: number) => console.log('key:', key, '，触发了delete1')
+
+interface disassemblyItem {
+  disassembly_id: number
+  name: string
+  weight?: number
+  project_id: number
+  level: number
+  superior_id: number
+}
+
+const formForCreateDisassembly = ref<FormInstance>()
+
+//disassemblyItem为当前选中项，用来删改查；disassemblySubitems为当前选中项的子项，用来批量新增
+const disassemblyData = reactive<{
+  disassemblyItem: disassemblyItem,
+  disassemblySubitems: disassemblyItem[],
+}>({
+  disassemblyItem: {
+    disassembly_id: 0,
+    name: '',
+    project_id: 0,
+    level: 0,
+    superior_id: 0,
+  },
+  disassemblySubitems: [],
+})
+
+const formForUpdatingDisassembly = ref<FormInstance>()
+
+const removeItem = (item: disassemblyItem) => {
+  let index = disassemblyData.disassemblySubitems.indexOf(item);
+  if (index !== -1) {
+    disassemblyData.disassemblySubitems.splice(index, 1);
+  }
+};
+const addItem = () => {
+  disassemblyData.disassemblySubitems.push({
+    name: '',
+    project_id: 0,
+    level: 0,
+    superior_id: 0,
+    disassembly_id: 0,
+  });
+};
+
+function resetFormOfCreatingDisassembly() {
+  formForCreateDisassembly.value!.clearValidate();
+}
+
+function resetFormOfUpdatingDisassembly() {
+  formForUpdatingDisassembly.value!.clearValidate();
+}
+
+function submitFormDataForCreatingDisassembly() {
+  formForCreateDisassembly.value!.validateFields().then(() => {
+        let params: IDisassembly[] = []
+        for (let item of disassemblyData.disassemblySubitems) {
+          params.push({
+            name: item.name,
+            project_id: disassemblyData.disassemblyItem.project_id,
+            weight: item.weight! / 100,
+            level: disassemblyData.disassemblyItem.level + 1,
+            superior_id: disassemblyData.disassemblyItem.disassembly_id,
+          })
+        }
+        return CreateDisassemblyInBatches(params)
+      },
+  ).then(() => {
+    message.success('添加成功')
+    visibilityOfModalForCreatingDisassembly.value = false
+    GetDisassemblyTree(52).then(res => {
+      treeData.value = res.data
+    })
+  })
+}
+
+function submitFormForUpdatingDisassembly() {
+  formForUpdatingDisassembly.value!.validateFields().then(
+      () => {
+        UpdateDisassembly(disassemblyData.disassemblyItem.disassembly_id, {
+          level: disassemblyData.disassemblyItem.level,
+          name: disassemblyData.disassemblyItem.name,
+          project_id: disassemblyData.disassemblyItem.project_id,
+          superior_id: disassemblyData.disassemblyItem.superior_id,
+          weight: disassemblyData.disassemblyItem.weight as number / 100
+        }).then(() => {
+          message.success('修改成功')
+          visibilityOfModalForUpdatingDisassembly.value = false
+          GetDisassemblyTree(52).then(res => {
+            treeData.value = res.data
+          })
+        });
+      }
+  )
+}
+
+function submitFormForDeletingDisassembly() {
+  DeleteDisassemblyWithSubitems(disassemblyData.disassemblyItem.disassembly_id).then(
+      () => {
+        message.success('删除成功', 2)
+        visibilityOfModalForDeletingDisassembly.value = false
+        GetDisassemblyTree(52).then(res => {
+          treeData.value = res.data
+        })
+      }
+  )
 }
 
 </script>
@@ -375,11 +533,11 @@ function percentToDecimal(value: string) {
     }
 
     .tree-wrapper-outside {
-      height: calc(100vh - 117px);
+      height: calc(100vh - 125px);
 
       .tree-wrapper-inside {
         overflow: auto;
-        max-height: calc(100vh - 117px);
+        max-height: calc(100vh - 125px);
       }
 
       ::-webkit-scrollbar {
@@ -393,13 +551,11 @@ function percentToDecimal(value: string) {
       }
     }
 
-
     .title {
       .button {
         display: none;
         margin-left: 6px;
       }
-
     }
 
     //鼠标移入节点时，显示相关操作
@@ -456,6 +612,12 @@ function percentToDecimal(value: string) {
 
 //调整数字输入框的对齐方式
 :deep(#a1.ant-input-number-input) {
+  text-align: right;
+  width: 55px;
+}
+
+//调整数字输入框的对齐方式
+:deep(#a2.ant-input-number-input) {
   text-align: right;
   width: 55px;
 }

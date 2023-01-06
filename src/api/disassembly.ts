@@ -40,6 +40,10 @@ const CreateDisassemblyInBatches = (param: IDisassembly[]) => request.post(
 const DeleteDisassembly = (disassemblyID: number) => request.delete(
     '/api/disassembly/' + disassemblyID,).then(res => res.data,)
 
+function DeleteDisassemblyWithSubitems(disassemblyID: number) {
+    return request.delete('/api/disassembly/' + disassemblyID,).then(res => res.data,)
+}
+
 const GetDisassemblyList = (params: IDisassemblyList) => request.get(
     '/api/disassembly/list', {params}).then(res => res.data,)
 
@@ -50,5 +54,6 @@ export {
     CreateDisassembly,
     CreateDisassemblyInBatches,
     DeleteDisassembly,
-    GetDisassemblyList
+    GetDisassemblyList,
+    DeleteDisassemblyWithSubitems,
 }

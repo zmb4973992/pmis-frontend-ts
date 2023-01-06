@@ -45,4 +45,16 @@
   }
 }
 
+//调整表单错误提示栏的样式
+:deep(.ant-form-item-explain) {
+  height: 50px;
+  margin-bottom: -50px;
+  font-size: 12px;
+}
+
+//调整表单item的样式
+:deep(.ant-form-item) {
+  margin-bottom: 20px;
+}
+
 
