@@ -8,7 +8,7 @@ import request from "@/utils/request";
 
 const user = useUserStore()
 
-import {GetRoles} from "@/api/role_and_user"
+import {GetRoles} from "@/api/role-and-user"
 import {GetUserByID} from "@/api/user";
 
 

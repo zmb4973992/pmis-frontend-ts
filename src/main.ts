@@ -9,9 +9,9 @@ import 'ant-design-vue/dist/antd.css';
 import 'normalize.css'
 import '@/router/permission.ts'
 
-
 const app = createApp(App)
 app.use(store)
     .use(router)
     .use(Antd)
     .mount('#app')
+

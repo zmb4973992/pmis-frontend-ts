@@ -40,6 +40,14 @@ request.interceptors.response.use(
     },
     err => {
         console.log(err)
+        // 对响应错误做点什么
+        if (err.message.indexOf('timeout') != -1) {
+            message.error('网络超时');
+        } else if (err.message == 'Network Error') {
+            message.error('网络连接错误');
+        }else if (err.message.indexOf('Request') != -1) {
+            message.error('网络发生错误');
+        }
         return err
     }
 )

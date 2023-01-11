@@ -43,7 +43,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/progress/historical_snapshot.vue'),
+                component: () => import('@/pages/progress/historical-snapshot.vue'),
             },
             {
                 path: '/progress/warning',
@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/progress/historical_snapshot.vue'),
+                component: () => import('@/pages/progress/historical-snapshot.vue'),
             },
             {
                 path: '/progress/update_log',
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/progress/update_log.vue'),
+                component: () => import('@/pages/progress/update-log.vue'),
             },
             //以下为项目
             {
@@ -74,7 +74,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/project/project_list.vue'),
+                component: () => import('@/pages/project/project-list.vue'),
             },
             {
                 path: '/project/member',
@@ -84,7 +84,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/project/member_management.vue'),
+                component: () => import('@/pages/project/member-management.vue'),
             },
             {
                 path: '/project/performance',
@@ -94,7 +94,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/project/historical_performance.vue'),
+                component: () => import('@/pages/project/historical-performance.vue'),
             },
             //以下为相关方
             {
@@ -105,7 +105,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/related_party/related_party_list.vue')
+                component: () => import('@/pages/related_party/related-party-list.vue')
             },
             //以下为消息中心
             {

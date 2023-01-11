@@ -1,6 +1,8 @@
 <template>
   <a-config-provider :locale="zhCN">
+    <a-spin :spinning="false" size="large" tip="稍等片刻，正在拼命加载中...">
     <router-view/>
+    </a-spin>
   </a-config-provider>
 </template>
 

@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {backToHomePage, logout} from "@/utils/frequent_function";
+import {backToHomePage, logout} from "@/utils/frequent-function";
 </script>
 
 <style scoped lang="scss">

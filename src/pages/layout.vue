@@ -33,7 +33,7 @@ import Logo from '@/components/logo.vue'
 import Header from '@/components/header/header.vue'
 import useGlobalStore from "@/store/global";
 import {computed, ref} from "vue";
-import {GetRelatedPartyList} from "@/api/related_party";
+import {GetRelatedPartyList} from "@/api/related-party";
 
 const globalStore = useGlobalStore()
 //这里的值是函数，使用计算属性可以利用缓存、提高性能

@@ -66,18 +66,20 @@
     <a-input style="margin-bottom: 10px" v-model:value="relatedParty.address"></a-input>
     <div style="margin-bottom: 5px;color: #848587">电话：</div>
     <a-input style="margin-bottom: 10px" v-model:value="relatedParty.telephone"></a-input>
-    <div class="buttons" style="float: right">
-      <a-button style="margin-right: 10px" @click="cancel">取消</a-button>
-      <a-button style="" type="primary" @click="confirm(relatedParty.id,relatedParty)">确认</a-button>
-    </div>
+    <template #footer>
+      <a-space style="float: right;">
+        <a-button style="margin-right: 10px" @click="cancel">取消</a-button>
+        <a-button style="" type="primary" @click="confirm(relatedParty.id,relatedParty)">确认</a-button>
+      </a-space>
+    </template>
   </a-drawer>
 </template>
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-import {DeleteRelatedParty, GetRelatedParty, IRelatedParty, UpdateRelatedParty} from "@/api/related_party";
+import {DeleteRelatedParty, GetRelatedParty, IRelatedParty, UpdateRelatedParty} from "@/api/related-party";
 import {onMounted, reactive, ref} from "vue";
-import {GetRelatedPartyList} from "@/api/related_party";
+import {GetRelatedPartyList} from "@/api/related-party";
 import {message} from "ant-design-vue";
 //分页条数
 const pageSizeOptions = ['12', '20', '25', '30']

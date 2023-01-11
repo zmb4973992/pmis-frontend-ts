@@ -1,7 +1,5 @@
 import {defineStore} from "pinia";
-import request from "@/utils/request";
-import {userState} from "@/store/interface";
-import {GetRelatedPartyList} from "@/api/related_party";
+import {GetRelatedPartyList} from "@/api/related-party";
 
 export interface dataList {
     id_gte?:number

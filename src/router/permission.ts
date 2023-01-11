@@ -1,5 +1,5 @@
 import NProgress from "nprogress";
-import {GetRoles} from "@/api/role_and_user";
+import {GetRoles} from "@/api/role-and-user";
 import router from "@/router/index";
 import useUserStore from "@/store/user";
 
