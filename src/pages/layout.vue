@@ -1,9 +1,7 @@
 <template>
   <a-layout class="layout">
     <!--左侧边栏-->
-    <a-layout-sider
-        class="left-layout"
-        :width="isCollapsed? '80px':'120px'">
+    <a-layout-sider class="left-layout" :width="isCollapsed? '80px':'120px'">
       <Logo/>
       <Sider class="sider-bar"/>
     </a-layout-sider>
@@ -80,7 +78,6 @@ const a = () => GetRelatedPartyList().then(() => spinning.value = false)
   .right-layout {
     background-color: $background-color;
 
-
     .layout-header {
       background-color: white;
       height: 35px;
@@ -105,10 +102,9 @@ const a = () => GetRelatedPartyList().then(() => spinning.value = false)
       overflow-x: auto;
 
       .layout-content {
-        margin: 6px;
+        margin: 10px;
       }
     }
   }
 }
-
 </style>

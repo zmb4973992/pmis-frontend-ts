@@ -1,66 +1,92 @@
 <template>
-  <!--  搜索框-->
-  <div class="search-bar">
-    <a-select id="department-id-in" show-search mode="multiple" :filter-option="filterOption"
-              :max-tag-count="1" :max-tag-text-length="2" placeholder="请选择部门"
-              v-model:value="queryCondition.department_id_in" :options="limitedDepartmentOptions"
-              style="width:150px;margin-right: 10px">
-    </a-select>
-    <a-input id="project-name-like" v-model:value="queryCondition.project_name_like" placeholder="项目名称">
-    </a-input>
+  <!--查询条件表单，2023/1/13重写-->
+  <a-form class="query-form">
+    <!--这里用a-row，是为了确保表单元素在一行内，如果内容超出一行，可以自动换行-->
+    <a-row>
+      <a-form-item class="query-form-item" label="部门">
+        <a-select id="department-id-in" show-search mode="multiple" :filter-option="filterOption"
+                  :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
+                  v-model:value="queryForm.department_id_in" :options="limitedDepartmentOptions"
+                  style="width:150px">
+        </a-select>
+      </a-form-item>
+      <a-form-item class="query-form-item" label="项目名称">
+        <a-input id="project-name-like" v-model:value="queryForm.project_name_like"
+                 placeholder="项目名称" style="width: 180px">
+        </a-input>
+      </a-form-item>
+      <a-form-item class="query-form-item">
+        <a-button-group>
+          <a-button class="button" type="primary" @click="search">
+            <template #icon>
+              <SearchOutlined/>
+            </template>
+            搜索
+          </a-button>
+          <a-button class="button" @click="reset">
+            <template #icon>
+              <RedoOutlined/>
+            </template>
+            重置
+          </a-button>
+        </a-button-group>
+      </a-form-item>
+    </a-row>
+  </a-form>
 
-    <a-button class="button" type="primary" @click="search">
-      <template #icon>
-        <SearchOutlined/>
+  <!--用a-card包裹，是为了后期添加loading效果，以及设置整体的内外边距、背景色等-->
+  <a-card size="small">
+    <!--  表格主体-->
+    <a-row class="table-buttons-row">
+        <a-button @click="create" type="primary" size="small">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加项目
+        </a-button>
+      <div class="buttons-for-table-setting">
+        <a-tooltip title="设置列" size="small">
+          <a-button type="text" @click="showModal" size="small">
+            <template #icon>
+              <setting-outlined/>
+            </template>
+          </a-button>
+        </a-tooltip>
+      </div>
+    </a-row>
+    <a-table :data-source="data.dataList" :columns="columns"
+             size="small" :pagination="false" :scroll="{x:1500}"
+             :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
+    >
+      <template #bodyCell="{column,record,index}">
+        <template v-if="column.dataIndex === 'line_number'">
+          {{ index + 1 }}
+        </template>
+        <template v-else-if="column.dataIndex === 'action'">
+          <a>详情</a>
+          <a-divider type="vertical"/>
+          <a @click="updateRecord(record.id)">修改</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm class="pop-confirm"
+                        title="确认要删除吗？"
+                        ok-text="确认"
+                        cancel-text="取消"
+                        placement="topRight"
+                        @confirm="deleteRecord(record.id)">
+            <a style="color: red">删除</a>
+          </a-popconfirm>
+        </template>
       </template>
-      搜索
-    </a-button>
-    <a-button class="button" @click="reset">
-      <template #icon>
-        <RedoOutlined/>
-      </template>
-      重置
-    </a-button>
-    <a-button class="button" @click="create">
-      <template #icon>
-        <PlusOutlined/>
-      </template>
-      添加项目
-    </a-button>
-  </div>
+    </a-table>
 
-  <!--  表格主体-->
-  <a-table :data-source="data.dataList" :columns="columns"
-           size="small" :pagination="false" :scroll="{x:1500}"
-           :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
-  >
-    <template #bodyCell="{column,record,index}">
-      <template v-if="column.dataIndex === 'line_number'">
-        {{ index + 1 }}
-      </template>
-      <template v-else-if="column.dataIndex === 'action'">
-        <a>详情</a>
-        <a-divider type="vertical"/>
-        <a @click="updateRecord(record.id)">修改</a>
-        <a-divider type="vertical"/>
-        <a-popconfirm class="pop-confirm"
-                      title="确认要删除吗？"
-                      ok-text="确认"
-                      cancel-text="取消"
-                      placement="topRight"
-                      @confirm="deleteRecord(record.id)">
-          <a>删除</a>
-        </a-popconfirm>
-      </template>
-    </template>
-  </a-table>
+    <!--分页器-->
+    <a-pagination v-model:pageSize="queryForm.page_size" :total="data.totalRecords"
+                  showSizeChanger :pageSizeOptions="pageSizeOptions"
+                  showQuickJumper @change="paginationChange"
+                  :show-total="total=>`共${total}条记录`"
+                  id="paginator"/>
+  </a-card>
 
-  <!--分页器-->
-  <a-pagination v-model:pageSize="queryCondition.page_size" :total="data.totalRecords"
-                showSizeChanger :pageSizeOptions="pageSizeOptions"
-                showQuickJumper @change="paginationChange"
-                :show-total="total=>`共${total}条记录`"
-                id="paginator"/>
 
   <!--修改项目信息的模态框-->
   <a-modal v-model:visible="visible" title="修改项目" width="1000px" @ok="submitUpdate">
@@ -103,15 +129,14 @@
 </template>
 
 <script setup lang="ts">
-import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
-import Update_project from "@/pages/project/component/update_project.vue";
 
-//表格的查询条件
-const queryCondition = reactive<IProjectList>({
+//查询条件
+const queryForm = reactive<IProjectList>({
   page: 1, page_size: 12, order_by: '', desc: false,
   department_id_in: [], project_name_like: '',
 })
@@ -174,7 +199,7 @@ let columns = ref([
 onMounted(() => search())
 
 const search = () => {
-  GetProjectList(queryCondition).then(
+  GetProjectList(queryForm).then(
       (res) => {
         data.dataList = res.data
         data.totalPages = res.paging.total_pages
@@ -184,16 +209,16 @@ const search = () => {
 }
 //页码变化时的回调函数
 const paginationChange = (page: number, pageSize: number) => {
-  queryCondition.page = page
-  queryCondition.page_size = pageSize
+  queryForm.page = page
+  queryForm.page_size = pageSize
   search()
 }
 
 const reset = () => {
-  queryCondition.department_id_in = []
-  queryCondition.project_name_like = ''
-  queryCondition.page = 1
-  queryCondition.page_size = 12
+  queryForm.department_id_in = []
+  queryForm.project_name_like = ''
+  queryForm.page = 1
+  queryForm.page_size = 12
   search()
 }
 //修改项目信息的模态框是否可见
@@ -228,10 +253,10 @@ function submitUpdate() {
 const deleteRecord = (projectID: number) => {
   console.log(projectID)
   DeleteProject(projectID).then(
-      res => {
+      () => {
         //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
         message.success('删除成功', 2)
-        GetProjectList(queryCondition).then(
+        GetProjectList(queryForm).then(
             (res) => {
               data.dataList = res.data
               data.totalPages = res.paging.total_pages
@@ -247,20 +272,32 @@ const create = () =>
 </script>
 
 <style scoped lang="scss">
-.search-bar {
+//查询表单的样式
+.query-form {
   background-color: white;
-  padding: 7px;
-  margin-bottom: 7px;
+  padding: 0 10px 10px 10px;
+  margin-bottom: 10px;
 
-  #department-id-in, #project-name-like {
-    width: 180px;
-    margin-right: 10px;
-  }
-
-  .button {
-    margin-right: 10px;
+  .query-form-item {
+    margin: {
+      top: 10px;
+      right: 10px;
+      bottom: 0;
+    }
   }
 }
+
+//表单操作按钮的样式
+.table-buttons-row {
+  background-color: white;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  .buttons-for-table-setting {
+    float: right;
+  }
+}
+
+
 
 //表格内容居中
 :deep(.ant-table) {
@@ -288,16 +325,6 @@ const create = () =>
   }
 }
 
-//修改鼠标悬浮行的样式
-//由于style为scoped，所以需要使用vue3的:deep()深度穿透
-:deep(.ant-table-tbody) {
-  > tr:hover > td {
-    background-color: #e7e7e7;
-  }
-}
-
-
-
 #paginator {
   background-color: white;
   text-align: right;
@@ -306,10 +333,6 @@ const create = () =>
     bottom: 10px;
     right: 10px;
   }
-}
-
-:deep(.ant-row) {
-  margin-bottom: 10px;
 }
 
 //滚动条样式，默认不显示表格的滚动条

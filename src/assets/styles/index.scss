@@ -32,16 +32,17 @@
 }
 
 //表格显示斑马纹
-:deep(.table-striped) {
-  td {
-    background-color: #f7f7f7;
-  }
-}
+//:deep(.table-striped) {
+//  td {
+//    background-color: #f7f7f7;
+//  }
+//}
 
 //修改鼠标悬浮行的样式;
 :deep(.ant-table-tbody) {
   > tr:hover > td {
-    background-color: #e7e7e7
+    background-color: #f2f2f2
+    //#e7e7e7 有斑马纹时的值
   }
 }
 
