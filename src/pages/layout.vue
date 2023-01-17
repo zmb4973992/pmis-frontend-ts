@@ -89,10 +89,11 @@ const a = () => GetRelatedPartyList().then(() => spinning.value = false)
       //首个元素放置于起点，末尾元素放置于终点
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+      border-bottom: #f3f3f4 2px solid;
+      //box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       //控制该区块的显示层级，越大的越靠前显示
       //加了才能显示header的阴影效果，否则会被下面的div覆盖
-      z-index: 1;
+      //z-index: 1;
     }
 
     .layout-content-wrapper {

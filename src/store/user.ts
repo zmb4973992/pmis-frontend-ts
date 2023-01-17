@@ -6,7 +6,7 @@ import {userState} from "@/store/interface";
 const useUserStore = defineStore(
     'user',
     {
-        state: ():userState => ({
+        state: (): userState => ({
             token: '',
             username: '',
             full_name: '',

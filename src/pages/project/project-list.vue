@@ -10,11 +10,13 @@
                   style="width:150px">
         </a-select>
       </a-form-item>
+
       <a-form-item class="query-form-item" label="项目名称">
         <a-input id="project-name-like" v-model:value="queryForm.project_name_like"
-                 placeholder="项目名称" style="width: 180px">
+                 placeholder="项目名称" style="width: 180px" >
         </a-input>
       </a-form-item>
+
       <a-form-item class="query-form-item">
         <a-button-group>
           <a-button class="button" type="primary" @click="search">
@@ -23,14 +25,16 @@
             </template>
             搜索
           </a-button>
-          <a-button class="button" @click="reset">
+          <a-button class="button" @click="reset" v-permitted-roles="['a','事业部级']">
             <template #icon>
               <RedoOutlined/>
             </template>
             重置
           </a-button>
         </a-button-group>
-      </a-form-item>
+      </a-form-item >
+
+
     </a-row>
   </a-form>
 
@@ -46,7 +50,7 @@
         </a-button>
       <div class="buttons-for-table-setting">
         <a-tooltip title="设置列" size="small">
-          <a-button type="text" @click="showModal" size="small">
+          <a-button type="text" @click="toBeCompleted" size="small">
             <template #icon>
               <setting-outlined/>
             </template>
@@ -134,6 +138,8 @@ import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
 import {GetDepartmentList} from "@/api/department";
+
+function toBeCompleted() {}
 
 //查询条件
 const queryForm = reactive<IProjectList>({
