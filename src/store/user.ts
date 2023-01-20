@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import request from "@/utils/request";
 import {userState} from "@/store/interface";
+import {GetRoles} from "@/api/role-and-user";
 
 //用来储存用户信息
 const useUserStore = defineStore(
@@ -42,14 +43,12 @@ const useUserStore = defineStore(
                         },
                     )
                     //获取用户角色
-                    request.get(
-                        '/api/role_and_user/by_token_in_header'
-                    ).then(
+                    GetRoles().then(
                         res => {
                             //如果token有效，就保留到store；
                             //如果token无效，就删掉本地的token
-                            if (res.data.code === 0) {
-                                this.roles = res.data.data.role_names
+                            if (res.code === 0) {
+                                this.roles = res.data.role_names
                             } else {
                                 localStorage.removeItem('access_token')
                             }

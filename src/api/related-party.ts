@@ -21,18 +21,18 @@ export interface IRelatedPartyList {
 }
 
 const GetRelatedParty = (relatedPartyID: number) => request.get(
-    '/api/related_party/' + relatedPartyID
+    '/api/related-party/' + relatedPartyID
 ).then(res => res.data,)
 
 const UpdateRelatedParty = (relatedPartyID: number, param: IRelatedParty) => request.put(
-    '/api/related_party/' + relatedPartyID, param).then(res => res.data,)
+    '/api/related-party/' + relatedPartyID, param).then(res => res.data,)
 
 const CreateRelatedParty = (param: IRelatedParty) => request.post(
-    '/api/related_party', param).then(res => res.data,)
+    '/api/related-party', param).then(res => res.data,)
 
 
 const DeleteRelatedParty = (relatedPartyID: number) => request.delete(
-    '/api/related_party/' + relatedPartyID,).then(res => res.data,)
+    '/api/related-party/' + relatedPartyID,).then(res => res.data,)
 
 const GetRelatedPartyList = (paramIn?: IRelatedPartyList) => {
     const paramOut: IRelatedPartyList = {}
@@ -50,7 +50,7 @@ const GetRelatedPartyList = (paramIn?: IRelatedPartyList) => {
             paramOut.page_size = paramIn.page_size
         }
     }
-    return request.post('/api/related_party/list', paramOut)
+    return request.post('/api/related-party/list', paramOut)
         .then(res => res.data,)
 }
 

@@ -1,7 +1,8 @@
 <template>
   <a-layout class="layout">
     <!--左侧边栏-->
-    <a-layout-sider class="left-layout" :width="isCollapsed? '80px':'120px'">
+    <a-layout-sider collapsible :trigger="null" v-model:collapsed="isCollapsed"
+                    class="left-layout" :width="isCollapsed? 'any':'140px'">
       <Logo/>
       <Sider class="sider-bar"/>
     </a-layout-sider>
@@ -16,7 +17,7 @@
         <a-layout-content>
           <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
           <div class="layout-content">
-              <router-view/>
+            <router-view/>
           </div>
         </a-layout-content>
       </div>
@@ -53,15 +54,23 @@ const a = () => GetRelatedPartyList().then(() => spinning.value = false)
   height: 100vh;
   background-color: $background-color;
 
+  //侧边栏收起时，调整侧边栏的宽度
+  .ant-layout-sider-collapsed {
+    min-width: 50px !important;
+    max-width: 50px !important;
+  }
+
   .left-layout {
     background-color: $background-color;
     border-right-width: 1px;
     border-radius: 10px;
 
-    //左侧边栏的滚动条要细一点，不应用全局样式
+    //定义左侧边栏的滚动条，要细一点，不应用全局样式
+    //2023.1.20 觉得还是隐藏起来好看点，依然可以滚动，不影响效果
     ::-webkit-scrollbar {
       width: 3px;
       height: 3px;
+      display: none;
     }
 
     .sider-bar {

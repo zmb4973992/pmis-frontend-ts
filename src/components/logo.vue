@@ -1,13 +1,11 @@
 <template>
-  <div class="logo-layout">
-
+  <div  class="logo-layout">
+    <div class="english-title">
+      <span>PMIS</span>
+    </div>
     <div v-if="!isCollapsed" class="chinese-title">
-      项目管理信息系统
+      <span>项目管理信息系统</span>
     </div>
-    <div v-else class="english-title">
-      PMIS
-    </div>
-
   </div>
 
 </template>
@@ -26,15 +24,17 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
   background-color: #1890ff;
   color: white;
   padding: 0 3px;
+  display: flex;
+  justify-content: space-around;
 
   .chinese-title {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 35px; //line-height = height时，行内文字垂直居中
     //默认居中对齐，所以不用text-align
   }
 
   .english-title {
-    font-size: 20px;
+    font-size: 14px;
     line-height: 35px;
     text-align: center;
   }

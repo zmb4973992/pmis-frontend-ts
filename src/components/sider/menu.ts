@@ -3,8 +3,8 @@ import {menu} from "@/components/interface";
 const menuList: menu[] = [
     {
         path: '/progress',
-        label: '进度',
-        icon:'PlayCircleOutlined',
+        label: '进度1111',
+        icon: 'PlayCircleOutlined',
         children: [
             {
                 path: '/disassembly',
@@ -31,6 +31,7 @@ const menuList: menu[] = [
     {
         path: '/project',
         label: '项目',
+        icon: 'DownOutlined',
         children: [
             {
                 path: '/list',
@@ -49,6 +50,7 @@ const menuList: menu[] = [
     {
         path: '/related-party',
         label: '相关方',
+        icon: 'UpOutlined',
         children: [
             {
                 path: '/list',
@@ -59,79 +61,16 @@ const menuList: menu[] = [
     {
         path: '/message',
         label: '消息中心',
-        icon:'BankOutlined',
+        icon: 'UpOutlined',
     },
     {
-        path:'/user_management',
-        label:'用户管理',
-        children:[
+        path: '/user_management',
+        label: '用户管理',
+        icon: 'MessageOutlined',
+        children: [
             {
                 path: '/organization_structure',
                 label: '组织结构',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试2',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试2',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试3',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试3',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试4',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试4',
-            },
-        ],
-    },
-    {
-        path: '/',
-        label: '重复测试5',
-    },
-    {
-        path: '/related-party',
-        label: '重复测试6',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试6',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试7',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试7',
-            },
-        ],
-    },
-    {
-        path: '/related-party',
-        label: '重复测试8',
-        children: [
-            {
-                path: '/list',
-                label: '重复测试8',
             },
         ],
     },
