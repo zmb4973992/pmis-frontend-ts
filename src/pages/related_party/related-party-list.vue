@@ -77,9 +77,8 @@
 
 <script setup lang="ts">
 import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-import {DeleteRelatedParty, GetRelatedParty, IRelatedParty, UpdateRelatedParty} from "@/api/related-party";
+import {relatedPartyApi} from "@/api/related-party";
 import {onMounted, reactive, ref} from "vue";
-import {GetRelatedPartyList} from "@/api/related-party";
 import {message} from "ant-design-vue";
 //分页条数
 const pageSizeOptions = ['12', '20', '25', '30']
@@ -102,11 +101,11 @@ let columns = ref([
 onMounted(() => search())
 //查询数据集，赋值给上面的data
 const search = () => {
-  GetRelatedPartyList(queryCondition).then(
+  relatedPartyApi.getList(queryCondition).then(
       (res) => {
         data.dataList = res.data
-        data.totalPages = res.paging.total_pages
-        data.totalRecords = res.paging.total_records
+        data.totalPages = res.paging.number_of_pages
+        data.totalRecords = res.paging.number_of_records
       },
   )
 }
@@ -144,7 +143,7 @@ function detail(id: number) {
 //打开抽屉，开启修改单条信息的界面
 const updateRecord = (id: number) => {
   visible.value = true
-  GetRelatedParty(id).then(
+  relatedPartyApi.get({id:id}).then(
       res => {
         relatedParty.id = res.data.id
         relatedParty.chineseName = res.data.chinese_name
@@ -160,14 +159,15 @@ const confirm = (id: number, params: any) => {
   //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
   visible.value = false
   message.success('修改成功', 2)
-  UpdateRelatedParty(id, {
+  relatedPartyApi.update({
+    id:id,
     chinese_name: relatedParty.chineseName,
     english_name: relatedParty.englishName,
     address: relatedParty.address,
     uniform_social_credit_code: relatedParty.uniformSocialCreditCode,
     telephone: relatedParty.telephone,
   }).then(
-      () => GetRelatedPartyList(queryCondition).then(
+      () => relatedPartyApi.getList(queryCondition).then(
           (res) => {
             data.dataList = res.data
             data.totalPages = res.paging.total_pages
@@ -178,11 +178,11 @@ const confirm = (id: number, params: any) => {
 
 //删除单条记录
 function deleteRecord(id: number) {
-  DeleteRelatedParty(id).then(
+  relatedPartyApi.delete({id:id}).then(
       res => {
         //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
         message.success('删除成功', 2)
-        GetRelatedPartyList(queryCondition).then(
+        relatedPartyApi.getList(queryCondition).then(
             (res) => {
               data.dataList = res.data
               data.totalPages = res.paging.total_pages
@@ -214,6 +214,7 @@ function deleteRecord(id: number) {
 :deep(.ant-table) {
   th.chinese_name, td.chinese_name, th.english_name, td.english_name,
   th.uniform_social_credit_code, td.uniform_social_credit_code,
+  th.action, td.action,
   th.button, td.button {
     text-align: center;
   }

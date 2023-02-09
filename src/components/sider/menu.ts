@@ -3,7 +3,7 @@ import {menu} from "@/components/interface";
 const menuList: menu[] = [
     {
         path: '/progress',
-        label: '进度1111',
+        label: '进度',
         icon: 'PlayCircleOutlined',
         children: [
             {

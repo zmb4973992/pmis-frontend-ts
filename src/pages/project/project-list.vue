@@ -137,7 +137,7 @@ import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-
 import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
-import {GetDepartmentList} from "@/api/department";
+import {departmentApi} from "@/api/department";
 
 function toBeCompleted() {}
 
@@ -153,7 +153,7 @@ let limitedDepartmentOptions = ref<{ value: number; label: string }[]>([])
 const departmentOptions = ref<{ value: number; label: string }[]>([])
 const projectTypeOptions = ref<{ label: string }[]>([])
 //获取部门选项的值
-GetDepartmentList({page_size: 100, verify_role: true}).then(
+departmentApi.getList({page_size: 100, is_showed_by_role: true}).then(
     res => {
       const departmentList = res.data.filter((item: any) => item.level === '部门')
       for (let item of departmentList) {
@@ -241,7 +241,7 @@ const project = reactive({
 //点击修改，准备修改项目信息
 function updateRecord(projectID: number) {
   visible.value = true
-  GetDepartmentList().then(res => {
+  departmentApi.getList().then(res => {
     for (let item of res.data) {
       departmentOptions.value.push({value: item.id, label: item.name})
     }

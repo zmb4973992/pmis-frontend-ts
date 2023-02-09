@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
 import {reactive, ref, watch} from "vue";
-import {GetDepartmentList} from "@/api/department";
+import {departmentApi} from "@/api/department";
 
 const visible = ref(false)
 
@@ -59,7 +59,7 @@ for (let i = 1; i < 100000; i++) {
 let expandedKeys = ref(numberArray)
 
 const getDepartmentTree = () => {
-  GetDepartmentList({page_size: 100}).then(res => {
+  departmentApi.getList({page_size: 100}).then(res => {
         //第一次遍历
         for (let item1 of res.data) {
           if (item1.level === "公司") {

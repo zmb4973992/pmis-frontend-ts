@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {GetRelatedPartyList} from "@/api/related-party";
+import {relatedPartyApi} from "@/api/related-party";
 
 export interface dataList {
     id_gte?:number
@@ -26,7 +26,7 @@ const useDataListStore = defineStore(
         }),
         actions: {
             update_data_list(params:dataList) {
-                GetRelatedPartyList(params).then(
+                relatedPartyApi.getList(params).then(
 
                 )
             }
