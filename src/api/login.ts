@@ -1,14 +1,14 @@
 import request from "@/utils/request";
 import useUserStore from "@/store/user";
 
-export interface ILogin {
+export interface Login {
     username: string
     password: string
 }
 
 let user = useUserStore()
 
-const login = (data: ILogin) =>
+const login = (data: Login) =>
     request.post('/api/login', data).then(
         // 如果请求成功发出、收到结果
         res => {

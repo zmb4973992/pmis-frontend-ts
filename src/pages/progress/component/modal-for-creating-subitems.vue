@@ -89,7 +89,7 @@ function submitForm() {
             superior_id: disassemblyData.disassemblyItem.disassembly_id,
           })
         }
-        return disassemblyApi.createDisassemblyInBatches(params)
+        return disassemblyApi.createInBatches(params)
       },
   ).then(() => {
     message.success('添加成功')
@@ -99,7 +99,7 @@ function submitForm() {
 }
 
 async function showModal(disassemblyID: number) {
-  disassemblyApi.getDisassembly(disassemblyID).then(res => {
+  disassemblyApi.get(disassemblyID).then(res => {
     disassemblyData.disassemblyItem.disassembly_id = res.data.id
     disassemblyData.disassemblyItem.level = res.data.level
     disassemblyData.disassemblyItem.name = res.data.name

@@ -1,6 +1,5 @@
 import request from "@/utils/request";
 
-//接口只能一次性导出，不能先定义、再导出
 export interface IUpdateUser {
     full_name: string
     email_address: string

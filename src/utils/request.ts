@@ -46,7 +46,7 @@ request.interceptors.response.use(
         } else if (err.message == 'Network Error') {
             message.error('网络连接错误');
         }else if (err.message.indexOf('Request') != -1) {
-            message.error('网络发生错误');
+            message.error('请求发生错误');
         }
         return err
     }

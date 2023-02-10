@@ -117,7 +117,7 @@ const projectFilterOption = (input: string, option: any) =>
 watch(projectID, () => {
   //项目id发生变动后，要清空treeData，否则a-tree组件就不会自动展开了
   treeData.value = []
-  disassemblyApi.getDisassemblyTree(projectID.value).then(res => {
+  disassemblyApi.getTree(projectID.value).then(res => {
     treeData.value = res.data
   })
 })
@@ -130,7 +130,7 @@ console.log('dayjs测试：', dayjs().format())
 
 //异步写法测试，可以和then交替使用
 async function aa() {
-  const res = await disassemblyApi.getDisassemblyTree(52)
+  const res = await disassemblyApi.getTree(52)
   treeData.value = res.data
 }
 
@@ -301,7 +301,7 @@ const disassemblyData = reactive<{
 
 
 function reloadDisassemblyTree() {
-  disassemblyApi.getDisassemblyTree(52).then(res => {
+  disassemblyApi.getTree(52).then(res => {
     treeData.value = res.data
   })
 }

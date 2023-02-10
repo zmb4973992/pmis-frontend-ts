@@ -11,9 +11,9 @@
         </a-select>
       </a-form-item>
 
-      <a-form-item class="query-form-item" label="项目名称">
-        <a-input id="project-name-like" v-model:value="queryForm.project_name_like"
-                 placeholder="项目名称" style="width: 180px" >
+      <a-form-item class="query-form-item" label="项目全称">
+        <a-input id="project_name_include" v-model:value="queryForm.project_name_include"
+                 placeholder="项目全称" style="width: 180px">
         </a-input>
       </a-form-item>
 
@@ -32,7 +32,7 @@
             重置
           </a-button>
         </a-button-group>
-      </a-form-item >
+      </a-form-item>
 
 
     </a-row>
@@ -42,12 +42,12 @@
   <a-card size="small">
     <!--  表格主体-->
     <a-row class="table-buttons-row">
-        <a-button @click="create" type="primary" size="small">
-          <template #icon>
-            <PlusOutlined/>
-          </template>
-          添加项目
-        </a-button>
+      <a-button @click="create" type="primary" size="small">
+        <template #icon>
+          <PlusOutlined/>
+        </template>
+        添加项目
+      </a-button>
       <div class="buttons-for-table-setting">
         <a-tooltip title="设置列" size="small">
           <a-button type="text" @click="toBeCompleted" size="small">
@@ -59,9 +59,7 @@
       </div>
     </a-row>
     <a-table :data-source="data.dataList" :columns="columns"
-             size="small" :pagination="false" :scroll="{x:1500}"
-             :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
-    >
+             size="small" :pagination="false" :scroll="{x:1500}">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
           {{ index + 1 }}
@@ -84,7 +82,7 @@
     </a-table>
 
     <!--分页器-->
-    <a-pagination v-model:pageSize="queryForm.page_size" :total="data.totalRecords"
+    <a-pagination v-model:pageSize="queryForm.page_size" :total="data.numberOfRecords"
                   showSizeChanger :pageSizeOptions="pageSizeOptions"
                   showQuickJumper @change="paginationChange"
                   :show-total="total=>`共${total}条记录`"
@@ -136,15 +134,22 @@
 import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
-import {DeleteProject, GetProjectList, IProjectList} from "@/api/project";
+import {projectApi, projectGetList} from "@/api/project";
 import {departmentApi} from "@/api/department";
 
-function toBeCompleted() {}
+function toBeCompleted() {
+}
 
 //查询条件
-const queryForm = reactive<IProjectList>({
-  page: 1, page_size: 12, order_by: '', desc: false,
-  department_id_in: [], project_name_like: '',
+const queryForm = reactive<projectGetList>({
+  is_showed_by_role:true,
+  department_id_in: [],
+  project_name_include:"",
+  department_name_include:"",
+  page: 1,
+  page_size: 12,
+  order_by: "",
+  desc: false,
 })
 //部门选项，value为真实值，label为显示值
 //这里是受限制的选项，只显示有权限看到的值
@@ -155,7 +160,7 @@ const projectTypeOptions = ref<{ label: string }[]>([])
 //获取部门选项的值
 departmentApi.getList({page_size: 100, is_showed_by_role: true}).then(
     res => {
-      const departmentList = res.data.filter((item: any) => item.level === '部门')
+      const departmentList = res.data.filter((item: any) => item.level_name === '部门')
       for (let item of departmentList) {
         limitedDepartmentOptions.value.push({value: item.id, label: item.name})
       }
@@ -167,17 +172,15 @@ const filterOption = (input: string, option: any) =>
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
 
-let data = reactive({
-  dataList: [], totalPages: 1, totalRecords: 1,
-})
+let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
 
 let columns = ref([
   {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px', fixed: 'left'},
   {
-    title: '项目简称',
-    dataIndex: 'project_short_name',
-    className: 'project_short_name',
-    width: '200px',
+    title: '项目全称',
+    dataIndex: 'project_full_name',
+    className: 'project_full_name',
+    width: '260px',
     ellipsis: true,
     fixed: 'left'
   },
@@ -195,24 +198,26 @@ let columns = ref([
     title: '金额',
     className: 'amount',
     dataIndex: 'amount',
-    width: '280px',
+    width: '100px',
     sorter: (a: any, b: any) => a.amount - b.amount
   },
-  {title: '币种', className: 'currency', dataIndex: 'currency', width: '60px', ellipsis: true},
+  {title: '币种', className: 'currency', dataIndex: 'currency', width: '150px', ellipsis: true},
   {title: '操作', className: 'action', dataIndex: 'action', width: '150px', fixed: 'right'},
 ])
 
 onMounted(() => search())
 
-const search = () => {
-  GetProjectList(queryForm).then(
+function search() {
+  projectApi.getList(queryForm).then(
       (res) => {
+        console.log(res);
         data.dataList = res.data
-        data.totalPages = res.paging.total_pages
-        data.totalRecords = res.paging.total_records
+        data.numberOfPages = res.paging.number_of_pages
+        data.numberOfRecords = res.paging.number_of_records
       },
   )
 }
+
 //页码变化时的回调函数
 const paginationChange = (page: number, pageSize: number) => {
   queryForm.page = page
@@ -220,13 +225,17 @@ const paginationChange = (page: number, pageSize: number) => {
   search()
 }
 
-const reset = () => {
+function reset() {
   queryForm.department_id_in = []
-  queryForm.project_name_like = ''
+  queryForm.project_name_include = ''
+  queryForm.department_name_include = ''
   queryForm.page = 1
   queryForm.page_size = 12
+  queryForm.order_by = ''
+  queryForm.desc = false
   search()
 }
+
 //修改项目信息的模态框是否可见
 const visible = ref(false)
 
@@ -257,16 +266,15 @@ function submitUpdate() {
 }
 
 const deleteRecord = (projectID: number) => {
-  console.log(projectID)
-  DeleteProject(projectID).then(
+  projectApi.delete({id: projectID}).then(
       () => {
         //这里还需要对返回结果进行判断后再处理，只是验证了模型能跑通
         message.success('删除成功', 2)
-        GetProjectList(queryForm).then(
+        projectApi.getList(queryForm).then(
             (res) => {
               data.dataList = res.data
-              data.totalPages = res.paging.total_pages
-              data.totalRecords = res.paging.total_records
+              data.numberOfPages = res.paging.number_of_pages
+              data.numberOfRecords = res.paging.number_of_records
             },
         )
       }
@@ -298,18 +306,19 @@ const create = () =>
   background-color: white;
   justify-content: space-between;
   margin-bottom: 10px;
+
   .buttons-for-table-setting {
     float: right;
   }
 }
 
 
-
 //表格内容居中
 :deep(.ant-table) {
-  th.line_number, td.line_number, th.project_short_name, td.project_short_name,
+  th.line_number, td.line_number, th.project_full_name, td.project_full_name,
   th.project_code, td.project_code, th.project_type, td.project_type,
   th.department, td.department, th.amount, th.currency, td.currency,
+  th.action,td.action,
   th.button, td.button {
     text-align: center;
   }
