@@ -1,5 +1,4 @@
 <template>
-  <!--查询条件表单，2023/1/13重写-->
   <a-form class="query-form">
     <!--这里用a-row，是为了确保表单元素在一行内，如果内容超出一行，可以自动换行-->
     <a-row>
@@ -67,7 +66,7 @@
         <template v-else-if="column.dataIndex === 'action'">
           <a>详情</a>
           <a-divider type="vertical"/>
-          <a @click="updateRecord(record.id)">修改</a>
+          <a @click="showModalForUpdating(record.id)">修改</a>
           <a-divider type="vertical"/>
           <a-popconfirm class="pop-confirm"
                         title="确认要删除吗？"
@@ -89,6 +88,10 @@
                   id="paginator"/>
   </a-card>
 
+
+  <!--修改项目信息的模态框-->
+  <modal-for-updating ref="modalForUpdating"
+                      @reloadList="reloadList"/>
 
   <!--修改项目信息的模态框-->
   <a-modal v-model:visible="visible" title="修改项目" width="1000px" @ok="submitUpdate">
@@ -136,16 +139,17 @@ import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {projectApi, projectGetList} from "@/api/project";
 import {departmentApi} from "@/api/department";
+import ModalForUpdating from "@/pages/project/project-list/component/modal-for-updating.vue";
 
 function toBeCompleted() {
 }
 
 //查询条件
 const queryForm = reactive<projectGetList>({
-  is_showed_by_role:true,
+  is_showed_by_role: true,
   department_id_in: [],
-  project_name_include:"",
-  department_name_include:"",
+  project_name_include: "",
+  department_name_include: "",
   page: 1,
   page_size: 12,
   order_by: "",
@@ -255,7 +259,6 @@ function updateRecord(projectID: number) {
       departmentOptions.value.push({value: item.id, label: item.name})
     }
   })
-
 }
 
 //确认修改信息
@@ -283,6 +286,20 @@ const deleteRecord = (projectID: number) => {
 
 const create = () =>
     message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
+
+function reloadList() {
+  projectApi.getList().then(res => {
+    data.dataList = res.data
+  })
+}
+
+//用于修改项目信息的模态框
+const modalForUpdating = ref()
+
+function showModalForUpdating(key: number) {
+  modalForUpdating.value.showModal(key)
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -318,7 +335,7 @@ const create = () =>
   th.line_number, td.line_number, th.project_full_name, td.project_full_name,
   th.project_code, td.project_code, th.project_type, td.project_type,
   th.department, td.department, th.amount, th.currency, td.currency,
-  th.action,td.action,
+  th.action, td.action,
   th.button, td.button {
     text-align: center;
   }

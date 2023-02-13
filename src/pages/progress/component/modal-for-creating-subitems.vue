@@ -1,6 +1,6 @@
 <template>
-  <a-modal v-model:visible="visible"  title="添加子项"
-           @ok="submitForm" style="width: 400px;">
+  <a-modal v-model:visible="visible" title="添加子项"
+           @ok="onSubmit" style="width: 400px;">
 
     <a-form ref="form" :model="disassemblyData">
       <div style="margin-bottom: 5px">
@@ -75,9 +75,9 @@ const disassemblyData = reactive<{
   disassemblySubitems: [],
 })
 
-const emits = defineEmits(['reloadDisassemblyTree'])
+const emits = defineEmits(['reloadDisassemblyTree1'])
 
-function submitForm() {
+function onSubmit() {
   form.value!.validateFields().then(() => {
         let params: iDisassemblyCreate[] = []
         for (let item of disassemblyData.disassemblySubitems) {
@@ -94,7 +94,7 @@ function submitForm() {
   ).then(() => {
     message.success('添加成功')
     visible.value = false
-    emits('reloadDisassemblyTree')
+    emits('reloadDisassemblyTree1')
   })
 }
 

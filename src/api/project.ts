@@ -26,11 +26,13 @@ export interface projectUpdate {
     country?: string
     province?: string
     project_type?: string
-    amount?: number
+    amount?: number|null
     currency?: string
-    exchange_rate?: number
-    department_id?: number
-    related_party_id?: number
+    exchange_rate?: number|null
+    department_id?: number|null
+    related_party_id?: number|null
+    project_status?:string
+    signing_date?:string
 }
 
 export interface projectDelete {

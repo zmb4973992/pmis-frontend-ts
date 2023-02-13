@@ -74,7 +74,7 @@ const routes: RouteRecordRaw[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/project/project-list.vue'),
+                component: () => import('@/pages/project/project-list/project-list.vue'),
             },
             {
                 path: '/project/member',

@@ -46,7 +46,7 @@
 
     <!--添加子项目的模态框-->
     <modal-for-creating-subitems ref="modalForCreatingSubitems"
-                                 @reloadDisassemblyTree="reloadDisassemblyTree"/>
+                                 @reloadDisassemblyTree1="reloadDisassemblyTree"/>
     <!--修改单项的模态框-->
     <modal-for-updating-subitem ref="modalForUpdatingItem"
                                 @reloadDisassemblyTree="reloadDisassemblyTree"/>
@@ -304,13 +304,11 @@ onMounted(() => {
 //   disassemblySubitems: [],
 // })
 
-
 function reloadDisassemblyTree() {
   disassemblyApi.getTree({project_id:52}).then(res => {
     treeData.value = res.data
   })
 }
-
 
 </script>
 
