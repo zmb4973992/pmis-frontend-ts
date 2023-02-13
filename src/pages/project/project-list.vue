@@ -23,7 +23,7 @@
             <template #icon>
               <SearchOutlined/>
             </template>
-            搜索
+            查询
           </a-button>
           <a-button class="button" @click="reset" v-permitted-roles="['a','事业部级']">
             <template #icon>

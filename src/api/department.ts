@@ -1,27 +1,27 @@
 import request from "@/utils/request";
 
-export interface departmentGet {
+export interface iDepartmentGet {
     id: number
 }
 
-export interface departmentCreate {
+export interface iDepartmentCreate {
     name: string
     level_name: string
     superior_id: number
 }
 
-export interface departmentUpdate {
+export interface iDepartmentUpdate {
     id: number,
     name?: string
     level_name?: string
     superior_id?: number
 }
 
-export interface departmentDelete {
+export interface iDepartmentDelete {
     id: number
 }
 
-export interface departmentGetArray {
+export interface iDepartmentGetArray {
     is_showed_by_role?: boolean
     superior_id?: number
     level_name?: string
@@ -33,7 +33,7 @@ export interface departmentGetArray {
     desc?: boolean
 }
 
-export interface departmentGetList {
+export interface iDepartmentGetList {
     is_showed_by_role?: boolean
     superior_id?: number
     level_name?: string
@@ -47,17 +47,17 @@ export interface departmentGetList {
 
 
 const departmentApi = {
-    get: (param: departmentGet) => request.get('/api/department/' + param.id)
+    get: (param: iDepartmentGet) => request.get('/api/department/' + param.id)
         .then(res => res.data,),
-    update: (param: departmentUpdate) => request.patch('/api/department/' + param.id, param)
+    update: (param: iDepartmentUpdate) => request.patch('/api/department/' + param.id, param)
         .then(res => res.data,),
-    create: (param: departmentCreate) => request.post('/api/department', param)
+    create: (param: iDepartmentCreate) => request.post('/api/department', param)
         .then(res => res.data,),
-    delete: (param:departmentDelete) => request.delete('/api/department'+param.id)
+    delete: (param:iDepartmentDelete) => request.delete('/api/department'+param.id)
         .then(res => res.data),
-    getArray: (param:departmentGetArray) => request.post('/api/department/array',param)
+    getArray: (param:iDepartmentGetArray) => request.post('/api/department/array',param)
         .then(res => res.data),
-    getList: (param?:departmentGetList) => request.post('/api/department/list',param)
+    getList: (param?:iDepartmentGetList) => request.post('/api/department/list',param)
         .then(res => res.data),
 }
 

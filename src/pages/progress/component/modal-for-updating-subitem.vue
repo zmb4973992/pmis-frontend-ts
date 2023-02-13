@@ -52,12 +52,13 @@ const form = ref<FormInstance>()
 function resetForm() {
   form.value!.clearValidate();
 }
+
 const emit = defineEmits(['reloadDisassemblyTree'])
 
 function showModal(disassemblyID: number) {
   visible.value = true
   disassemblyData.disassemblyItem.disassembly_id = disassemblyID
-  disassemblyApi.get(disassemblyID).then(
+  disassemblyApi.get({id: disassemblyID}).then(
       res => {
         if (res.data) {
           disassemblyData.disassemblyItem.name = res.data.name
@@ -73,7 +74,8 @@ function showModal(disassemblyID: number) {
 function submitForm() {
   form.value!.validateFields().then(
       () => {
-        disassemblyApi.update(disassemblyData.disassemblyItem.disassembly_id, {
+        disassemblyApi.update( {
+          id:disassemblyData.disassemblyItem.disassembly_id,
           level: disassemblyData.disassemblyItem.level,
           name: disassemblyData.disassemblyItem.name,
           project_id: disassemblyData.disassemblyItem.project_id,
@@ -82,7 +84,7 @@ function submitForm() {
         }).then(() => {
           message.success('修改成功')
           visible.value = false
-          emit('updateDisassemblyTree')
+          emit('reloadDisassemblyTree')
         });
       }
   )

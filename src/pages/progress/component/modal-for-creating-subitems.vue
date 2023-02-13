@@ -41,7 +41,7 @@ import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons-vue";
 
 import {nextTick, reactive, ref} from "vue";
 import {FormInstance, message} from "ant-design-vue";
-import {disassemblyApi, IDisassembly} from "@/api/disassembly";
+import {disassemblyApi, iDisassemblyCreate} from "@/api/disassembly";
 
 const form = ref<FormInstance>()
 
@@ -79,7 +79,7 @@ const emits = defineEmits(['reloadDisassemblyTree'])
 
 function submitForm() {
   form.value!.validateFields().then(() => {
-        let params: IDisassembly[] = []
+        let params: iDisassemblyCreate[] = []
         for (let item of disassemblyData.disassemblySubitems) {
           params.push({
             name: item.name,
@@ -89,17 +89,17 @@ function submitForm() {
             superior_id: disassemblyData.disassemblyItem.disassembly_id,
           })
         }
-        return disassemblyApi.createInBatches(params)
+        return disassemblyApi.createInBatches({param:params})
       },
   ).then(() => {
     message.success('添加成功')
     visible.value = false
-    emits('updateDisassemblyTree')
+    emits('reloadDisassemblyTree')
   })
 }
 
 async function showModal(disassemblyID: number) {
-  disassemblyApi.get(disassemblyID).then(res => {
+  disassemblyApi.get({id:disassemblyID}).then(res => {
     disassemblyData.disassemblyItem.disassembly_id = res.data.id
     disassemblyData.disassemblyItem.level = res.data.level
     disassemblyData.disassemblyItem.name = res.data.name

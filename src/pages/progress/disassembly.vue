@@ -81,19 +81,22 @@ import ModalForUpdatingSubitem from "@/pages/progress/component/modal-for-updati
 
 //用于创建子项的模态框
 const modalForCreatingSubitems = ref()
+
 function showModalForCreatingDisassembly(key: number) {
   modalForCreatingSubitems.value.showModal(key)
 }
 
 //用于修改选中项的模态框
 const modalForUpdatingItem = ref()
+
 function showModalForUpdatingDisassembly(key: number) {
   modalForUpdatingItem.value.showModal(key)
 }
 
 //用于删除选中项的模态框
 const modalForDeletingItem = ref()
-function showModalForDeletingDisassembly(key:number) {
+
+function showModalForDeletingDisassembly(key: number) {
   modalForDeletingItem.value.showModal(key)
 }
 
@@ -101,15 +104,14 @@ import ModalForCreatingSubitems from "@/pages/progress/component/modal-for-creat
 
 //项目选择框的过滤器（下拉框搜索）
 import {message} from "ant-design-vue";
-import {nextTick, onMounted, reactive, ref, watch} from "vue";
+import {nextTick, onMounted, ref, watch} from "vue";
 import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 
-import {GetProjectList} from "@/api/project";
+import {projectApi} from "@/api/project";
 import dayjs from 'dayjs'
 import ModalForDeletingItem from "@/pages/progress/component/modal-for-deleting-item.vue";
-import {log} from "echarts/types/src/util/log";
 
 let projectID = ref()
 const projectFilterOption = (input: string, option: any) =>
@@ -130,7 +132,7 @@ console.log('dayjs测试：', dayjs().format())
 
 //异步写法测试，可以和then交替使用
 async function aa() {
-  const res = await disassemblyApi.getTree(52)
+  const res = await disassemblyApi.getTree({project_id: 52})
   treeData.value = res.data
 }
 
@@ -155,13 +157,16 @@ watch(selectedKeys, () => {
 const activeKey = ref('1')
 
 
-GetProjectList({verify_role: true, page_size: 100}).then(res => {
+projectApi.getList({
+  is_showed_by_role: true,
+  page_size: 100
+}).then(res => {
   for (let item of res.data) {
     projectOptions.value.push({label: item.project_full_name, value: item.id})
   }
 })
 
-nextTick(()=>console.log('next'))
+nextTick(() => console.log('next'))
 
 function change(targetKey: string) {
   let a = Number(targetKey)
@@ -275,33 +280,33 @@ onMounted(() => {
 })
 
 
-interface disassemblyItem {
-  disassembly_id: number
-  name: string
-  weight?: number
-  project_id: number
-  level: number
-  superior_id: number
-}
+// interface disassemblyItem {
+//   disassembly_id: number
+//   name: string
+//   weight?: number
+//   project_id: number
+//   level: number
+//   superior_id: number
+// }
 
 //disassemblyItem为当前选中项，用来删改查；disassemblySubitems为当前选中项的子项，用来批量新增
-const disassemblyData = reactive<{
-  disassemblyItem: disassemblyItem,
-  disassemblySubitems: disassemblyItem[],
-}>({
-  disassemblyItem: {
-    disassembly_id: 0,
-    name: '',
-    project_id: 0,
-    level: 0,
-    superior_id: 0,
-  },
-  disassemblySubitems: [],
-})
+// const disassemblyData = reactive<{
+//   disassemblyItem: disassemblyItem,
+//   disassemblySubitems: disassemblyItem[],
+// }>({
+//   disassemblyItem: {
+//     disassembly_id: 0,
+//     name: '',
+//     project_id: 0,
+//     level: 0,
+//     superior_id: 0,
+//   },
+//   disassemblySubitems: [],
+// })
 
 
 function reloadDisassemblyTree() {
-  disassemblyApi.getTree(52).then(res => {
+  disassemblyApi.getTree({project_id:52}).then(res => {
     treeData.value = res.data
   })
 }
