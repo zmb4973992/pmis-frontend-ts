@@ -17,11 +17,10 @@
                   @change="toBeCompleted">
         </a-select>
       </a-form-item>
-      <a-form-item  label="项目金额">
-        <a-input-number ref="aaa" v-model:value="data.amount" :min="0" :controls="false">
+      <a-form-item label="项目金额">
+        <a-input-number id="aaa" v-model:value="data.amount" :min="0" :controls="false">
           <template #addonAfter>
             <a-select v-model:value="data.currency" :options="currencyOptions">
-
             </a-select>
           </template>
         </a-input-number>
@@ -34,31 +33,53 @@
       </a-form-item>
 
       <a-form-item label="签约日期">
-        <a-date-picker v-model:value="data.signing_date">
+        <a-date-picker v-model:value="signingDate">
         </a-date-picker>
       </a-form-item>
-      <!--      <a-form-item label="权重：" name="weight"-->
-      <!--                   :rules="{required: true, message: '请填写权重'}">-->
-      <!--        <a-input-number id="a2" v-model:value="disassemblyData.disassemblyItem.weight"-->
-      <!--                        :controls="false" addon-after="%" :min="0" :max="100"-->
-      <!--                        :precision="1">-->
-      <!--        </a-input-number>-->
-      <!--      </a-form-item>-->
-      {{ data }}
+
+      <a-form-item label="上传文件">
+        <a-upload v-model:file-list="fileList" name="file" :max-count="1"
+        action="http://127.0.0.1:8000/api/file/upload/single"
+                  :headers="headers"
+
+        @change="handleChange">
+          <a-button>
+            <upload-outlined></upload-outlined>
+            上传文件
+          </a-button>
+        </a-upload>
+      </a-form-item>
+
+
     </a-form>
   </a-modal>
 </template>
 
 <script setup lang="ts">
 import {reactive, ref} from "vue";
-import {FormInstance, message} from "ant-design-vue";
-import {projectApi, projectUpdate} from "@/api/project";
+import {FormInstance, message, UploadChangeParam} from "ant-design-vue";
+import {projectApi,} from "@/api/project";
 import {dictionaryItemApi} from "@/api/dictionary-item";
+import dayjs, {Dayjs} from "dayjs";
+import {UploadOutlined} from "@ant-design/icons-vue";
+import useUserStore from "@/store/user";
 
+const userStore = useUserStore()
+
+const token = userStore.token
+
+const headers = {
+  'access_token':token,
+}
+
+const fileList = ref([])
+function handleChange(info: UploadChangeParam) {
+  console.log(info)
+}
 
 function a() {
-
 }
+
 function toBeCompleted() {
 }
 
@@ -66,7 +87,7 @@ const countryOptions = ref<{ value: string, label: string }[]>([])
 const projectTypeOptions = ref<{ value: string, label: string }[]>([])
 const currencyOptions = ref<{ value: string, label: string }[]>()
 
-const data = reactive<projectUpdate>({
+const data = reactive({
   id: 0,
   project_code: '',
   project_full_name: '',
@@ -77,7 +98,7 @@ const data = reactive<projectUpdate>({
   currency: '',
   exchange_rate: null,
   related_party_id: null,
-  department_id: null
+  department_id: null,
 })
 
 const visible = ref(false)
@@ -88,6 +109,10 @@ function resetForm() {
 }
 
 const emit = defineEmits(['reloadDisassemblyTree'])
+
+
+// 签约日期
+let signingDate = ref<Dayjs>()
 
 function showModal(projectID: number) {
   visible.value = true
@@ -101,7 +126,7 @@ function showModal(projectID: number) {
           data.project_type = res.data.project_type
           data.amount = res.data.amount
           data.currency = res.data.currency
-          data.signing_date = res.data.signing_date
+          signingDate.value = dayjs(res.data.signing_date)
         }
       }
   )
@@ -147,9 +172,15 @@ function onSubmit() {
   form.value!.validateFields().then(
       () => {
         projectApi.update({
-          id: 666,
+          id: data.id,
           project_code: data.project_code,
-          // weight: disassemblyData.disassemblyItem.weight as number / 100
+          project_full_name: data.project_full_name,
+          country: data.country,
+          project_type: data.project_type,
+          amount: data.amount,
+          currency: data.currency,
+          exchange_rate: data.exchange_rate,
+          signing_date: signingDate.value?.format("YYYY-MM-DD"),
         }).then(() => {
           message.success('修改成功')
           visible.value = false
@@ -163,9 +194,9 @@ defineExpose({showModal,})
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 //调整数字输入框的对齐方式
-:deep(.ant-input-number) {
+#aaa {
   text-align: right;
   width: 120px;
 }

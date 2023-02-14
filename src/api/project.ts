@@ -1,10 +1,11 @@
 import request from "@/utils/request";
+import dayjs from "dayjs";
 
-export interface projectGet {
+export interface iProjectGet {
     id :number
 }
 
-export interface projectCreate {
+export interface iProjectCreate {
     project_code?: string
     project_full_name?: string
     project_short_name?: string
@@ -18,7 +19,7 @@ export interface projectCreate {
     related_party_id?: number
 }
 
-export interface projectUpdate {
+export interface iProjectUpdate {
     id:number
     project_code?: string
     project_full_name?: string
@@ -35,11 +36,11 @@ export interface projectUpdate {
     signing_date?:string
 }
 
-export interface projectDelete {
+export interface iProjectDelete {
     id:number
 }
 
-export interface projectGetList {
+export interface iProjectGetList {
     is_showed_by_role?:boolean
     project_name_include?: string
     department_id_in?: number[]
@@ -50,7 +51,7 @@ export interface projectGetList {
     desc?: boolean
 }
 
-export interface projectGetArray {
+export interface iProjectGetArray {
     is_showed_by_role?:boolean
     project_name_like?: string
     department_id_in?: number[]
@@ -62,17 +63,17 @@ export interface projectGetArray {
 }
 
 const projectApi = {
-    get:(param:projectGet)=> request.get('/api/project/' + param.id)
+    get:(param:iProjectGet)=> request.get('/api/project/' + param.id)
         .then(res => res.data),
-    create:(param:projectCreate)=> request.post('/api/project', param)
+    create:(param:iProjectCreate)=> request.post('/api/project', param)
         .then(res => res.data,),
-    update:(param:projectUpdate) => request.patch('/api/project',param)
+    update:(param:iProjectUpdate) => request.patch('/api/project/'+param.id,param)
         .then(res => res.data),
-    delete: (param:projectDelete) => request.delete('/api/project/' + param.id)
+    delete: (param:iProjectDelete) => request.delete('/api/project/' + param.id)
         .then(res => res.data,),
-    getList:(param?:projectGetList) => request.post('/api/project/list',param)
+    getList:(param?:iProjectGetList) => request.post('/api/project/list',param)
         .then(res=>res.data),
-    getArray:(param?:projectGetArray) => request.post('/api/project/array',param)
+    getArray:(param?:iProjectGetArray) => request.post('/api/project/array',param)
         .then(res=>res.data),
 }
 

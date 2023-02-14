@@ -137,15 +137,16 @@
 import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
-import {projectApi, projectGetList} from "@/api/project";
+import {projectApi, iProjectGetList} from "@/api/project";
 import {departmentApi} from "@/api/department";
 import ModalForUpdating from "@/pages/project/project-list/component/modal-for-updating.vue";
+import dayjs from "dayjs";
 
 function toBeCompleted() {
 }
 
 //查询条件
-const queryForm = reactive<projectGetList>({
+const queryForm = reactive<iProjectGetList>({
   is_showed_by_role: true,
   department_id_in: [],
   project_name_include: "",
@@ -214,7 +215,6 @@ onMounted(() => search())
 function search() {
   projectApi.getList(queryForm).then(
       (res) => {
-        console.log(res);
         data.dataList = res.data
         data.numberOfPages = res.paging.number_of_pages
         data.numberOfRecords = res.paging.number_of_records
