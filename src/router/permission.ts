@@ -40,7 +40,7 @@ router.beforeEach(async (to, from) => {
     }
 
     let user = useUserStore()
-    if (!user.token) {
+    if (!user.access_token) {
         user.updateUserInfo()
     }
 

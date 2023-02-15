@@ -17,6 +17,7 @@ export interface iProjectCreate {
     exchange_rate?: number
     department_id?: number
     related_party_id?: number
+    our_signatory?:string
 }
 
 export interface iProjectUpdate {
@@ -27,13 +28,15 @@ export interface iProjectUpdate {
     country?: string
     province?: string
     project_type?: string
-    amount?: number|null
+    amount?: number
     currency?: string
-    exchange_rate?: number|null
-    department_id?: number|null
-    related_party_id?: number|null
+    exchange_rate?: number
+    department_id?: number
+    related_party_id?: number
     project_status?:string
     signing_date?:string
+    our_signatory?:string
+    duration?:number
 }
 
 export interface iProjectDelete {

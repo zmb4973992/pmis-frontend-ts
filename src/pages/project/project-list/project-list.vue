@@ -93,44 +93,6 @@
   <modal-for-updating ref="modalForUpdating"
                       @reloadList="reloadList"/>
 
-  <!--修改项目信息的模态框-->
-  <a-modal v-model:visible="visible" title="修改项目" width="1000px" @ok="submitUpdate">
-    <a-form>
-      <a-row>
-        <a-col :span="10">
-          <a-form-item label="项目全称">
-            <a-input v-model:value="project.projectFullName"></a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :span="7" style="padding-left: 10px">
-          <a-form-item label="项目简称">
-            <a-input v-model:value="project.projectShortName"></a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :span="7" style="padding-left: 10px">
-          <a-form-item label="归属部门">
-            <a-select id="project-department" v-model:value="project.departmentID"
-                      :options="departmentOptions">
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :span="8">
-          <a-form-item label="项目编号">
-            <a-input v-model:value="project.projectCode"/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="8">
-          <a-form-item label="项目类型">
-            <a-select v-model:value="project.projectType" :options="projectTypeOptions"/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="8">3</a-col>
-      </a-row>
-    </a-form>
-  </a-modal>
-
 </template>
 
 <script setup lang="ts">
@@ -140,7 +102,6 @@ import {message} from "ant-design-vue";
 import {projectApi, iProjectGetList} from "@/api/project";
 import {departmentApi} from "@/api/department";
 import ModalForUpdating from "@/pages/project/project-list/component/modal-for-updating.vue";
-import dayjs from "dayjs";
 
 function toBeCompleted() {
 }
@@ -159,9 +120,7 @@ const queryForm = reactive<iProjectGetList>({
 //部门选项，value为真实值，label为显示值
 //这里是受限制的选项，只显示有权限看到的值
 let limitedDepartmentOptions = ref<{ value: number; label: string }[]>([])
-//这是所有的值，无限制
-const departmentOptions = ref<{ value: number; label: string }[]>([])
-const projectTypeOptions = ref<{ label: string }[]>([])
+
 //获取部门选项的值
 departmentApi.getList({page_size: 100, is_showed_by_role: true}).then(
     res => {
@@ -238,34 +197,6 @@ function reset() {
   queryForm.order_by = ''
   queryForm.desc = false
   search()
-}
-
-//修改项目信息的模态框是否可见
-const visible = ref(false)
-
-const project = reactive({
-  projectFullName: '', projectShortName: '', departmentID: 0,
-  projectCode: '', projectType: '', segmentedProjectType: '',
-  amount: 0, currency: '', exchangeRate: 0, projectStatus: '',
-  relatedPartyID: 0, country: '', duration: 0, signingDate: '',
-  effectiveDate: '', commissioningDate: '', task: '',
-})
-
-//点击修改，准备修改项目信息
-function updateRecord(projectID: number) {
-  visible.value = true
-  departmentApi.getList().then(res => {
-    for (let item of res.data) {
-      departmentOptions.value.push({value: item.id, label: item.name})
-    }
-  })
-}
-
-//确认修改信息
-function submitUpdate() {
-  message.success('成功提交')
-  visible.value = false
-
 }
 
 const deleteRecord = (projectID: number) => {

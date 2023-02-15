@@ -279,31 +279,6 @@ onMounted(() => {
   window.addEventListener('resize', () => chart1.resize())
 })
 
-
-// interface disassemblyItem {
-//   disassembly_id: number
-//   name: string
-//   weight?: number
-//   project_id: number
-//   level: number
-//   superior_id: number
-// }
-
-//disassemblyItem为当前选中项，用来删改查；disassemblySubitems为当前选中项的子项，用来批量新增
-// const disassemblyData = reactive<{
-//   disassemblyItem: disassemblyItem,
-//   disassemblySubitems: disassemblyItem[],
-// }>({
-//   disassemblyItem: {
-//     disassembly_id: 0,
-//     name: '',
-//     project_id: 0,
-//     level: 0,
-//     superior_id: 0,
-//   },
-//   disassemblySubitems: [],
-// })
-
 function reloadDisassemblyTree() {
   disassemblyApi.getTree({project_id:52}).then(res => {
     treeData.value = res.data

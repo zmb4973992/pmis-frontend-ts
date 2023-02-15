@@ -1,10 +1,10 @@
 import request from "@/utils/request";
 
-export interface relatedPartyGet {
+export interface iRelatedPartyGet {
     id: number
 }
 
-export interface relatedPartyCreate {
+export interface iRelatedPartyCreate {
     chinese_name?: string
     english_name?: string
     address?: string
@@ -12,7 +12,7 @@ export interface relatedPartyCreate {
     telephone?: string
 }
 
-export interface relatedPartyUpdate {
+export interface iRelatedPartyUpdate {
     id: number
     chinese_name?: string
     english_name?: string
@@ -21,11 +21,11 @@ export interface relatedPartyUpdate {
     telephone?: string
 }
 
-export interface relatedPartyDelete {
+export interface iRelatedPartyDelete {
     id : number
 }
 
-export interface relatedPartyGetList {
+export interface iRelatedPartyGetList {
     chinese_name_include?: string
     english_name_include?: string
     page?: number
@@ -36,15 +36,15 @@ export interface relatedPartyGetList {
 
 
 const relatedPartyApi = {
-    get: (param: relatedPartyGet) => request.get(
+    get: (param: iRelatedPartyGet) => request.get(
         '/api/related-party/' + param.id).then(res => res.data,),
-    update: (param: relatedPartyUpdate) => request.patch(
+    update: (param: iRelatedPartyUpdate) => request.patch(
         '/api/related-party/' + param.id, param).then(res => res.data,),
-    create: (param: relatedPartyCreate) => request.post(
+    create: (param: iRelatedPartyCreate) => request.post(
         '/api/related-party', param).then(res => res.data,),
-    delete: (param:relatedPartyDelete) => request.delete(
+    delete: (param:iRelatedPartyDelete) => request.delete(
         '/api/related-party/' + param.id,).then(res => res.data,),
-    getList: (param?: relatedPartyGetList) => request.post(
+    getList: (param?: iRelatedPartyGetList) => request.post(
         '/api/related-party/list', param).then(res => res.data,),
 }
 
