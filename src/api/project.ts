@@ -37,6 +37,7 @@ export interface iProjectUpdate {
     signing_date?:string
     our_signatory?:string
     duration?:number
+    content?:string
 }
 
 export interface iProjectDelete {

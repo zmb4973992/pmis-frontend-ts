@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="visible" :after-close="resetForm" title="修改"
-           width="600px" @ok="onSubmit" @cancel="onCancel">
+           width="600px" @ok="onSubmit">
     <a-form ref="form" :model="data" :label-col="{ span:4 }">
       <a-form-item label="项目全称" name="project_full_name"
                    :rules="{required: true, message: '请填写项目名称'}">
@@ -69,6 +69,13 @@
         <a-date-picker v-model:value="effectiveDate">
         </a-date-picker>
       </a-form-item>
+
+      <a-form-item label="工作内容">
+        <a-textarea v-model:value="data.content" placeholder="请输入工作内容"
+                    :rows="3">
+        </a-textarea>
+      </a-form-item>
+
 
       <!--      <a-form-item label="上传文件">-->
       <!--        <a-upload v-model:file-list="fileList" name="file"-->
@@ -146,7 +153,10 @@ const data = reactive<iProjectUpdate>({
   department_id: undefined,
   our_signatory: undefined,
   duration: undefined,
+  content: undefined,
+  signing_date:undefined,
 })
+
 
 // 签约日期
 let signingDate = ref<Dayjs>()
@@ -158,11 +168,12 @@ const visible = ref(false)
 const form = ref<FormInstance>()
 
 function resetForm() {
+  Object.keys(data).map(key=> {
+    delete data[key as keyof typeof data]
+  })
 }
 
 const emit = defineEmits(['reloadDisassemblyTree'])
-
-
 
 
 function showModal(projectID: number) {
@@ -179,6 +190,7 @@ function showModal(projectID: number) {
           data.currency = res.data.currency
           if (res.data.signing_date) {
             signingDate.value = dayjs(res.data.signing_date)
+            data.signing_date = dayjs(res.data.signing_date)
           }
           if (res.data.effective_date) {
             effectiveDate.value = dayjs(res.data.effective_date)
