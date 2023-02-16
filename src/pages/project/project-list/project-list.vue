@@ -11,7 +11,7 @@
       </a-form-item>
 
       <a-form-item class="query-form-item" label="项目全称">
-        <a-input id="project_name_include" v-model:value="queryForm.project_name_include"
+        <a-input id="name_include" v-model:value="queryForm.name_include"
                  placeholder="项目全称" style="width: 180px">
         </a-input>
       </a-form-item>
@@ -108,9 +108,9 @@ function toBeCompleted() {
 
 //查询条件
 const queryForm = reactive<iProjectGetList>({
-  is_showed_by_role: true,
+  is_showed_by_role: false,
   department_id_in: [],
-  project_name_include: "",
+  name_include: "",
   department_name_include: "",
   page: 1,
   page_size: 12,
@@ -141,22 +141,22 @@ let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
 let columns = ref([
   {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px', fixed: 'left'},
   {
-    title: '项目全称',
-    dataIndex: 'project_full_name',
-    className: 'project_full_name',
+    title: '项目名称',
+    dataIndex: 'name',
+    className: 'name',
     width: '260px',
     ellipsis: true,
     fixed: 'left'
   },
   {
     title: '项目号',
-    dataIndex: 'project_code',
-    className: 'project_code',
+    dataIndex: 'code',
+    className: 'code',
     width: '150px',
     ellipsis: true,
     sorter: (a: any, b: any) => a.project_code - b.project_code
   },
-  {title: '项目类型', className: 'project_type', dataIndex: 'project_type', width: '300px', ellipsis: true},
+  {title: '项目类型', className: 'type', dataIndex: 'type', width: '300px', ellipsis: true},
   {title: '所属部门', className: 'department', dataIndex: ['department', 'name'], width: '300px', ellipsis: true},
   {
     title: '金额',
@@ -175,8 +175,9 @@ function search() {
   projectApi.getList(queryForm).then(
       (res) => {
         data.dataList = res.data
-        data.numberOfPages = res.paging.number_of_pages
-        data.numberOfRecords = res.paging.number_of_records
+        data.numberOfPages = res.paging?.number_of_pages
+        data.numberOfRecords = res.paging?.number_of_records
+        console.log(data.dataList);
       },
   )
 }
@@ -190,7 +191,7 @@ const paginationChange = (page: number, pageSize: number) => {
 
 function reset() {
   queryForm.department_id_in = []
-  queryForm.project_name_include = ''
+  queryForm.name_include = ''
   queryForm.department_name_include = ''
   queryForm.page = 1
   queryForm.page_size = 12
@@ -263,11 +264,9 @@ function showModalForUpdating(key: number) {
 
 //表格内容居中
 :deep(.ant-table) {
-  th.line_number, td.line_number, th.project_full_name, td.project_full_name,
-  th.project_code, td.project_code, th.project_type, td.project_type,
-  th.department, td.department, th.amount, th.currency, td.currency,
-  th.action, td.action,
-  th.button, td.button {
+  th.line_number, td.line_number, th.name, td.name, th.code, td.code,
+  th.type, td.type, th.department, td.department, th.amount,
+  th.currency, td.currency, th.action, td.action, th.button, td.button {
     text-align: center;
   }
 

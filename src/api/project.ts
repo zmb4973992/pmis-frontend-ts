@@ -1,41 +1,38 @@
 import request from "@/utils/request";
-import dayjs from "dayjs";
 
 export interface iProjectGet {
     id :number
 }
 
 export interface iProjectCreate {
-    project_code?: string
-    project_full_name?: string
-    project_short_name?: string
-    country?: string
-    province?: string
-    project_type?: string
+    code?: number
+    name?: string
+    country?: number
+    province?: number
+    type?: number
     amount?: number
-    currency?: string
+    currency?: number
     exchange_rate?: number
     department_id?: number
     related_party_id?: number
-    our_signatory?:string
+    our_signatory?:number
 }
 
 export interface iProjectUpdate {
     id:number
-    project_code?: string
-    project_full_name?: string
-    project_short_name?: string
-    country?: string
-    province?: string
-    project_type?: string
+    code?: string
+    name?: string
+    country?: number
+    province?: number
+    type?: number
     amount?: number
-    currency?: string
+    currency?: number
     exchange_rate?: number
     department_id?: number
     related_party_id?: number
-    project_status?:string
+    status?:number
     signing_date?:string
-    our_signatory?:string
+    our_signatory?:number
     duration?:number
     content?:string
 }
@@ -46,7 +43,7 @@ export interface iProjectDelete {
 
 export interface iProjectGetList {
     is_showed_by_role?:boolean
-    project_name_include?: string
+    name_include?: string
     department_id_in?: number[]
     department_name_include?:string
     page?: number
@@ -57,7 +54,7 @@ export interface iProjectGetList {
 
 export interface iProjectGetArray {
     is_showed_by_role?:boolean
-    project_name_like?: string
+    name_like?: string
     department_id_in?: number[]
     department_name_include?:string
     page?: number
