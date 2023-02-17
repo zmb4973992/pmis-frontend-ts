@@ -1,8 +1,8 @@
 <template>
   <a-modal v-model:visible="visible" :after-close="resetForm" title="修改"
-           width="600px" @ok="onSubmit">
+           width="600px" @ok="onSubmit" :destroy-on-close="true">
     <a-form ref="form" :model="data" :label-col="{ span:4 }">
-      <a-form-item label="项目全称" name="project_full_name"
+      <a-form-item label="项目全称" name="name"
                    :rules="{required: true, message: '请填写项目名称'}">
         <a-input v-model:value="data.name"/>
       </a-form-item>
@@ -40,7 +40,7 @@
       </a-form-item>
 
       <a-form-item label="项目状态" name="project_status">
-        <a-select v-model:value="data.status" :options="projectStatusOptions"/>
+        <a-select v-model:value="data.status" :options="statusOptions"/>
       </a-form-item>
 
       <a-form-item label="对方名称" name="related_party_id">
@@ -88,7 +88,8 @@
       <!--          </a-button>-->
       <!--        </a-upload>-->
       <!--      </a-form-item>-->
-{{data}}
+      {{ data }}
+      {{effectiveDate}}
 
     </a-form>
   </a-modal>
@@ -115,7 +116,6 @@ const headers = {
 const fileList = ref([])
 
 function handleChange(info: UploadChangeParam) {
-  console.log(info)
 }
 
 function a() {
@@ -128,7 +128,7 @@ const countryOptions = ref<{ value: string, label: string }[]>([])
 const projectTypeOptions = ref<{ value: string, label: string }[]>([])
 const currencyOptions = ref<{ value: string, label: string }[]>()
 const departmentOptions = ref<{ value: string, label: string }[]>()
-const projectStatusOptions = ref<{ value: string, label: string }[]>()
+const statusOptions = ref<{ value: string, label: string }[]>()
 const relatedPartyOptions = ref<{ value: string, label: string }[]>()
 const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
 
@@ -142,12 +142,13 @@ const data = reactive<iProjectUpdate>({
   amount: undefined,
   currency: undefined,
   exchange_rate: undefined,
+  signing_date: undefined,
+  effective_date:undefined,
   related_party_id: undefined,
   department_id: undefined,
   our_signatory: undefined,
-  duration: undefined,
+  construction_period: undefined,
   content: undefined,
-  signing_date: undefined,
 })
 
 // 签约日期
@@ -172,21 +173,21 @@ function showModal(projectID: number) {
   visible.value = true
   projectApi.get({id: projectID}).then(
       res => {
-        if (res.data) {
-          data.id = res.data.id
-          data.code = res.data.code
-          data.name = res.data.name
-          data.country = res.data.country
-          data.type = res.data.type
-          data.amount = res.data.amount
-          data.currency = res.data.currency
-          if (res.data.signing_date) {
-            signingDate.value = dayjs(res.data.signing_date)
-          }
-          if (res.data.effective_date) {
-            effectiveDate.value = dayjs(res.data.effective_date)
-          }
-        }
+        data.id = res.data?.id
+        data.code = res.data?.code
+        data.name = res.data?.name
+        data.country = res.data?.country?.id
+        data.type = res.data?.type?.id
+        data.amount = res.data?.amount
+        data.currency = res.data?.currency?.id
+        data.exchange_rate = res.data?.exchange_rate
+        data.status = res.data?.status?.id
+        data.our_signatory = res.data?.our_signatory?.id
+        data.construction_period = res.data?.construction_period
+        data.department_id = res.data?.department?.id
+        data.related_party_id = res.data?.related_party_id
+        signingDate.value = res.data.signing_date ? dayjs(res.data.signing_date) : undefined
+        effectiveDate.value = res.data.effective_date ? dayjs(res.data.effective_date) :undefined
       }
   )
 
@@ -233,7 +234,7 @@ function showModal(projectID: number) {
           for (let item of res.data) {
             result.push({value: item.id, label: item.name})
           }
-          projectStatusOptions.value = result
+          statusOptions.value = result
         }
       }
   )
@@ -287,9 +288,15 @@ function onSubmit() {
           amount: data.amount,
           currency: data.currency,
           exchange_rate: data.exchange_rate,
+          status:data.status,
+          our_signatory:data.our_signatory,
+          construction_period:data.construction_period,
+          department_id:data.department_id,
+          related_party_id:data.related_party_id,
+          content:data.content,
           signing_date: signingDate.value?.format("YYYY-MM-DD"),
+          effective_date :effectiveDate.value?.format("YYYY-MM-DD")
         }).then((res) => {
-          console.log(res)
           message.success('修改成功')
           visible.value = false
           emit('reloadDisassemblyTree')

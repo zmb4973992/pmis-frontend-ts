@@ -5,7 +5,7 @@ export interface iProjectGet {
 }
 
 export interface iProjectCreate {
-    code?: number
+    code?: string
     name?: string
     country?: number
     province?: number
@@ -15,7 +15,12 @@ export interface iProjectCreate {
     exchange_rate?: number
     department_id?: number
     related_party_id?: number
+    status?:number
+    signing_date?:string
+    effective_date?:string
     our_signatory?:number
+    construction_period?:number
+    content?:string
 }
 
 export interface iProjectUpdate {
@@ -32,8 +37,9 @@ export interface iProjectUpdate {
     related_party_id?: number
     status?:number
     signing_date?:string
+    effective_date?:string
     our_signatory?:number
-    duration?:number
+    construction_period?:number
     content?:string
 }
 

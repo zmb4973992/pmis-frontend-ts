@@ -139,7 +139,14 @@ const pageSizeOptions = ['12', '20', '25', '30']
 let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
 
 let columns = ref([
-  {title: '行号', dataIndex: 'line_number', className: 'line_number', width: '50px', fixed: 'left'},
+  {
+    title: '行号',
+    dataIndex: 'line_number',
+    className: 'line_number',
+    width: '50px',
+    fixed: 'left',
+    ellipsis: true,
+  },
   {
     title: '项目名称',
     dataIndex: 'name',
@@ -152,21 +159,61 @@ let columns = ref([
     title: '项目号',
     dataIndex: 'code',
     className: 'code',
-    width: '150px',
+    width: '160px',
     ellipsis: true,
     sorter: (a: any, b: any) => a.project_code - b.project_code
   },
-  {title: '项目类型', className: 'type', dataIndex: 'type', width: '300px', ellipsis: true},
-  {title: '所属部门', className: 'department', dataIndex: ['department', 'name'], width: '300px', ellipsis: true},
+  {
+    title: '所在国家',
+    className: 'country',
+    dataIndex: ['country', 'name'],
+    width: '100px',
+    ellipsis: true,
+  },
+  {
+    title: '项目类型',
+    className: 'type',
+    dataIndex: ['type', 'name'],
+    width: '300px',
+    ellipsis: true
+  },
   {
     title: '金额',
     className: 'amount',
     dataIndex: 'amount',
     width: '100px',
+    ellipsis: true,
     sorter: (a: any, b: any) => a.amount - b.amount
   },
-  {title: '币种', className: 'currency', dataIndex: 'currency', width: '150px', ellipsis: true},
-  {title: '操作', className: 'action', dataIndex: 'action', width: '150px', fixed: 'right'},
+  {
+    title: '币种',
+    className: 'currency',
+    dataIndex: ['currency', 'name'],
+    width: '150px',
+    ellipsis: true
+  },
+  {
+    title: '状态',
+    className: 'status',
+    dataIndex: ['status', 'name'],
+    width: '100px',
+    ellipsis: true,
+  },
+  {
+    title: '所属部门',
+    className: 'department',
+    dataIndex: ['department', 'name'],
+    width: '300px',
+    ellipsis: true
+  },
+  {
+    title: '操作',
+    className: 'action',
+    dataIndex: 'action',
+    width: '150px',
+    fixed: 'right',
+    ellipsis: true,
+  },
 ])
 
 onMounted(() => search())
@@ -177,7 +224,7 @@ function search() {
         data.dataList = res.data
         data.numberOfPages = res.paging?.number_of_pages
         data.numberOfRecords = res.paging?.number_of_records
-        console.log(data.dataList);
+        console.log(res.data);
       },
   )
 }
@@ -266,6 +313,7 @@ function showModalForUpdating(key: number) {
 :deep(.ant-table) {
   th.line_number, td.line_number, th.name, td.name, th.code, td.code,
   th.type, td.type, th.department, td.department, th.amount,
+  th.country, td.country,th.status,td.status,
   th.currency, td.currency, th.action, td.action, th.button, td.button {
     text-align: center;
   }
