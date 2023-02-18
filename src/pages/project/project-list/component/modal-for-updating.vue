@@ -89,7 +89,8 @@
       <!--        </a-upload>-->
       <!--      </a-form-item>-->
       {{ data }}
-      {{effectiveDate}}
+      <a-divider/>
+      {{ effectiveDate }}
 
     </a-form>
   </a-modal>
@@ -132,30 +133,14 @@ const statusOptions = ref<{ value: string, label: string }[]>()
 const relatedPartyOptions = ref<{ value: string, label: string }[]>()
 const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
 
-const data = reactive<iProjectUpdate>({
-  id: 0,
-  code: '',
-  name: '',
-  country: undefined,
-  province: undefined,
-  type: undefined,
-  amount: undefined,
-  currency: undefined,
-  exchange_rate: undefined,
-  signing_date: undefined,
-  effective_date:undefined,
-  related_party_id: undefined,
-  department_id: undefined,
-  our_signatory: undefined,
-  construction_period: undefined,
-  content: undefined,
-})
+const data = reactive<iProjectUpdate>({id: 0})
 
 // 签约日期
 let signingDate = ref<Dayjs>()
 
 // 生效日期
 let effectiveDate = ref<Dayjs>()
+let effectiveDateString = effectiveDate.value?.format("YYYY-MM-DD")
 
 const visible = ref(false)
 const form = ref<FormInstance>()
@@ -173,21 +158,21 @@ function showModal(projectID: number) {
   visible.value = true
   projectApi.get({id: projectID}).then(
       res => {
-        data.id = res.data?.id
-        data.code = res.data?.code
-        data.name = res.data?.name
-        data.country = res.data?.country?.id
-        data.type = res.data?.type?.id
-        data.amount = res.data?.amount
-        data.currency = res.data?.currency?.id
-        data.exchange_rate = res.data?.exchange_rate
-        data.status = res.data?.status?.id
-        data.our_signatory = res.data?.our_signatory?.id
-        data.construction_period = res.data?.construction_period
-        data.department_id = res.data?.department?.id
-        data.related_party_id = res.data?.related_party_id
-        signingDate.value = res.data.signing_date ? dayjs(res.data.signing_date) : undefined
-        effectiveDate.value = res.data.effective_date ? dayjs(res.data.effective_date) :undefined
+        data.id = res.data?.id || undefined
+        data.code = res.data?.code || undefined
+        data.name = res.data?.name || undefined
+        data.country = res.data?.country?.id || undefined
+        data.type = res.data?.type?.id || undefined
+        data.amount = res.data?.amount || undefined
+        data.currency = res.data?.currency?.id || undefined
+        data.exchange_rate = res.data?.exchange_rate || undefined
+        data.status = res.data?.status?.id || undefined
+        data.our_signatory = res.data?.our_signatory?.id || undefined
+        data.construction_period = res.data?.construction_period || undefined
+        data.department_id = res.data?.department?.id || undefined
+        data.related_party_id = res.data?.related_party_id || undefined
+        signingDate.value = res.data?.signing_date ? dayjs(res.data.signing_date) : undefined
+        effectiveDate.value = res.data?.effective_date ? dayjs(res.data.effective_date) : undefined
       }
   )
 
@@ -276,9 +261,11 @@ function showModal(projectID: number) {
   )
 }
 
+
 function onSubmit() {
   form.value?.validateFields().then(
       () => {
+        data.amount = data.amount === null ? -1 : data.amount
         projectApi.update({
           id: data.id,
           code: data.code,
@@ -288,14 +275,14 @@ function onSubmit() {
           amount: data.amount,
           currency: data.currency,
           exchange_rate: data.exchange_rate,
-          status:data.status,
-          our_signatory:data.our_signatory,
-          construction_period:data.construction_period,
-          department_id:data.department_id,
-          related_party_id:data.related_party_id,
-          content:data.content,
-          signing_date: signingDate.value?.format("YYYY-MM-DD"),
-          effective_date :effectiveDate.value?.format("YYYY-MM-DD")
+          status: data.status,
+          our_signatory: data.our_signatory,
+          construction_period: data.construction_period,
+          department_id: data.department_id,
+          related_party_id: data.related_party_id,
+          content: data.content,
+          signing_date: signingDate.value?.format("YYYY-MM-DD") || "",
+          effective_date: effectiveDate.value?.format("YYYY-MM-DD") || "",
         }).then((res) => {
           message.success('修改成功')
           visible.value = false

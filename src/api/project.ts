@@ -30,7 +30,7 @@ export interface iProjectUpdate {
     country?: number
     province?: number
     type?: number
-    amount?: number
+    amount?: number | null
     currency?: number
     exchange_rate?: number
     department_id?: number
