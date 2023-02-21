@@ -18,7 +18,7 @@
 
       <a-form-item class="query-form-item">
         <a-button-group>
-          <a-button class="button" type="primary" @click="search">
+          <a-button class="button" type="primary" @click="loadList">
             <template #icon>
               <SearchOutlined/>
             </template>
@@ -33,7 +33,6 @@
         </a-button-group>
       </a-form-item>
 
-
     </a-row>
   </a-form>
 
@@ -41,7 +40,7 @@
   <a-card size="small">
     <!--  表格主体-->
     <a-row class="table-buttons-row">
-      <a-button @click="create" type="primary" size="small">
+      <a-button size="small" type="primary" @click="create">
         <template #icon>
           <PlusOutlined/>
         </template>
@@ -90,8 +89,7 @@
 
 
   <!--修改项目信息的模态框-->
-  <modal-for-updating ref="modalForUpdating"
-                      @reloadList="reloadList"/>
+  <modal-for-updating ref="modalForUpdating" @loadList="loadList"/>
 
 </template>
 
@@ -216,15 +214,14 @@ let columns = ref([
   },
 ])
 
-onMounted(() => search())
+onMounted(() => loadList())
 
-function search() {
+function loadList() {
   projectApi.getList(queryForm).then(
       (res) => {
         data.dataList = res.data
         data.numberOfPages = res.paging?.number_of_pages
         data.numberOfRecords = res.paging?.number_of_records
-        console.log(res.data);
       },
   )
 }
@@ -233,7 +230,7 @@ function search() {
 const paginationChange = (page: number, pageSize: number) => {
   queryForm.page = page
   queryForm.page_size = pageSize
-  search()
+  loadList()
 }
 
 function reset() {
@@ -244,7 +241,7 @@ function reset() {
   queryForm.page_size = 12
   queryForm.order_by = ''
   queryForm.desc = false
-  search()
+  loadList()
 }
 
 const deleteRecord = (projectID: number) => {
@@ -313,7 +310,7 @@ function showModalForUpdating(key: number) {
 :deep(.ant-table) {
   th.line_number, td.line_number, th.name, td.name, th.code, td.code,
   th.type, td.type, th.department, td.department, th.amount,
-  th.country, td.country,th.status,td.status,
+  th.country, td.country, th.status, td.status,
   th.currency, td.currency, th.action, td.action, th.button, td.button {
     text-align: center;
   }

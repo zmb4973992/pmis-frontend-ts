@@ -52,7 +52,7 @@
       </a-form-item>
 
       <a-form-item label="约定工期" name="duration">
-        <a-input-number v-model:value="data.duration" style="width: 120px"
+        <a-input-number v-model:value="data.construction_period" style="width: 120px"
                         :controls="false">
           <template #addonAfter>
             <span>天</span>
@@ -76,51 +76,56 @@
         </a-textarea>
       </a-form-item>
 
+      <!--      <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">-->
+      <!--        支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>-->
+      <!--      </div>-->
 
-      <!--      <a-form-item label="上传文件">-->
-      <!--        <a-upload v-model:file-list="fileList" name="file"-->
-      <!--                  action="http://127.0.0.1:8000/api/file/upload/single" :headers="headers"-->
-      <!--                  :before-upload="beforeUpload" accept="image/jpeg"-->
-      <!--                  @change="handleChange">-->
-      <!--          <a-button>-->
-      <!--            <upload-outlined></upload-outlined>-->
-      <!--            上传文件-->
-      <!--          </a-button>-->
-      <!--        </a-upload>-->
-      <!--      </a-form-item>-->
-      {{ data }}
-      <a-divider/>
-      {{ effectiveDate }}
+      <a-form-item label="附件">
+
+
+        <a-upload
+            v-model:file-list="fileList"
+            name="file" :multiple="true"
+            action="http://localhost:8000/api/file/upload/single"
+            :before-upload="beforeUpload"
+            @change="handleChange"
+
+            :headers="headers">
+          <a-button>
+            <upload-outlined></upload-outlined>
+            上传
+          </a-button>
+        </a-upload>
+      </a-form-item>
 
     </a-form>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {FormInstance, message, UploadChangeParam} from "ant-design-vue";
+import {onMounted, reactive, ref} from "vue";
+import {FormInstance, message, Upload, UploadChangeParam, UploadProps} from "ant-design-vue";
 import {iProjectUpdate, projectApi,} from "@/api/project";
 import {dictionaryItemApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import useUserStore from "@/store/user";
 import {departmentApi} from "@/api/department";
 import {relatedPartyApi} from "@/api/related-party";
+import {UploadOutlined} from "@ant-design/icons-vue";
 
 const userStore = useUserStore()
 
 const token = userStore.access_token
 
-const headers = {
-  'access_token': token,
-}
+const headers = {"access_token": token}
 
-const fileList = ref([])
+const action = ref('http://localhost:8000/api/file/upload/single')
 
-function handleChange(info: UploadChangeParam) {
-}
-
-function a() {
-}
+const fileList = ref([{
+  name: 'xx发生大幅x.png',
+  response: 'Server Error 500', // custom error message to show
+  url: 'http://www.baidu.com/xxx.png',
+},])
 
 function toBeCompleted() {
 }
@@ -140,7 +145,6 @@ let signingDate = ref<Dayjs>()
 
 // 生效日期
 let effectiveDate = ref<Dayjs>()
-let effectiveDateString = effectiveDate.value?.format("YYYY-MM-DD")
 
 const visible = ref(false)
 const form = ref<FormInstance>()
@@ -152,15 +156,15 @@ function resetForm() {
   //记得还要修改不在reactive里的数据
 }
 
-const emit = defineEmits(['reloadDisassemblyTree'])
+const emit = defineEmits(['loadList'])
 
 function showModal(projectID: number) {
   visible.value = true
   projectApi.get({id: projectID}).then(
       res => {
         data.id = res.data?.id || undefined
-        data.code = res.data?.code || undefined
-        data.name = res.data?.name || undefined
+        data.code = res.data?.code
+        data.name = res.data?.name
         data.country = res.data?.country?.id || undefined
         data.type = res.data?.type?.id || undefined
         data.amount = res.data?.amount || undefined
@@ -173,6 +177,7 @@ function showModal(projectID: number) {
         data.related_party_id = res.data?.related_party_id || undefined
         signingDate.value = res.data?.signing_date ? dayjs(res.data.signing_date) : undefined
         effectiveDate.value = res.data?.effective_date ? dayjs(res.data.effective_date) : undefined
+        data.content = res.data?.content
       }
   )
 
@@ -265,57 +270,69 @@ function showModal(projectID: number) {
 function onSubmit() {
   form.value?.validateFields().then(
       () => {
-        data.amount = data.amount === null ? -1 : data.amount
         projectApi.update({
           id: data.id,
           code: data.code,
           name: data.name,
-          country: data.country,
-          type: data.type,
-          amount: data.amount,
-          currency: data.currency,
-          exchange_rate: data.exchange_rate,
-          status: data.status,
-          our_signatory: data.our_signatory,
-          construction_period: data.construction_period,
-          department_id: data.department_id,
-          related_party_id: data.related_party_id,
+          country: data.country === null ? -1 : data.country,
+          type: data.type === null ? -1 : data.type,
+          amount: data.amount === null ? -1 : data.amount,
+          currency: data.currency === null ? -1 : data.currency,
+          exchange_rate: data.exchange_rate === null ? -1 : data.exchange_rate,
+          status: data.status === null ? -1 : data.status,
+          our_signatory: data.our_signatory === null ? -1 : data.status,
+          construction_period: data.construction_period === null ? -1 : data.construction_period,
+          department_id: data.department_id === null ? -1 : data.department_id,
+          related_party_id: data.related_party_id === null ? -1 : data.related_party_id,
           content: data.content,
           signing_date: signingDate.value?.format("YYYY-MM-DD") || "",
           effective_date: effectiveDate.value?.format("YYYY-MM-DD") || "",
-        }).then((res) => {
-          message.success('修改成功')
-          visible.value = false
-          emit('reloadDisassemblyTree')
+        }).then(res => {
+          if (res?.code === 0) {
+            message.success('修改成功')
+            visible.value = false
+            emit('loadList')
+          } else {
+            message.error(res?.message || '修改失败')
+          }
         });
-      }
-  )
+      })
 }
 
 //上传文件
-function beforeUpload(file: any, fileList: any) {
-  // if (file.size / 1024 / 1024 > 50) {
-  //   message.error('前端校验失败，上传的文件必须小于50MB')
+function beforeUpload(file: any) {
+  const isLessThan50MB = file.size / 1024 / 1024 < 50
+  if (!isLessThan50MB) {
+    message.error('上传的文件必须小于50MB')
+    return Upload.LIST_IGNORE
+  }
+
+  // const suffixIsLegal = file.type === 'image/jpeg' || file.type === 'image/png'
+  // if (!suffixIsLegal) {
+  //   message.error('只支持后缀为.jpg/.png的文件')
   //   return Upload.LIST_IGNORE
   // }
-  //
-  //   if (file.type !== 'image/jpg') {
-  //     message.error(`只能上传jpg文件`)
-  //     return Upload.LIST_IGNORE
-  //   }
+
+  return (isLessThan50MB) || Upload.LIST_IGNORE
 }
 
+const handleChange = ({ file, fileList:innerFileList }: UploadChangeParam) => {
+  if (file.status == 'done') {
+    if (file.response?.code === 0) {
+      file.url= 'http://127.0.0.1:8000/dl'+ '?uuid=dkfej'
+      console.log(file);
+      return file.name
+    }
+  }
+};
 
 defineExpose({showModal,})
 
 </script>
 
 <style lang="scss">
-//调整数字输入框的对齐方式
 #project_amount {
   //text-align: right;
   width: 120px;
 }
-
-
 </style>
