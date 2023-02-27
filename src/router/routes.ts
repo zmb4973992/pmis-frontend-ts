@@ -96,6 +96,17 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import('@/pages/project/historical-performance.vue'),
             },
+            //以下为合同
+            {
+                path:'/contract/list',
+                name:'合同列表',
+                meta : {
+                    title: '合同列表',
+                    requireAuth: true,
+                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                },
+                component : () => import('@/pages/contract/contract-list/contract-list.vue')
+            },
             //以下为相关方
             {
                 path: '/related-party/list',

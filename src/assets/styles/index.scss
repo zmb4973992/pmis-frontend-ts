@@ -31,13 +31,6 @@
   width: 10px;
 }
 
-//表格显示斑马纹
-//:deep(.table-striped) {
-//  td {
-//    background-color: #f7f7f7;
-//  }
-//}
-
 //修改鼠标悬浮行的样式;
 :deep(.ant-table-tbody) {
   > tr:hover > td {
@@ -52,10 +45,4 @@
   margin-bottom: -50px;
   font-size: 12px;
 }
-
-//调整表单item的样式
-:deep(.ant-form-item) {
-  margin-bottom: 20px;
-}
-
 

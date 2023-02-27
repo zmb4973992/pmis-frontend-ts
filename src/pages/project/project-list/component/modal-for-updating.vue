@@ -76,13 +76,7 @@
         </a-textarea>
       </a-form-item>
 
-      <!--      <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">-->
-      <!--        支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>-->
-      <!--      </div>-->
-
       <a-form-item label="附件">
-
-
         <a-upload
             v-model:file-list="fileList"
             name="file" :multiple="true"
@@ -91,10 +85,15 @@
             @change="handleChange"
 
             :headers="headers">
-          <a-button>
-            <upload-outlined></upload-outlined>
-            上传
-          </a-button>
+          <a-row>
+            <a-button>
+              <upload-outlined></upload-outlined>
+              上传
+            </a-button>
+            <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">
+              支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>
+            </div>
+          </a-row>
         </a-upload>
       </a-form-item>
 
@@ -307,19 +306,19 @@ function beforeUpload(file: any) {
     return Upload.LIST_IGNORE
   }
 
-  // const suffixIsLegal = file.type === 'image/jpeg' || file.type === 'image/png'
-  // if (!suffixIsLegal) {
-  //   message.error('只支持后缀为.jpg/.png的文件')
-  //   return Upload.LIST_IGNORE
-  // }
+  const suffixIsLegal = file.type === 'image/jpeg' || file.type === 'image/png'
+  if (!suffixIsLegal) {
+    message.error('只支持后缀为.jpg/.png的文件')
+    return Upload.LIST_IGNORE
+  }
 
-  return (isLessThan50MB) || Upload.LIST_IGNORE
+  return (isLessThan50MB && suffixIsLegal) || Upload.LIST_IGNORE
 }
 
-const handleChange = ({ file, fileList:innerFileList }: UploadChangeParam) => {
+const handleChange = ({file, fileList: innerFileList}: UploadChangeParam) => {
   if (file.status == 'done') {
     if (file.response?.code === 0) {
-      file.url= 'http://127.0.0.1:8000/dl'+ '?uuid=dkfej'
+      file.url = 'http://127.0.0.1:8000/download/' + file.response?.data?.file_name
       console.log(file);
       return file.name
     }

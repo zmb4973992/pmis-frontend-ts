@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="visible"
-           title="删除" @ok="submitForm" style="width: 300px">
+           title="删除" @ok="onSubmit" style="width: 300px">
     <div>确定要删除“{{ disassemblyData.disassemblyItem.name }}”吗？</div>
     <div>该分类和它的子分类都会被删除！</div>
   </a-modal>
@@ -43,7 +43,7 @@ const disassemblyData = reactive<{
 function showModal(disassemblyID: number) {
   visible.value = true
   disassemblyData.disassemblyItem.disassembly_id = disassemblyID
-  disassemblyApi.get(disassemblyID).then(
+  disassemblyApi.get({id: disassemblyID}).then(
       res => {
         if (res.data) {
           disassemblyData.disassemblyItem.name = res.data.name
@@ -57,13 +57,13 @@ function showModal(disassemblyID: number) {
 }
 
 
-function submitForm() {
-  disassemblyApi.deleteWithSubitems(disassemblyData.disassemblyItem.disassembly_id).then(
+function onSubmit() {
+  disassemblyApi.deleteWithSubitems({id: disassemblyData.disassemblyItem.disassembly_id}).then(
       () => {
         message.success('删除成功', 2)
         visible.value = false
-        disassemblyApi.getTree(52).then(res => {
-          emit('updateDisassemblyTree')
+        disassemblyApi.getTree({project_id: 52}).then(res => {
+          emit('reloadDisassemblyTree')
         })
       }
   )

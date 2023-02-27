@@ -48,6 +48,17 @@ const menuList: menu[] = [
         ],
     },
     {
+        path:'/contract',
+        label:'合同',
+        icon:'FileTextOutlined',
+        children:[
+            {
+                path: '/list',
+                label: '合同列表',
+            },
+        ],
+    },
+    {
         path: '/related-party',
         label: '相关方',
         icon: 'UpOutlined',
