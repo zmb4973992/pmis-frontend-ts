@@ -43,8 +43,6 @@
           </span>
             </template>
           </a-tree>
-
-
         </a-card>
       </a-col>
 
@@ -66,11 +64,21 @@
             </div>
           </a-row>
 
-          <a-table :columns="columns">
-
+          <a-table :data-source="data.dataList" :columns="columns"
+                   size="small" :pagination="false">
+            <template #bodyCell="{column,record,index}">
+              <template v-if="column.dataIndex === 'line_number'">
+                {{ index + 1 }}
+              </template>
+              <template v-else-if="column.dataIndex === 'action'">
+                <a>详情</a>
+                <a-divider type="vertical"/>
+                <a @click="showModalForUpdating(record.id)">修改</a>
+                <a-divider type="vertical"/>
+                <a @click="showModalForDeleting(record.id)">删除</a>
+              </template>
+            </template>
           </a-table>
-
-
 
 
           <!--分页器-->
@@ -135,73 +143,16 @@ let columns = ref([
     title: '行号',
     dataIndex: 'line_number',
     className: 'line_number1',
-    width: '50px',
-    ellipsis: true,
+    width: '500px',
+    ellipsis:true,
   },
   {
     title: '项目名称',
     dataIndex: 'name',
     className: 'name1',
-    width: '100px',
-    ellipsis: true,
-  },
-  {
-    title: '项目号',
-    dataIndex: 'code',
-    className: 'code1',
-    width: '60px',
-    ellipsis: true,
-    sorter: (a: any, b: any) => a.project_code - b.project_code
-  },
-  {
-    title: '所在国家',
-    className: 'country1',
-    dataIndex: ['country', 'name'],
-    width: '10px',
-    ellipsis: true,
-  },
-  {
-    title: '项目类型',
-    className: 'type1',
-    dataIndex: ['type', 'name'],
-    width: '30px',
-    ellipsis: true
-  },
-  {
-    title: '金额',
-    className: 'amount1',
-    dataIndex: 'amount1',
-    width: '100px',
-    ellipsis: true,
-    sorter: (a: any, b: any) => a.amount - b.amount
-  },
-  {
-    title: '币种',
-    className: 'currency1',
-    dataIndex: ['currency', 'name'],
-    width: '50px',
-    ellipsis: true
-  },
-  {
-    title: '状态',
-    className: 'status1',
-    dataIndex: ['status', 'name'],
-    width: '100px',
-    ellipsis: true,
-  },
-  {
-    title: '所属部门',
-    className: 'department1',
-    dataIndex: ['department', 'name'],
-    width: '30px',
-    ellipsis: true
-  },
-  {
-    title: '操作',
-    className: 'action1',
-    dataIndex: 'action1',
-    width: '40px',
-    ellipsis: true,
+    width: '200px',
+    ellipsis:true,
+
   },
 ])
 
@@ -465,6 +416,10 @@ function reloadDisassemblyTree() {
   }
 
   .right-column {
+    //这个宽度必须有！
+    //由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
+    //这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
+    width: 100px !important;
   }
 }
 
