@@ -13,42 +13,26 @@
       </div>
       <br><br>
       <!--登录表单-->
-      <a-form
-          name="login"
-          :model="formState"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 19 }"
-          autocomplete="off"
-          @finish="onFinish"
-          @finishFailed="onFinishFailed"
-      >
-        <a-form-item
-            class="username_setting"
-            label="用户名："
-            name="username"
-            :rules="[{required: true, message: '请输入用户名'}]"
-        >
-          <a-input v-model:value="formState.username"/>
+      <a-form name="login" :model="formState" :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 19 }" autocomplete="off" @finish="onFinish"
+          @finishFailed="onFinishFailed">
+
+        <a-form-item label="用户名：" name="username"
+            :rules="[{ required: true, message: '请输入用户名！' }]">
+          <a-input v-model:value="formState.username" />
         </a-form-item>
 
-        <a-form-item
-            class="password_setting"
-            label="密码："
-            name="password"
-            :rules="[{ required: true, message: '请输入密码' }]"
-        >
+        <a-form-item class="password_setting" label="密码：" name="password"
+            :rules="[{ required: true, message: '请输入密码' }]">
           <a-input-password v-model:value="formState.password"/>
         </a-form-item>
 
-        <a-form-item
-            class="login-button"
-            :wrapper-col="{ offset: 5, span: 16 }">
+        <a-form-item class="login-button" :wrapper-col="{ offset: 10, span: 16 }">
           <a-button class="login-button" type="primary" html-type="submit">登录</a-button>
         </a-form-item>
+
       </a-form>
     </div>
-
-
   </div>
 
 
@@ -56,12 +40,10 @@
 
 <script setup lang="ts">
 import {reactive} from "vue";
-import useUserStore from "@/store/user";
 import {useRouter} from "vue-router";
 import {message} from "ant-design-vue";
-import {ILogin, login} from "@/api/login";
+import {login} from "@/api/login";
 
-const user = useUserStore()
 const router = useRouter()
 
 const formState = reactive({
@@ -69,13 +51,11 @@ const formState = reactive({
   password: '',
 })
 
-const onFinish = (data: ILogin) => {
-  // axios可以把fulfilled和rejected同时放在then里，相当于promise的then+catch
+const onFinish = (data:any) => {
   login(data).then(
       // 如果请求成功发出
       res => {
-        // 如果返回的状态码不是0
-        if (res.code == 0) {
+        if (res.code === 0) {
           message.success('登录成功，正在跳转......', 1)
           router.push({name: 'home'})
         } else {
@@ -90,16 +70,12 @@ const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
 };
 
-
 </script>
 
 <style scoped lang="scss">
 .layout {
-  height: 100vh; //vh=Viewport Height 视窗高度，按百分比计算
-  width: 100vw; //vw=Viewport Width 视窗宽度，按百分比计算
-  //background-color: cornflowerblue;
-  //线性渐变背景色，方向-起始颜色-终止颜色
-  //background: linear-gradient(to bottom, cornflowerblue, rgb(190, 220, 238));
+  height: 100vh;
+  width: 100vw;
   background: linear-gradient(to bottom, rgb(13, 56, 57), rgb(190, 228, 238));
   display: flex; //容器内的子元素实施弹性布局
   justify-content: center; //水平布局

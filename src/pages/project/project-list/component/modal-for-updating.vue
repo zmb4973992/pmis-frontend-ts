@@ -114,7 +114,7 @@ import {UploadOutlined} from "@ant-design/icons-vue";
 
 const userStore = useUserStore()
 
-const token = userStore.access_token
+const token = userStore.accessToken
 
 const headers = {"access_token": token}
 

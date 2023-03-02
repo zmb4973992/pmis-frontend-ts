@@ -1,9 +1,9 @@
 //store中所有的接口类型都在这里定义
 
 export interface userState {
-    access_token: string,
+    accessToken: string,
     username: string,
-    full_name: string,
+    fullName: string,
     roles: string[],
     departments: string[],
 }

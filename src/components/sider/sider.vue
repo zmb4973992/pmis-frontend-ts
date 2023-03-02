@@ -48,7 +48,6 @@
 import {menuList} from "@/components/sider/menu";
 import useGlobalStore from "@/store/global";
 import {storeToRefs} from "pinia";
-import {BankOutlined} from "@ant-design/icons-vue";
 
 const globalState = useGlobalStore()
 const {isCollapsed} = storeToRefs(globalState)

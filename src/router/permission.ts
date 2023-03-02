@@ -15,21 +15,23 @@ router.beforeEach(async (to, from) => {
             // 如果登录用户有角色的话
             if (rolesData.code === 0) {
                 //开始判断用户是否有权限访问路由
-                let isPermitted: boolean = false
+                let permitted = false
                 // 对用户所有的角色名称进行遍历
                 for (let roleName of rolesData.data.role_names) {
-                    if (isPermitted) break;
+                    if (permitted) {
+                        break
+                    }
                     // 再对路由的允许访问角色进行遍历
                     for (let permittedRole of to.meta.permittedRoles as string[]) {
                         //如果两边的权限有相同值，则允许访问
                         if (roleName === permittedRole) {
-                            isPermitted = true
+                            permitted = true
                             break
                         }
                     }
                 }
                 //双层遍历后两边权限没有相同值，则跳转到403（无权访问页）
-                if (!isPermitted) {
+                if (!permitted) {
                     return {name: '403'}
                 }
             }
@@ -40,8 +42,7 @@ router.beforeEach(async (to, from) => {
     }
 
     let user = useUserStore()
-    if (!user.access_token) {
+    if (!user.accessToken) {
         user.updateUserInfo()
     }
-
 })

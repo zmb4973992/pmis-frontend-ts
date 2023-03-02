@@ -8,15 +8,15 @@ const useUserStore = defineStore(
     'user',
     {
         state: (): userState => ({
-            access_token: '',
+            accessToken: '',
             username: '',
-            full_name: '',
+            fullName: '',
             roles: [],
             departments: [],
         }),
         //类似computed
         getters: {
-            testToken: (state) => ('aaa' + state.access_token),
+            testToken: (state) => ('aaa' + state.accessToken),
             test2(): string[] {
                 return ['a', 'b']
             }
@@ -26,7 +26,7 @@ const useUserStore = defineStore(
             updateUserInfo() {
                 const token = localStorage.getItem('access_token')
                 if (token) {
-                    this.access_token = token
+                    this.accessToken = token
                     //获取基本的用户信息
                     request.get(
                         '/api/user'
@@ -36,7 +36,7 @@ const useUserStore = defineStore(
                             //如果token无效，就删掉本地的token
                             if (res.data.code === 0) {
                                 this.username = res.data.data.username
-                                this.full_name = res.data.data.full_name
+                                this.fullName = res.data.data.full_name
                             } else {
                                 localStorage.removeItem('access_token')
                             }
@@ -58,13 +58,13 @@ const useUserStore = defineStore(
 
             },
             updateToken(token: string) {
-                this.access_token = token
+                this.accessToken = token
             },
             updateRoles(roles: []) {
                 this.roles = roles
             },
             resetState() {
-                this.access_token = ''
+                this.accessToken = ''
             }
         },
     })

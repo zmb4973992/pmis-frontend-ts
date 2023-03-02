@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import {useRoute, useRouter} from 'vue-router'
 import Sider from '@/components/sider/sider.vue'
 import Logo from '@/components/logo.vue'
 import Header from '@/components/header/header.vue'

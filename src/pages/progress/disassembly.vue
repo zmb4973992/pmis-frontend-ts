@@ -1,30 +1,33 @@
 <template>
   <div class="layout1">
-    <div class="left-column">
-      <a-select class="project-selector" show-search placeholder="请选择项目"
-                :filter-option="projectFilterOption" v-model:value="projectID"
-                :options="projectOptions"></a-select>
+    <a-row type="flex">
+      <a-col flex="280px" class="left-column">
+        <a-card size="small" :bordered="false">
+          <a-select class="project-selector" show-search placeholder="请选择项目"
+                    :filter-option="projectFilterOption" v-model:value="projectID"
+                    :options="projectOptions">
+          </a-select>
 
-      <!--这里的getPopupContainer是为了修改popover的样式-->
-      <!--https://www.cnblogs.com/buluzombie/p/16463276.html-->
-      <a-popover placement="right"
-                 :getPopupContainer="triggerNode => triggerNode.parentNode">
-        <a-button class="edit-button" type="primary">
-          <EditOutlined/>
-        </a-button>
-        <template #content>
-          <a @click="toBeCompleted">使用模板拆解项目</a>
-          <a-divider style="margin: 5px auto"/>
-          <a style="color: red" @click="toBeCompleted">清空拆解情况</a>
-        </template>
-      </a-popover>
+          <!--这里的getPopupContainer是为了修改popover的样式-->
+          <!--https://www.cnblogs.com/buluzombie/p/16463276.html-->
+          <a-popover placement="right"
+                     :getPopupContainer="triggerNode => triggerNode.parentNode">
+            <a-button class="edit-button" type="primary">
+              <EditOutlined/>
+            </a-button>
+            <template #content>
+              <a @click="toBeCompleted">使用模板拆解项目</a>
+              <a-divider style="margin: 5px auto"/>
+              <a style="color: red" @click="toBeCompleted">清空拆解情况</a>
+            </template>
+          </a-popover>
+
+          <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
 
-      <a-divider id="divider"/>
-      <div class="tree-wrapper-outside">
-        <div class="tree-wrapper-inside">
-          <a-tree v-if="treeData?.length" :tree-data="treeData"
-                  v-model:selectedKeys="selectedKeys" :default-expand-all="true">
+          <a-tree class="tree" v-if="treeData?.length" :tree-data="treeData"
+                  v-model:selectedKeys="selectedKeys" :default-expand-all="true"
+          >
             <template #title="{title,key,level}">
           <span class="title">
             <span>{{ title }}</span>
@@ -40,43 +43,168 @@
           </span>
             </template>
           </a-tree>
-        </div>
-      </div>
-    </div>
 
-    <!--添加子项目的模态框-->
-    <modal-for-creating-subitems ref="modalForCreatingSubitems"
-                                 @reloadDisassemblyTree1="reloadDisassemblyTree"/>
-    <!--修改单项的模态框-->
-    <modal-for-updating-subitem ref="modalForUpdatingItem"
-                                @reloadDisassemblyTree="reloadDisassemblyTree"/>
-    <!--删除单项的模态框-->
-    <modal-for-deleting-item ref="modalForDeletingItem"
-                             @reloadDisassemblyTree="reloadDisassemblyTree"/>
 
-    <div class="right-column">
-      <a-tabs id="tabs" v-model:activeKey="activeKey"
-              @tabClick="change">
-        <a-tab-pane key="1" tab="Tab 1" forceRender>
-          <div id="chart1"></div>
+        </a-card>
+      </a-col>
 
-        </a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2" forceRender>
-          <div id="chart2"></div>
+      <a-col flex="10px"></a-col>
 
-        </a-tab-pane>
-        <a-tab-pane key="3" tab="Tab 3">
-          <div id="chart3"></div>
-        </a-tab-pane>
+      <a-col flex="auto" class="right-column">
+        <a-card size="small">
+          sdfsdf
+          <a-row class="table-buttons-row">
 
-        <a-tab-pane key="4" tab="Tab 4" force-render>
-        </a-tab-pane>
-      </a-tabs>
-    </div>
+            <div class="buttons-for-table-setting">
+              <a-tooltip title="设置列" size="small">
+                <a-button type="text" @click="toBeCompleted" size="small">
+                  <template #icon>
+                    <setting-outlined/>
+                  </template>
+                </a-button>
+              </a-tooltip>
+            </div>
+          </a-row>
+
+          <a-table :columns="columns">
+
+          </a-table>
+
+
+
+
+          <!--分页器-->
+          <a-pagination id="paginator" v-model:pageSize="queryForm.page_size"
+                        :total="data.numberOfRecords" showSizeChanger
+                        :pageSizeOptions="pageSizeOptions"
+                        showQuickJumper @change="paginationChange"
+                        :show-total="total=>`共${total}条记录`"/>
+
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
+
+  <!--添加子项目的模态框-->
+  <modal-for-creating-subitems ref="modalForCreatingSubitems"
+                               @reloadDisassemblyTree1="reloadDisassemblyTree"/>
+  <!--修改单项的模态框-->
+  <modal-for-updating-subitem ref="modalForUpdatingItem"
+                              @reloadDisassemblyTree="reloadDisassemblyTree"/>
+  <!--删除单项的模态框-->
+  <modal-for-deleting-item ref="modalForDeletingItem"
+                           @reloadDisassemblyTree="reloadDisassemblyTree"/>
+
+
+  <!--      <a-tabs id="tabs" v-model:activeKey="activeKey"-->
+  <!--              @tabClick="change">-->
+  <!--        <a-tab-pane key="1" tab="Tab 1" forceRender>-->
+  <!--          <div id="chart1"></div>-->
+
+  <!--        </a-tab-pane>-->
+  <!--        <a-tab-pane key="2" tab="Tab 2" forceRender>-->
+  <!--          <div id="chart2"></div>-->
+
+  <!--        </a-tab-pane>-->
+  <!--        <a-tab-pane key="3" tab="Tab 3">-->
+  <!--          <div id="chart3"></div>-->
+  <!--        </a-tab-pane>-->
+
+  <!--        <a-tab-pane key="4" tab="Tab 4" force-render>-->
+  <!--        </a-tab-pane>-->
+  <!--      </a-tabs>-->
 </template>
 
 <script setup lang="ts">
+let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
+
+//查询条件
+const queryForm = reactive<iProjectGetList>({
+  is_showed_by_role: false,
+  department_id_in: [],
+  name_include: "",
+  department_name_include: "",
+  page: 1,
+  page_size: 12,
+  order_by: "",
+  desc: false,
+})
+
+let columns = ref([
+  {
+    title: '行号',
+    dataIndex: 'line_number',
+    className: 'line_number1',
+    width: '50px',
+    ellipsis: true,
+  },
+  {
+    title: '项目名称',
+    dataIndex: 'name',
+    className: 'name1',
+    width: '100px',
+    ellipsis: true,
+  },
+  {
+    title: '项目号',
+    dataIndex: 'code',
+    className: 'code1',
+    width: '60px',
+    ellipsis: true,
+    sorter: (a: any, b: any) => a.project_code - b.project_code
+  },
+  {
+    title: '所在国家',
+    className: 'country1',
+    dataIndex: ['country', 'name'],
+    width: '10px',
+    ellipsis: true,
+  },
+  {
+    title: '项目类型',
+    className: 'type1',
+    dataIndex: ['type', 'name'],
+    width: '30px',
+    ellipsis: true
+  },
+  {
+    title: '金额',
+    className: 'amount1',
+    dataIndex: 'amount1',
+    width: '100px',
+    ellipsis: true,
+    sorter: (a: any, b: any) => a.amount - b.amount
+  },
+  {
+    title: '币种',
+    className: 'currency1',
+    dataIndex: ['currency', 'name'],
+    width: '50px',
+    ellipsis: true
+  },
+  {
+    title: '状态',
+    className: 'status1',
+    dataIndex: ['status', 'name'],
+    width: '100px',
+    ellipsis: true,
+  },
+  {
+    title: '所属部门',
+    className: 'department1',
+    dataIndex: ['department', 'name'],
+    width: '30px',
+    ellipsis: true
+  },
+  {
+    title: '操作',
+    className: 'action1',
+    dataIndex: 'action1',
+    width: '40px',
+    ellipsis: true,
+  },
+])
+
 import ModalForUpdatingSubitem from "@/pages/progress/component/modal-for-updating-subitem.vue";
 
 //用于创建子项的模态框
@@ -104,12 +232,12 @@ import ModalForCreatingSubitems from "@/pages/progress/component/modal-for-creat
 
 //项目选择框的过滤器（下拉框搜索）
 import {message} from "ant-design-vue";
-import {nextTick, onMounted, ref, watch} from "vue";
+import {nextTick, onMounted, reactive, ref, watch} from "vue";
 import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 
-import {projectApi} from "@/api/project";
+import {iProjectGetList, projectApi} from "@/api/project";
 import dayjs from 'dayjs'
 import ModalForDeletingItem from "@/pages/progress/component/modal-for-deleting-item.vue";
 
@@ -127,8 +255,6 @@ watch(projectID, () => {
 function toBeCompleted() {
   message.info('待完成')
 }
-
-console.log('dayjs测试：', dayjs().format())
 
 //异步写法测试，可以和then交替使用
 async function aa() {
@@ -159,8 +285,9 @@ const activeKey = ref('1')
 
 projectApi.getList({
   is_showed_by_role: true,
-  page_size: 100
+  page_size: 1000
 }).then(res => {
+  console.log(res);
   for (let item of res.data) {
     projectOptions.value.push({label: item.project_full_name, value: item.id})
   }
@@ -230,108 +357,95 @@ function change(targetKey: string) {
 onMounted(() => {
   //需要等节点挂载完毕后，才开始echarts的相关操作，否则会找不到节点
   //这里只处理tabs第一个图表，其他图表都在切换标签时进行处理
-  let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-  chart1.resize()
-  chart1.setOption({
-    tooltip: {
-      trigger: 'item'
-    },
-
-    title: {
-      text: '圆环图的例子',
-      left: 'center',
-      top: 'center'
-    },
-    legend: {
-      top: '5%',
-      left: 'center'
-    },
-    series: [
-      {
-        type: 'pie',
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: {
-          show: false,
-        },
-        data: [
-          {
-            value: 1548,
-            name: 'C'
-          },
-          {
-            value: 335,
-            name: 'A'
-          },
-          {
-            value: 234,
-            name: 'B'
-          },
-
-        ],
-        radius: ['40%', '70%']
-      }
-    ]
-  })
-  window.addEventListener('resize', () => chart1.resize())
+  // let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
+  // chart1.resize()
+  // chart1.setOption({
+  //   tooltip: {
+  //     trigger: 'item'
+  //   },
+  //
+  //   title: {
+  //     text: '圆环图的例子',
+  //     left: 'center',
+  //     top: 'center'
+  //   },
+  //   legend: {
+  //     top: '5%',
+  //     left: 'center'
+  //   },
+  //   series: [
+  //     {
+  //       type: 'pie',
+  //       itemStyle: {
+  //         borderRadius: 10,
+  //         borderColor: '#fff',
+  //         borderWidth: 2
+  //       },
+  //       label: {
+  //         show: false,
+  //       },
+  //       data: [
+  //         {
+  //           value: 1548,
+  //           name: 'C'
+  //         },
+  //         {
+  //           value: 335,
+  //           name: 'A'
+  //         },
+  //         {
+  //           value: 234,
+  //           name: 'B'
+  //         },
+  //
+  //       ],
+  //       radius: ['40%', '70%']
+  //     }
+  //   ]
+  // })
+  // window.addEventListener('resize', () => chart1.resize())
 })
 
 function reloadDisassemblyTree() {
-  disassemblyApi.getTree({project_id:52}).then(res => {
+  disassemblyApi.getTree({project_id: 52}).then(res => {
     treeData.value = res.data
   })
 }
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .layout1 {
   overflow-x: auto;
 
   .left-column {
-    float: left;
-    width: 260px;
-
     background-color: white;
-    margin-right: 10px;
-    padding: 4px 10px 8px 10px;
 
     .project-selector {
-      width: 205px;
-      margin: {
-        top: 4px;
-        bottom: 7px;
-        right: 5px;
-      }
+      width: 215px;
     }
 
     .edit-button {
+      margin: {
+        left: 8px;
+      }
       padding: {
         left: 7px;
         right: 7px;
       }
     }
 
-    .tree-wrapper-outside {
-      height: calc(100vh - 125px);
+    .tree {
+      height: calc(100vh - 141px);
+      overflow: auto;
+    }
 
-      .tree-wrapper-inside {
-        overflow: auto;
-        max-height: calc(100vh - 125px);
-      }
+    .tree::-webkit-scrollbar {
+      display: none;
+    }
 
-      ::-webkit-scrollbar {
-        display: none;
-      }
-
-      &:hover {
-        ::-webkit-scrollbar {
-          display: block;
-        }
-      }
+    .tree:hover::-webkit-scrollbar {
+      display: block;
     }
 
     .title {
@@ -348,42 +462,10 @@ function reloadDisassemblyTree() {
       }
     }
 
-    #divider {
-      margin: {
-        top: 10px;
-        bottom: 10px;
-      };
-    }
   }
 
   .right-column {
-    margin-left: 270px;
-    width: calc(100% - 270px);
-    background-color: white;
-
-    #tabs {
-      width: 100%;
-      padding: {
-        left: 15px;
-        right: 15px;
-      }
-
-      #chart1 {
-        width: 100%;
-        height: 400px;
-      }
-
-      #chart2 {
-        width: 100%;
-        height: 400px;
-      }
-    }
   }
-}
-
-:deep(.ant-popover-inner-content) {
-  padding: 5px 10px;
-  text-align: center;
 }
 
 </style>

@@ -39,10 +39,10 @@
   }
 }
 
-//调整表单错误提示栏的样式
-:deep(.ant-form-item-explain) {
-  height: 50px;
-  margin-bottom: -50px;
-  font-size: 12px;
-}
+//调整表单错误提示栏的样式，不要全局应用，会影响其他页面，比如登录页
+//:deep(.ant-form-item-explain) {
+//  height: 50px;
+//  margin-bottom: -50px;
+//  font-size: 12px;
+//}
 

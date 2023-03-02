@@ -73,12 +73,11 @@
     </a-table>
 
     <!--分页器-->
-    <a-pagination v-model:pageSize="queryForm.page_size" :total="data.numberOfRecords"
-                  showSizeChanger :pageSizeOptions="pageSizeOptions"
+    <a-pagination id="paginator" v-model:pageSize="queryForm.page_size"
+                  :total="data.numberOfRecords" showSizeChanger
+                  :pageSizeOptions="pageSizeOptions"
                   showQuickJumper @change="paginationChange"
-                  :show-total="total=>`共${total}条记录`"
-                  style="text-align: center;"
-                  id="paginator"/>
+                  :show-total="total=>`共${total}条记录`"     />
   </a-card>
 
 
@@ -283,7 +282,7 @@ function showModalForDeleting(projectID: number) {
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 //查询表单的样式
 .query-form {
   background-color: white;
@@ -312,7 +311,7 @@ function showModalForDeleting(projectID: number) {
 
 
 //表格内容居中
-:deep(.ant-table) {
+.ant-table {
   th.line_number, td.line_number, th.name, td.name, th.code, td.code,
   th.type, td.type, th.department, td.department, th.amount,
   th.country, td.country, th.status, td.status,
@@ -345,10 +344,14 @@ function showModalForDeleting(projectID: number) {
     bottom: 10px;
     right: 10px;
   }
+  .ant-select-item-option {
+    text-align: center;
+  }
+
 }
 
 //滚动条样式，默认不显示表格的滚动条
-:deep(.ant-table) {
+.ant-table {
   ::-webkit-scrollbar {
     display: none;
   }
@@ -360,7 +363,7 @@ function showModalForDeleting(projectID: number) {
 }
 
 //滚动条样式，鼠标移入表格后显示滚动条
-:deep(.ant-table:hover) {
+.ant-table:hover {
   ::-webkit-scrollbar {
     /* 滚动条整体样式 */
     width: 8px;

@@ -149,9 +149,7 @@ watch(selectedKeys, () => {
   }
 
   .right-column {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-    background-color: white;
+
   }
 }
 

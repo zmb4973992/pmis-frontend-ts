@@ -28,9 +28,8 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     //暂时不要只返回data，因为ts下使用res.XXX会报错，只能使用res.data.XXX
     (res) => {
-        // 如果返回结果的错误代码为3001（token无效），则清除本地缓存
-        if (res.data.code === 3001) {
-            // localStorage.removeItem('access_token')
+        // 如果返回结果的错误代码为18（token无效），则清除本地缓存
+        if (res.data.code === 18) {
             localStorage.clear()
             message.error('登录超时，请重新登录')
             router.push({name:'登录'})

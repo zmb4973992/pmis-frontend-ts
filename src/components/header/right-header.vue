@@ -9,7 +9,7 @@
 
     <a-dropdown>
       <a class="dropdown" @click.prevent>
-        你好，{{ full_name }}
+        你好，{{ fullName }}
         <DownOutlined/>
       </a>
       <template #overlay>
@@ -38,11 +38,12 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 
 const user = useUserStore()
-const {full_name} = storeToRefs(user)
+user.updateUserInfo()
+const {fullName} = storeToRefs(user)
 const router = useRouter()
 const logout = () => {
   localStorage.removeItem('access_token')
-  router.push({name: 'login'})
+  router.push({name: '登录'})
 }
 const jumpToMessageCenter = () => router.push({name: '消息中心'})
 let numberOfUnreadMessages = ref(811)
