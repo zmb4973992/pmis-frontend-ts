@@ -75,7 +75,7 @@ const disassemblyData = reactive<{
   disassemblySubitems: [],
 })
 
-const emits = defineEmits(['reloadDisassemblyTree1'])
+const emits = defineEmits(['loadDisassemblyTree'])
 
 function onSubmit() {
   form.value!.validateFields().then(() => {
@@ -94,7 +94,7 @@ function onSubmit() {
   ).then(() => {
     message.success('添加成功')
     visible.value = false
-    emits('reloadDisassemblyTree1')
+    emits('loadDisassemblyTree')
   })
 }
 

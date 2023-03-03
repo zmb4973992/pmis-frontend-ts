@@ -1,26 +1,29 @@
 <template>
   <div class="layout1">
     <a-row type="flex">
+      <!--左侧内容区-->
       <a-col flex="280px" class="left-column">
         <a-card size="small" :bordered="false">
-          <a-select class="project-selector" show-search placeholder="请选择项目"
-                    :filter-option="projectFilterOption" v-model:value="projectID"
-                    :options="projectOptions">
-          </a-select>
-
+          <div class="label-and-selector" style="display: flex">
+            <span>项目：</span>
+            <a-select class="project-selector" show-search placeholder="请选择项目"
+                      :filter-option="projectFilterOption" v-model:value="projectID"
+                      :options="projectOptions">
+            </a-select>
+          </div>
           <!--这里的getPopupContainer是为了修改popover的样式-->
           <!--https://www.cnblogs.com/buluzombie/p/16463276.html-->
-          <a-popover placement="right"
-                     :getPopupContainer="triggerNode => triggerNode.parentNode">
-            <a-button class="edit-button" type="primary">
-              <EditOutlined/>
-            </a-button>
-            <template #content>
-              <a @click="toBeCompleted">使用模板拆解项目</a>
-              <a-divider style="margin: 5px auto"/>
-              <a style="color: red" @click="toBeCompleted">清空拆解情况</a>
-            </template>
-          </a-popover>
+          <!--          <a-popover placement="right"-->
+          <!--                     :getPopupContainer="triggerNode => triggerNode.parentNode">-->
+          <!--            <a-button class="edit-button" type="primary">-->
+          <!--              <EditOutlined/>-->
+          <!--            </a-button>-->
+          <!--            <template #content>-->
+          <!--              <a @click="toBeCompleted">使用模板拆解项目</a>-->
+          <!--              <a-divider style="margin: 5px auto"/>-->
+          <!--              <a style="color: red" @click="toBeCompleted">清空拆解情况</a>-->
+          <!--            </template>-->
+          <!--          </a-popover>-->
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
@@ -46,23 +49,24 @@
         </a-card>
       </a-col>
 
+      <!--这是分割线gutter-->
       <a-col flex="10px"></a-col>
 
+      <!--右侧内容区-->
       <a-col flex="auto" class="right-column">
         <a-card size="small">
-          sdfsdf
-          <a-row class="table-buttons-row">
-
+          <div class="table-buttons-row">
+            <div>子分类数据：</div>
             <div class="buttons-for-table-setting">
               <a-tooltip title="设置列" size="small">
                 <a-button type="text" @click="toBeCompleted" size="small">
                   <template #icon>
-                    <setting-outlined/>
+                    <setting-outlined style="font-size: 16px"/>
                   </template>
                 </a-button>
               </a-tooltip>
             </div>
-          </a-row>
+          </div>
 
           <a-table :data-source="data.dataList" :columns="columns"
                    size="small" :pagination="false">
@@ -80,14 +84,6 @@
             </template>
           </a-table>
 
-
-          <!--分页器-->
-          <a-pagination id="paginator" v-model:pageSize="queryForm.page_size"
-                        :total="data.numberOfRecords" showSizeChanger
-                        :pageSizeOptions="pageSizeOptions"
-                        showQuickJumper @change="paginationChange"
-                        :show-total="total=>`共${total}条记录`"/>
-
         </a-card>
       </a-col>
     </a-row>
@@ -95,7 +91,7 @@
 
   <!--添加子项目的模态框-->
   <modal-for-creating-subitems ref="modalForCreatingSubitems"
-                               @reloadDisassemblyTree1="reloadDisassemblyTree"/>
+                               @loadDisassemblyTree="loadDisassemblyTree"/>
   <!--修改单项的模态框-->
   <modal-for-updating-subitem ref="modalForUpdatingItem"
                               @reloadDisassemblyTree="reloadDisassemblyTree"/>
@@ -142,21 +138,26 @@ let columns = ref([
   {
     title: '行号',
     dataIndex: 'line_number',
-    className: 'line_number1',
-    width: '500px',
-    ellipsis:true,
+    className: 'line_number',
+    width: '60px',
+    ellipsis: true,
   },
   {
-    title: '项目名称',
+    title: '名称',
     dataIndex: 'name',
-    className: 'name1',
-    width: '200px',
-    ellipsis:true,
-
+    className: 'name',
+    width: '40%',
+    ellipsis: true,
+  },
+  {
+    title: '权重',
+    dataIndex: 'weight',
+    className: 'weight',
+    width: '30%',
   },
 ])
 
-import ModalForUpdatingSubitem from "@/pages/progress/component/modal-for-updating-subitem.vue";
+import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-subitem.vue";
 
 //用于创建子项的模态框
 const modalForCreatingSubitems = ref()
@@ -179,7 +180,7 @@ function showModalForDeletingDisassembly(key: number) {
   modalForDeletingItem.value.showModal(key)
 }
 
-import ModalForCreatingSubitems from "@/pages/progress/component/modal-for-creating-subitems.vue";
+import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/modal-for-creating-subitems.vue";
 
 //项目选择框的过滤器（下拉框搜索）
 import {message} from "ant-design-vue";
@@ -189,31 +190,29 @@ import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 
 import {iProjectGetList, projectApi} from "@/api/project";
-import dayjs from 'dayjs'
-import ModalForDeletingItem from "@/pages/progress/component/modal-for-deleting-item.vue";
+import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 
 let projectID = ref()
 const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
 watch(projectID, () => {
   //项目id发生变动后，要清空treeData，否则a-tree组件就不会自动展开了
   treeData.value = []
-  disassemblyApi.getTree(projectID.value).then(res => {
-    treeData.value = res.data
-  })
+  loadDisassemblyTree()
 })
 
 function toBeCompleted() {
   message.info('待完成')
 }
 
-//异步写法测试，可以和then交替使用
-async function aa() {
-  const res = await disassemblyApi.getTree({project_id: 52})
-  treeData.value = res.data
+async function loadDisassemblyTree() {
+  const res = await disassemblyApi.getTree({project_id: projectID.value})
+  console.log(res);
+  if (res && res?.data) {
+    treeData.value = res.data
+  }
 }
-
-aa()
 
 const projectOptions = ref<{ value: number; label: string }[]>([])
 
@@ -233,16 +232,16 @@ watch(selectedKeys, () => {
 
 const activeKey = ref('1')
 
-
-projectApi.getList({
-  is_showed_by_role: true,
-  page_size: 1000
-}).then(res => {
-  console.log(res);
+//获取项目下拉框的选项
+async function loadProjectOptions() {
+  let res = await projectApi.getList({page_size: 0})
   for (let item of res.data) {
-    projectOptions.value.push({label: item.project_full_name, value: item.id})
+    projectOptions.value.push({label: item.name, value: item.id})
   }
-})
+}
+
+loadProjectOptions()
+
 
 nextTick(() => console.log('next'))
 
@@ -357,12 +356,6 @@ onMounted(() => {
   // window.addEventListener('resize', () => chart1.resize())
 })
 
-function reloadDisassemblyTree() {
-  disassemblyApi.getTree({project_id: 52}).then(res => {
-    treeData.value = res.data
-  })
-}
-
 </script>
 
 <style lang="scss">
@@ -371,20 +364,9 @@ function reloadDisassemblyTree() {
 
   .left-column {
     background-color: white;
+    height: calc(100vh - 55px);
 
-    .project-selector {
-      width: 215px;
-    }
 
-    .edit-button {
-      margin: {
-        left: 8px;
-      }
-      padding: {
-        left: 7px;
-        right: 7px;
-      }
-    }
 
     .tree {
       height: calc(100vh - 141px);
@@ -398,29 +380,131 @@ function reloadDisassemblyTree() {
     .tree:hover::-webkit-scrollbar {
       display: block;
     }
-
-    .title {
-      .button {
-        display: none;
-        margin-left: 6px;
-      }
-    }
-
-    //鼠标移入节点时，显示相关操作
-    .ant-tree-treenode:hover {
-      .button {
-        display: inline;
-      }
-    }
-
   }
+}
 
-  .right-column {
-    //这个宽度必须有！
-    //由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
-    //这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
-    width: 100px !important;
+.right-column {
+  //这个宽度必须有！
+  //由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
+  //这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
+  width: 10px;
+
+  .table-buttons-row {
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+
+//鼠标移入节点时，显示相关操作
+.ant-tree-treenode:hover {
+  .button {
+    display: inline;
+  }
+}
+
+.title {
+  .button {
+    display: none;
+    margin-left: 6px;
+  }
+}
+
+#paginator {
+  margin-top: 10px;
+  text-align: right;
+
+  .ant-select-item-option {
+    text-align: center;
+  }
+}
+
+.label-and-selector {
+  align-items: center;
+
+  .project-selector {
+    flex: 1;
   }
 }
 
 </style>
+
+
+
+
+
+
+.layout1 {
+overflow-x: auto;
+
+.left-column {
+background-color: white;
+
+
+.tree {
+height: calc(100vh - 141px);
+min-height: calc(100vh - 141px);
+max-height: calc(100vh - 141px);
+overflow: auto;
+}
+
+.tree::-webkit-scrollbar {
+display: none;
+}
+
+.tree:hover::-webkit-scrollbar {
+display: block;
+}
+}
+}
+
+.right-column {
+//这个宽度必须有！
+//由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
+//这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
+width: 10px;
+
+.table-buttons-row {
+height: 45px;
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+}
+}
+
+
+//鼠标移入节点时，显示相关操作
+.ant-tree-treenode:hover {
+.button {
+display: inline;
+}
+}
+
+.title {
+.button {
+display: none;
+margin-left: 6px;
+}
+}
+
+#paginator {
+margin-top: 10px;
+text-align: right;
+
+.ant-select-item-option {
+text-align: center;
+}
+}
+
+.label-and-selector {
+align-items: center;
+
+.project-selector {
+flex: 1;
+}
+}
+
