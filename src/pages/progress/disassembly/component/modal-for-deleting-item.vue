@@ -22,7 +22,7 @@ interface disassemblyItem {
   superior_id: number
 }
 
-const emit = defineEmits(['reloadDisassemblyTree'])
+const emit = defineEmits(['loadData'])
 
 //disassemblyItem为当前选中项，用来删改查；disassemblySubitems为当前选中项的子项，用来批量新增
 const disassemblyData = reactive<{
@@ -63,7 +63,7 @@ function onSubmit() {
         message.success('删除成功', 2)
         visible.value = false
         disassemblyApi.getTree({project_id: 52}).then(res => {
-          emit('reloadDisassemblyTree')
+          emit('loadData')
         })
       }
   )

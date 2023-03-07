@@ -77,7 +77,7 @@
                   :total="data.numberOfRecords" showSizeChanger
                   :pageSizeOptions="pageSizeOptions"
                   showQuickJumper @change="paginationChange"
-                  :show-total="total=>`共${total}条记录`"     />
+                  :show-total="total=>`共${total}条记录`"/>
   </a-card>
 
 
@@ -131,7 +131,7 @@ const filterOption = (input: string, option: any) =>
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
 
-let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
+let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 0,})
 
 let columns = ref([
   {
@@ -344,6 +344,7 @@ function showModalForDeleting(projectID: number) {
     bottom: 10px;
     right: 10px;
   }
+
   .ant-select-item-option {
     text-align: center;
   }

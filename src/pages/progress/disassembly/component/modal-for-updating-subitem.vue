@@ -24,26 +24,20 @@ import {disassemblyApi} from "@/api/disassembly";
 import {FormInstance, message} from "ant-design-vue";
 
 interface disassemblyItem {
-  disassembly_id: number
+  disassemblyID: number
   name: string
   weight?: number
-  project_id: number
+  projectID: number
   level: number
-  superior_id: number
+  superiorID: number
 }
 
-const disassemblyData = reactive<{
-  disassemblyItem: disassemblyItem,
-  disassemblySubitems: disassemblyItem[],
-}>({
-  disassemblyItem: {
-    disassembly_id: 0,
-    name: '',
-    project_id: 0,
-    level: 0,
-    superior_id: 0,
-  },
-  disassemblySubitems: [],
+const formData = reactive<disassemblyItem>({
+  superiorID: 0,
+  name: '',
+  projectID: 0,
+  level: 0,
+  disassemblyID:0,
 })
 
 const visible = ref(false)
@@ -53,39 +47,42 @@ function resetForm() {
   form.value!.clearValidate();
 }
 
-const emit = defineEmits(['reloadDisassemblyTree'])
+const emit = defineEmits(['loadData'])
 
-function showModal(disassemblyID: number) {
+async function showModal(disassemblyID: number) {
   visible.value = true
-  disassemblyData.disassemblyItem.disassembly_id = disassemblyID
-  disassemblyApi.get({id: disassemblyID}).then(
-      res => {
-        if (res.data) {
-          disassemblyData.disassemblyItem.name = res.data.name
-          disassemblyData.disassemblyItem.weight = res.data.weight * 100
-          disassemblyData.disassemblyItem.project_id = res.data.project_id
-          disassemblyData.disassemblyItem.level = res.data.level
-          disassemblyData.disassemblyItem.superior_id = res.data.superior_id
-        }
-      }
-  )
+  formData.disassemblyID = disassemblyID
+  let res = await disassemblyApi.get({id:disassemblyID})
+  console.log(res)
+
+  // disassemblyApi.get({id: disassemblyID}).then(
+  //     res => {
+  //       if (res.data) {
+  //         disassemblyData.disassemblyItem.name = res.data.name
+  //         disassemblyData.disassemblyItem.weight = res.data.weight * 100
+  //         disassemblyData.disassemblyItem.project_id = res.data.project_id
+  //         disassemblyData.disassemblyItem.level = res.data.level
+  //         disassemblyData.disassemblyItem.superior_id = res.data.superior_id
+  //       }
+  //     }
+  // )
 }
 
 function submitForm() {
   form.value!.validateFields().then(
       () => {
-        disassemblyApi.update( {
-          id:disassemblyData.disassemblyItem.disassembly_id,
-          level: disassemblyData.disassemblyItem.level,
-          name: disassemblyData.disassemblyItem.name,
-          project_id: disassemblyData.disassemblyItem.project_id,
-          superior_id: disassemblyData.disassemblyItem.superior_id,
-          weight: disassemblyData.disassemblyItem.weight as number / 100
-        }).then(() => {
-          message.success('修改成功')
-          visible.value = false
-          emit('reloadDisassemblyTree')
-        });
+        // disassemblyApi.update( {
+          // id:disassemblyData.disassemblyItem.disassembly_id,
+          // level: disassemblyData.disassemblyItem.level,
+          // name: disassemblyData.disassemblyItem.name,
+          // project_id: disassemblyData.disassemblyItem.project_id,
+          // superior_id: disassemblyData.disassemblyItem.superior_id,
+          // weight: disassemblyData.disassemblyItem.weight as number / 100
+        // }).then(() => {
+        //   message.success('修改成功')
+        //   visible.value = false
+        //   emit('loadData')
+        // });
       }
   )
 }

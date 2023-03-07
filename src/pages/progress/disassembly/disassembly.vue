@@ -11,19 +11,6 @@
                       :options="projectOptions">
             </a-select>
           </div>
-          <!--这里的getPopupContainer是为了修改popover的样式-->
-          <!--https://www.cnblogs.com/buluzombie/p/16463276.html-->
-          <!--          <a-popover placement="right"-->
-          <!--                     :getPopupContainer="triggerNode => triggerNode.parentNode">-->
-          <!--            <a-button class="edit-button" type="primary">-->
-          <!--              <EditOutlined/>-->
-          <!--            </a-button>-->
-          <!--            <template #content>-->
-          <!--              <a @click="toBeCompleted">使用模板拆解项目</a>-->
-          <!--              <a-divider style="margin: 5px auto"/>-->
-          <!--              <a style="color: red" @click="toBeCompleted">清空拆解情况</a>-->
-          <!--            </template>-->
-          <!--          </a-popover>-->
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
@@ -56,7 +43,22 @@
       <a-col flex="auto" class="right-column">
         <a-card size="small">
           <div class="table-buttons-row">
-            <div>子分类数据：</div>
+            <a-space>
+              子分类数据：
+              <a-button v-if="selectedKeys.length > 0" size="small" type="primary"
+                        @click="showModalForCreatingDisassembly(selectedKeys[0])">
+                <template #icon>
+                  <PlusOutlined/>
+                </template>
+                添加
+              </a-button>
+              <a-button v-else size="small" type="primary" disabled>
+                <template #icon>
+                  <PlusOutlined/>
+                </template>
+                添加
+              </a-button>
+            </a-space>
             <div class="buttons-for-table-setting">
               <a-tooltip title="设置列" size="small">
                 <a-button type="text" @click="toBeCompleted" size="small">
@@ -68,21 +70,26 @@
             </div>
           </div>
 
-          <a-table :data-source="data.dataList" :columns="columns"
+          <a-table :data-source="tableData.dataList" :columns="columns"
                    size="small" :pagination="false">
             <template #bodyCell="{column,record,index}">
               <template v-if="column.dataIndex === 'line_number'">
                 {{ index + 1 }}
               </template>
               <template v-else-if="column.dataIndex === 'action'">
-                <a>详情</a>
+                <a @click="showModalForUpdatingDisassembly(record.id)">修改</a>
                 <a-divider type="vertical"/>
-                <a @click="showModalForUpdating(record.id)">修改</a>
-                <a-divider type="vertical"/>
-                <a @click="showModalForDeleting(record.id)">删除</a>
+                <a @click="showModalForDeletingDisassembly(record.id)">删除</a>
               </template>
             </template>
           </a-table>
+
+          <!--分页器-->
+          <a-pagination id="paginator" v-model:pageSize="queryCondition.page_size"
+                        :total="tableData.numberOfRecords" showSizeChanger
+                        :pageSizeOptions="pageSizeOptions"
+                        showQuickJumper @change="paginationChange"
+                        :show-total="total=>`共${total}条记录`"/>
 
         </a-card>
       </a-col>
@@ -90,14 +97,15 @@
   </div>
 
   <!--添加子项目的模态框-->
-  <modal-for-creating-subitems ref="modalForCreatingSubitems"
-                               @loadDisassemblyTree="loadDisassemblyTree"/>
+  <modal-for-creating-subitems
+      ref="modalForCreatingSubitems" @loadData="loadData" :projectID="projectID"
+      :disassemblyID="selectedKeys[0]"/>
   <!--修改单项的模态框-->
-  <modal-for-updating-subitem ref="modalForUpdatingItem"
-                              @reloadDisassemblyTree="reloadDisassemblyTree"/>
+  <modal-for-updating-subitem
+      ref="modalForUpdatingItem" @loadData="loadData" :treeData="treeData"/>
   <!--删除单项的模态框-->
-  <modal-for-deleting-item ref="modalForDeletingItem"
-                           @reloadDisassemblyTree="reloadDisassemblyTree"/>
+  <modal-for-deleting-item
+      ref="modalForDeletingItem" @loadData="loadData"/>
 
 
   <!--      <a-tabs id="tabs" v-model:activeKey="activeKey"-->
@@ -120,19 +128,17 @@
 </template>
 
 <script setup lang="ts">
-let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
+import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/modal-for-creating-subitems.vue";
+import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-subitem.vue";
+import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
+import {message} from "ant-design-vue";
+import {onMounted, reactive, ref, watch} from "vue";
+import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import * as echarts from 'echarts';
+import {disassemblyApi} from "@/api/disassembly";
+import {projectApi} from "@/api/project";
 
-//查询条件
-const queryForm = reactive<iProjectGetList>({
-  is_showed_by_role: false,
-  department_id_in: [],
-  name_include: "",
-  department_name_include: "",
-  page: 1,
-  page_size: 12,
-  order_by: "",
-  desc: false,
-})
+let tableData = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
 
 let columns = ref([
   {
@@ -141,6 +147,7 @@ let columns = ref([
     className: 'line_number',
     width: '60px',
     ellipsis: true,
+    align: 'center',
   },
   {
     title: '名称',
@@ -148,16 +155,24 @@ let columns = ref([
     className: 'name',
     width: '40%',
     ellipsis: true,
+    align: 'center',
   },
   {
     title: '权重',
     dataIndex: 'weight',
     className: 'weight',
     width: '30%',
+    align: 'center',
+  },
+  {
+    title: '操作',
+    className: 'action',
+    dataIndex: 'action',
+    width: '150px',
+    ellipsis: true,
+    align: 'center',
   },
 ])
-
-import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-subitem.vue";
 
 //用于创建子项的模态框
 const modalForCreatingSubitems = ref()
@@ -180,57 +195,86 @@ function showModalForDeletingDisassembly(key: number) {
   modalForDeletingItem.value.showModal(key)
 }
 
-import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/modal-for-creating-subitems.vue";
-
-//项目选择框的过滤器（下拉框搜索）
-import {message} from "ant-design-vue";
-import {nextTick, onMounted, reactive, ref, watch} from "vue";
-import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import * as echarts from 'echarts';
-import {disassemblyApi} from "@/api/disassembly";
-
-import {iProjectGetList, projectApi} from "@/api/project";
-import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
-
-let projectID = ref()
+//项目选择框的过滤器
 const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
+let projectID = ref()
 watch(projectID, () => {
-  //项目id发生变动后，要清空treeData，否则a-tree组件就不会自动展开了
-  treeData.value = []
-  loadDisassemblyTree()
+  loadTreeData()
+  selectedKeys.value = []
 })
 
 function toBeCompleted() {
   message.info('待完成')
 }
 
-async function loadDisassemblyTree() {
-  const res = await disassemblyApi.getTree({project_id: projectID.value})
-  console.log(res);
-  if (res && res?.data) {
-    treeData.value = res.data
-  }
-}
-
 const projectOptions = ref<{ value: number; label: string }[]>([])
 
+//树形图相关的数据
 interface treeDataFormat {
   title: string
   key: number
-  children?: treeDataFormat[]
+  children: treeDataFormat[] | null
 }
 
 let treeData = ref<treeDataFormat[]>([])
 
-const selectedKeys = ref([]);
+async function loadTreeData() {
+  if (projectID.value) {
+    //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
+    treeData.value = []
+    const res = await disassemblyApi.getTree({project_id: projectID.value})
+    if (res.data) {
+      for (let index in res.data) {
+        treeData.value.push(switchToTreeData(res.data[index]))
+      }
+    }
+  } else {
+    treeData.value = []
+  }
+}
 
+interface rawTreeDataFormat {
+  name: string
+  id: number
+  children?: rawTreeDataFormat[] | null
+}
+
+//后端返回的结果为：[{name:xxx,id:xxx,children:xxx}]，需要修改字段名称
+function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
+  return {
+    title: obj.name,
+    key: obj.id,
+    children: obj.children?.map(child => switchToTreeData(child)) || null
+  }
+}
+
+
+const selectedKeys = ref([]);
 watch(selectedKeys, () => {
-  console.log(selectedKeys.value[0])
+  loadTableData()
 });
 
-const activeKey = ref('1')
+async function loadTableData() {
+  if (selectedKeys.value.length > 0) {
+    let res = await disassemblyApi.getList({
+      superior_id: selectedKeys.value[0],
+      page_size:queryCondition.page_size,
+      page:queryCondition.page,
+    })
+    tableData.dataList = res.data
+    tableData.numberOfPages = res.paging.number_of_pages
+    tableData.numberOfRecords = res.paging.number_of_records
+  } else {
+    tableData.dataList = []
+  }
+}
+
+function loadData() {
+  loadTreeData()
+  loadTableData()
+}
 
 //获取项目下拉框的选项
 async function loadProjectOptions() {
@@ -241,9 +285,6 @@ async function loadProjectOptions() {
 }
 
 loadProjectOptions()
-
-
-nextTick(() => console.log('next'))
 
 function change(targetKey: string) {
   let a = Number(targetKey)
@@ -303,7 +344,6 @@ function change(targetKey: string) {
 
 }
 
-
 onMounted(() => {
   //需要等节点挂载完毕后，才开始echarts的相关操作，否则会找不到节点
   //这里只处理tabs第一个图表，其他图表都在切换标签时进行处理
@@ -356,6 +396,25 @@ onMounted(() => {
   // window.addEventListener('resize', () => chart1.resize())
 })
 
+//查询条件
+const queryCondition = reactive({
+  page: 1,
+  page_size: 12,
+  order_by: "",
+  desc: false,
+})
+
+//分页器选项
+const pageSizeOptions = ['12', '20', '25', '30']
+
+//页码变化时的回调函数
+const paginationChange = (page: number, pageSize: number) => {
+  queryCondition.page = page
+  queryCondition.page_size = pageSize
+  console.log(page,pageSize)
+  loadTableData()
+}
+
 </script>
 
 <style lang="scss">
@@ -365,7 +424,6 @@ onMounted(() => {
   .left-column {
     background-color: white;
     height: calc(100vh - 55px);
-
 
 
     .tree {
@@ -390,7 +448,7 @@ onMounted(() => {
   width: 10px;
 
   .table-buttons-row {
-    height: 45px;
+    height: 35px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -431,80 +489,4 @@ onMounted(() => {
 }
 
 </style>
-
-
-
-
-
-
-.layout1 {
-overflow-x: auto;
-
-.left-column {
-background-color: white;
-
-
-.tree {
-height: calc(100vh - 141px);
-min-height: calc(100vh - 141px);
-max-height: calc(100vh - 141px);
-overflow: auto;
-}
-
-.tree::-webkit-scrollbar {
-display: none;
-}
-
-.tree:hover::-webkit-scrollbar {
-display: block;
-}
-}
-}
-
-.right-column {
-//这个宽度必须有！
-//由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
-//这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
-width: 10px;
-
-.table-buttons-row {
-height: 45px;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-align-items: center;
-}
-}
-
-
-//鼠标移入节点时，显示相关操作
-.ant-tree-treenode:hover {
-.button {
-display: inline;
-}
-}
-
-.title {
-.button {
-display: none;
-margin-left: 6px;
-}
-}
-
-#paginator {
-margin-top: 10px;
-text-align: right;
-
-.ant-select-item-option {
-text-align: center;
-}
-}
-
-.label-and-selector {
-align-items: center;
-
-.project-selector {
-flex: 1;
-}
-}
 

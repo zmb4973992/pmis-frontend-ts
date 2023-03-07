@@ -65,7 +65,7 @@ const disassemblyApi = {
     deleteWithSubitems: (param:iDisassemblyDeleteWithSubitems) =>
         request.delete('/api/disassembly/with-subitems/' + param.id,)
             .then(res => res.data,),
-    getList: (param:iDisassemblyGetList) => request.post(
+    getList: (param?:iDisassemblyGetList) => request.post(
         '/api/disassembly/list', param).then(res => res.data,),
 }
 
