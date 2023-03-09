@@ -22,14 +22,14 @@
 
 //由于style为scoped，所以需要使用vue3的:deep()深度穿透
 //调整tree子项的缩进距离
-:deep(.ant-tree-indent-unit) {
-  width: 1em;
-}
+//:deep(.ant-tree-indent-unit) {
+//  width: 1em;
+//}
 
 //调整tree展开/收缩图标的宽度
-:deep(.ant-tree-switcher) {
-  width: 10px;
-}
+//:deep(.ant-tree-switcher) {
+//  width: 10px;
+//}
 
 //修改鼠标悬浮行的样式;
 :deep(.ant-table-tbody) {

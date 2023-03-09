@@ -1,7 +1,8 @@
 <template>
-  <a-modal v-model:visible="visible"
-           title="删除" @ok="onSubmit" style="width: 300px">
-    <div>确定要删除“{{ disassemblyData.disassemblyItem.name }}”吗？</div>
+  <a-modal v-model:visible="visible" title="删除" @ok="onSubmit" style="width: 350px">
+    <div>确定要删除“
+      <span style="color:red;">{{ disassemblyData.name }}</span>
+      ”吗？</div>
     <div>该分类和它的子分类都会被删除！</div>
   </a-modal>
 </template>
@@ -14,59 +15,38 @@ import {message} from "ant-design-vue";
 const visible = ref(false)
 
 interface disassemblyItem {
-  disassembly_id: number
-  name: string
+  disassemblyID?: number
+  name?: string
   weight?: number
-  project_id: number
-  level: number
-  superior_id: number
+  projectID?: number
+  level?: number
+  superiorID?: number
 }
 
 const emit = defineEmits(['loadData'])
 
-//disassemblyItem为当前选中项，用来删改查；disassemblySubitems为当前选中项的子项，用来批量新增
-const disassemblyData = reactive<{
-  disassemblyItem: disassemblyItem,
-  disassemblySubitems: disassemblyItem[],
-}>({
-  disassemblyItem: {
-    disassembly_id: 0,
-    name: '',
-    project_id: 0,
-    level: 0,
-    superior_id: 0,
-  },
-  disassemblySubitems: [],
-})
+const disassemblyData = reactive<disassemblyItem>({})
 
 
-function showModal(disassemblyID: number) {
+async function showModal(disassemblyID: number) {
   visible.value = true
-  disassemblyData.disassemblyItem.disassembly_id = disassemblyID
-  disassemblyApi.get({id: disassemblyID}).then(
-      res => {
-        if (res.data) {
-          disassemblyData.disassemblyItem.name = res.data.name
-          disassemblyData.disassemblyItem.weight = res.data.weight * 100
-          disassemblyData.disassemblyItem.project_id = res.data.project_id
-          disassemblyData.disassemblyItem.level = res.data.level
-          disassemblyData.disassemblyItem.superior_id = res.data.superior_id
-        }
-      }
-  )
+  disassemblyData.disassemblyID = disassemblyID
+  let res = await disassemblyApi.get({id: disassemblyID})
+  if (res && res?.data) {
+    disassemblyData.name = res.data.name
+  }
 }
 
 
-function onSubmit() {
-  disassemblyApi.deleteWithSubitems({id: disassemblyData.disassemblyItem.disassembly_id}).then(
-      () => {
-        message.success('删除成功', 2)
-        visible.value = false
-        disassemblyApi.getTree({project_id: 52}).then(res => {
-          emit('loadData')
-        })
-      }
-  )
+async function onSubmit() {
+  let res = await disassemblyApi.deleteWithSubitems({id: disassemblyData.disassemblyID as number})
+  if (res?.code === 0) {
+    message.success('删除成功')
+    visible.value = false
+    emit('loadData')
+  } else {
+    message.error(res.message)
+  }
 }
 
 defineExpose({

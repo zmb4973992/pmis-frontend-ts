@@ -14,24 +14,23 @@
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
-
-          <a-tree class="tree" v-if="treeData?.length" :tree-data="treeData"
-                  v-model:selectedKeys="selectedKeys" :default-expand-all="true"
+          <a-tree class="tree1" v-if="treeData?.length" :tree-data="treeData"
+                  v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"
           >
-            <template #title="{title,key,level}">
-          <span class="title">
-            <span>{{ title }}</span>
-              <a @click.stop="showModalForCreatingDisassembly(key)">
-                <PlusOutlined class="button"/>
-              </a>
-              <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
-                <EditOutlined class="button"/>
-              </a>
-              <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
-                  <DeleteOutlined class="button"/>
-              </a>
-          </span>
-            </template>
+<!--            <template #title="{title,key,level}">-->
+<!--          <span class="title">-->
+<!--            <span>{{ title }}</span>-->
+<!--              <a @click.stop="showModalForCreatingDisassembly">-->
+<!--                <PlusOutlined class="button"/>-->
+<!--              </a>-->
+<!--              <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly">-->
+<!--                <EditOutlined class="button"/>-->
+<!--              </a>-->
+<!--              <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">-->
+<!--                  <DeleteOutlined class="button"/>-->
+<!--              </a>-->
+<!--          </span>-->
+<!--            </template>-->
           </a-tree>
         </a-card>
       </a-col>
@@ -45,19 +44,27 @@
           <div class="table-buttons-row">
             <a-space>
               子分类数据：
-              <a-button v-if="selectedKeys.length > 0" size="small" type="primary"
-                        @click="showModalForCreatingDisassembly(selectedKeys[0])">
+              <a-button v-if="projectID" size="small" type="primary"
+                        @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
                 <template #icon>
                   <PlusOutlined/>
                 </template>
                 添加
               </a-button>
-              <a-button v-else size="small" type="primary" disabled>
+
+              <a-button v-else size="small" type="primary" disabled
+                        @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
                 <template #icon>
                   <PlusOutlined/>
                 </template>
                 添加
               </a-button>
+              <!--              <a-button v-else size="small" type="primary" disabled>-->
+              <!--                <template #icon>-->
+              <!--                  <PlusOutlined/>-->
+              <!--                </template>-->
+              <!--                添加-->
+              <!--              </a-button>-->
             </a-space>
             <div class="buttons-for-table-setting">
               <a-tooltip title="设置列" size="small">
@@ -79,7 +86,7 @@
               <template v-else-if="column.dataIndex === 'action'">
                 <a @click="showModalForUpdatingDisassembly(record.id)">修改</a>
                 <a-divider type="vertical"/>
-                <a @click="showModalForDeletingDisassembly(record.id)">删除</a>
+                <a @click="showModalForDeletingDisassembly(record.id)" style="color: red">删除</a>
               </template>
             </template>
           </a-table>
@@ -99,10 +106,10 @@
   <!--添加子项目的模态框-->
   <modal-for-creating-subitems
       ref="modalForCreatingSubitems" @loadData="loadData" :projectID="projectID"
-      :disassemblyID="selectedKeys[0]"/>
+      :disassemblyID="selectedDisassemblyIDs[0]"/>
   <!--修改单项的模态框-->
   <modal-for-updating-subitem
-      ref="modalForUpdatingItem" @loadData="loadData" :treeData="treeData"/>
+      ref="modalForUpdatingItem" @loadData="loadData" :projectID="projectID"/>
   <!--删除单项的模态框-->
   <modal-for-deleting-item
       ref="modalForDeletingItem" @loadData="loadData"/>
@@ -133,7 +140,7 @@ import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/moda
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message} from "ant-design-vue";
 import {onMounted, reactive, ref, watch} from "vue";
-import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import { PlusOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
@@ -202,7 +209,7 @@ const projectFilterOption = (input: string, option: any) =>
 let projectID = ref()
 watch(projectID, () => {
   loadTreeData()
-  selectedKeys.value = []
+  selectedDisassemblyIDs.value = []
 })
 
 function toBeCompleted() {
@@ -215,6 +222,7 @@ const projectOptions = ref<{ value: number; label: string }[]>([])
 interface treeDataFormat {
   title: string
   key: number
+  level: number
   children: treeDataFormat[] | null
 }
 
@@ -238,6 +246,7 @@ async function loadTreeData() {
 interface rawTreeDataFormat {
   name: string
   id: number
+  level: number
   children?: rawTreeDataFormat[] | null
 }
 
@@ -246,26 +255,33 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
   return {
     title: obj.name,
     key: obj.id,
+    level: obj.level,
     children: obj.children?.map(child => switchToTreeData(child)) || null
   }
 }
 
 
-const selectedKeys = ref([]);
-watch(selectedKeys, () => {
-  loadTableData()
-});
+const selectedDisassemblyIDs = ref([]);
+watch(selectedDisassemblyIDs, () => loadTableData());
 
 async function loadTableData() {
-  if (selectedKeys.value.length > 0) {
+  //如果选择了拆解id
+  if (selectedDisassemblyIDs.value.length > 0) {
     let res = await disassemblyApi.getList({
-      superior_id: selectedKeys.value[0],
-      page_size:queryCondition.page_size,
-      page:queryCondition.page,
+      superior_id: selectedDisassemblyIDs.value[0],
+      page_size: queryCondition.page_size,
+      page: queryCondition.page,
     })
-    tableData.dataList = res.data
-    tableData.numberOfPages = res.paging.number_of_pages
-    tableData.numberOfRecords = res.paging.number_of_records
+    if (res && res.data) {
+      for (let item of res.data) {
+        item.weight = (item.weight * 100).toFixed(1) + '%'
+      }
+      tableData.dataList = res?.data
+      tableData.numberOfPages = res?.paging?.number_of_pages
+      tableData.numberOfRecords = res?.paging?.number_of_records
+    } else {
+      tableData.dataList = []
+    }
   } else {
     tableData.dataList = []
   }
@@ -411,13 +427,13 @@ const pageSizeOptions = ['12', '20', '25', '30']
 const paginationChange = (page: number, pageSize: number) => {
   queryCondition.page = page
   queryCondition.page_size = pageSize
-  console.log(page,pageSize)
+  console.log(page, pageSize)
   loadTableData()
 }
 
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .layout1 {
   overflow-x: auto;
 
@@ -425,18 +441,20 @@ const paginationChange = (page: number, pageSize: number) => {
     background-color: white;
     height: calc(100vh - 55px);
 
-
-    .tree {
+    :deep(.ant-tree) {
       height: calc(100vh - 141px);
+      width: 255px;
       overflow: auto;
     }
 
-    .tree::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
 
-    .tree:hover::-webkit-scrollbar {
-      display: block;
+    &:hover {
+      ::-webkit-scrollbar {
+        display: block;
+      }
     }
   }
 }
@@ -458,11 +476,26 @@ const paginationChange = (page: number, pageSize: number) => {
 
 
 //鼠标移入节点时，显示相关操作
-.ant-tree-treenode:hover {
-  .button {
-    display: inline;
+:deep(.ant-tree) {
+  .ant-tree-treenode:hover {
+    .button {
+      display: inline;
+    }
+  }
+
+  .ant-tree-indent-unit {
+    width: 1em;
+  }
+
+  .ant-tree-switcher {
+    width: 10px;
+  }
+
+  .ant-tree-title {
+    word-break: break-all;
   }
 }
+
 
 .title {
   .button {

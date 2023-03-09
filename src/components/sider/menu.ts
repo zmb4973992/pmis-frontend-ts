@@ -85,6 +85,11 @@ const menuList: menu[] = [
             },
         ],
     },
+    {
+        path:'/test',
+        label:'测试',
+        icon:'QuestionCircleOutlined'
+    },
 ]
 
 export {menuList}

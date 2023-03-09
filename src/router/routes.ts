@@ -140,6 +140,12 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: ()=>import('@/pages/user_management/organization_structure.vue')
             },
+            //以下为测试
+            {
+                path:'/test',
+                name:'测试',
+                component: ()=>import('@/pages/test.vue')
+            },
 
         ],
     },
