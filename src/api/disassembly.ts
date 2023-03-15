@@ -10,8 +10,6 @@ export interface iDisassemblyGetTree {
 
 export interface iDisassemblyCreate {
     name: string
-    project_id: number
-    level: number
     weight: number
     superior_id: number
 }
@@ -23,10 +21,7 @@ export interface iDisassemblyCreateInBatches {
 export interface iDisassemblyUpdate {
     id :number
     name?: string
-    project_id?: number
-    level?: number
     weight?: number
-    superior_id?: number
 }
 
 export interface iDisassemblyDelete {

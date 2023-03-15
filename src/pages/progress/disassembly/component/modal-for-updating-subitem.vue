@@ -138,10 +138,7 @@ function onSubmit() {
       async () => {
         let res = await disassemblyApi.update({
           id: formData.disassemblyID,
-          level: formData.level,
           name: formData.name,
-          project_id: formData.projectID,
-          superior_id: formData.superiorID,
           weight: formData.weight as number / 100
         })
         if (res?.code === 0) {

@@ -139,9 +139,7 @@ function onSubmit() {
       async () => {
         let res = await disassemblyApi.create({
           name: formData.name as string,
-          project_id: formData.projectID,
           superior_id: formData.superiorID as number,
-          level: formData.level as number,
           weight: formData.weight as number / 100
         })
         if (res?.code === 0) {
