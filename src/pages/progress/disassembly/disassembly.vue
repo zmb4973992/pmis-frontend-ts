@@ -5,7 +5,7 @@
       <a-col flex="280px" class="left-column">
         <a-card size="small" :bordered="false">
           <div class="label-and-selector" style="display: flex">
-            <span>项目：</span>
+<!--            <span>项目：</span>-->
             <a-select class="project-selector" show-search placeholder="请选择项目"
                       :filter-option="projectFilterOption" v-model:value="projectID"
                       :options="projectOptions">
@@ -17,20 +17,20 @@
           <a-tree class="tree1" v-if="treeData?.length" :tree-data="treeData"
                   v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"
           >
-<!--            <template #title="{title,key,level}">-->
-<!--          <span class="title">-->
-<!--            <span>{{ title }}</span>-->
-<!--              <a @click.stop="showModalForCreatingDisassembly">-->
-<!--                <PlusOutlined class="button"/>-->
-<!--              </a>-->
-<!--              <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly">-->
-<!--                <EditOutlined class="button"/>-->
-<!--              </a>-->
-<!--              <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">-->
-<!--                  <DeleteOutlined class="button"/>-->
-<!--              </a>-->
-<!--          </span>-->
-<!--            </template>-->
+            <template #title="{title,key,level}">
+          <span class="title">
+            <span>{{ title }}</span>
+              <a @click.stop="showModalForCreatingDisassembly(key)">
+                <PlusOutlined class="button"/>
+              </a>
+              <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
+                <EditOutlined class="button"/>
+              </a>
+              <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
+                  <DeleteOutlined class="button"/>
+              </a>
+          </span>
+            </template>
           </a-tree>
         </a-card>
       </a-col>
@@ -105,11 +105,10 @@
 
   <!--添加子项目的模态框-->
   <modal-for-creating-subitems
-      ref="modalForCreatingSubitems" @loadData="loadData" :projectID="projectID"
-      :disassemblyID="selectedDisassemblyIDs[0]"/>
+      ref="modalForCreatingSubitems" @loadData="loadData" :projectID="projectID"/>
   <!--修改单项的模态框-->
   <modal-for-updating-subitem
-      ref="modalForUpdatingItem" @loadData="loadData" :projectID="projectID"/>
+      ref="modalForUpdatingItem" @loadData="loadData"/>
   <!--删除单项的模态框-->
   <modal-for-deleting-item
       ref="modalForDeletingItem" @loadData="loadData"/>
@@ -140,7 +139,7 @@ import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/moda
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message} from "ant-design-vue";
 import {onMounted, reactive, ref, watch} from "vue";
-import { PlusOutlined} from "@ant-design/icons-vue";
+import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
@@ -184,22 +183,22 @@ let columns = ref([
 //用于创建子项的模态框
 const modalForCreatingSubitems = ref()
 
-function showModalForCreatingDisassembly(key: number) {
-  modalForCreatingSubitems.value.showModal(key)
+function showModalForCreatingDisassembly(superiorID: number | undefined) {
+    modalForCreatingSubitems.value.showModal(superiorID)
 }
 
 //用于修改选中项的模态框
 const modalForUpdatingItem = ref()
 
-function showModalForUpdatingDisassembly(key: number) {
-  modalForUpdatingItem.value.showModal(key)
+function showModalForUpdatingDisassembly(disassemblyID: number) {
+  modalForUpdatingItem.value.showModal(disassemblyID)
 }
 
 //用于删除选中项的模态框
 const modalForDeletingItem = ref()
 
-function showModalForDeletingDisassembly(key: number) {
-  modalForDeletingItem.value.showModal(key)
+function showModalForDeletingDisassembly(disassemblyID: number) {
+  modalForDeletingItem.value.showModal(disassemblyID)
 }
 
 //项目选择框的过滤器

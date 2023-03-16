@@ -1,30 +1,30 @@
 <template>
-    <a-modal v-model:visible="visible" title="添加子项" @ok="onSubmit" style="width: 450px;">
+  <a-modal v-model:visible="visible" title="添加子项" @ok="onSubmit" style="width: 450px;">
 
-      <a-form ref="form" :model="formData" :label-col="{span:5}" :wrapper-col="{span:19}"
-              :rules="rules">
-        <a-form-item name="superiorID" label="上级名称">
-          <a-tree-select v-model:value="formData.superiorID" show-search
-                         tree-default-expand-all :tree-data="treeData"
-                         @change="treeSelectChange" dropdownClassName="tree2">
-          </a-tree-select>
-        </a-form-item>
+    <a-form ref="form" :model="formData" :label-col="{span:5}" :wrapper-col="{span:19}"
+            :rules="rules">
+      <a-form-item name="superiorID" label="上级名称">
+        <a-tree-select v-model:value="formData.superiorID" show-search
+                       tree-default-expand-all :tree-data="treeData"
+                       dropdownClassName="tree2">
+        </a-tree-select>
+      </a-form-item>
 
-        <a-form-item name="name" label="名称">
-          <a-input v-model:value="formData.name"/>
-        </a-form-item>
+      <a-form-item name="name" label="名称">
+        <a-input v-model:value="formData.name"/>
+      </a-form-item>
 
-        <a-form-item name="weight" label="权重">
-          <a-input-number v-model:value="formData.weight" :controls="false"
-                          addon-after="%" :min="0" :max="100" :precision="1"
-                          style="width: 120px"/>
-        </a-form-item>
+      <a-form-item name="weight" label="权重">
+        <a-input-number v-model:value="formData.weight" :controls="false"
+                        addon-after="%" :min="0" :max="100" :precision="1"
+                        style="width: 120px"/>
+      </a-form-item>
 
-        {{ formData }}
+      {{ formData }}
 
-      </a-form>
+    </a-form>
 
-    </a-modal>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -43,17 +43,13 @@ interface treeDataFormat {
 let treeData = ref<treeDataFormat[]>([])
 
 async function loadTreeData() {
-  if (props.projectID) {
-    //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
-    treeData.value = []
-    const res = await disassemblyApi.getTree({project_id: props.projectID})
-    if (res.data) {
-      for (let index in res.data) {
-        treeData.value.push(switchToTreeData(res.data[index]))
-      }
+  //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
+  treeData.value = []
+  const res = await disassemblyApi.getTree({project_id: props.projectID})
+  if (res.data) {
+    for (let index in res.data) {
+      treeData.value.push(switchToTreeData(res.data[index]))
     }
-  } else {
-    treeData.value = []
   }
 }
 
@@ -74,22 +70,17 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
 
 const form = ref<FormInstance>()
 
-const props = defineProps({
-  projectID: Number,
-  disassemblyID: Number,
-})
+const props = defineProps<{
+  projectID?: number
+}>()
 
 interface formDataFormat {
-  projectID: number
-  superiorID?: number
   name?: string
   weight?: number
-  level?: number
+  superiorID?: number
 }
 
-const formData = reactive<formDataFormat>({
-  projectID: 0,
-})
+const formData = reactive<formDataFormat>({})
 
 //权重的校验规则
 let checkWeight = async (_rule: Rule, value: number) => {
@@ -113,25 +104,19 @@ const visible = ref(false)
 
 const emit = defineEmits(['loadData'])
 
-async function showModal() {
+async function showModal(superiorID?: number) {
   form.value?.resetFields()
-  if (props.projectID) {
-    formData.projectID = props.projectID
-    if (props.disassemblyID) {
-      formData.superiorID = props.disassemblyID
-      let res = await disassemblyApi.get({id: props.disassemblyID})
-      if (res && res?.data) {
-        formData.level = res.data.level + 1
-        visible.value = true
-      }
-    } else {
-      formData.superiorID = undefined
+  if (superiorID) {
+    formData.superiorID = superiorID
+    let res = await disassemblyApi.get({id: superiorID})
+    if (res && res?.data) {
       visible.value = true
     }
-    await loadTreeData()
   } else {
-    message.warn("请先在左侧选择项目")
+    formData.superiorID = undefined
+    visible.value = true
   }
+  await loadTreeData()
 }
 
 function onSubmit() {
@@ -158,12 +143,11 @@ defineExpose({
 })
 
 //当树形图变化时
-async function treeSelectChange(disassemblyID: number) {
-  let res = await disassemblyApi.get({id: disassemblyID})
-  if (res && res?.data) {
-    formData.level = res.data.level + 1
-  }
-}
+// async function treeSelectChange(disassemblyID: number) {
+//   let res = await disassemblyApi.get({id: disassemblyID})
+//   if (res && res?.data) {
+//   }
+// }
 </script>
 
 <style lang="scss">

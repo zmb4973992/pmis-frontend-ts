@@ -3,13 +3,6 @@
 
     <a-form ref="form" :model="formData" :label-col="{span:5}" :wrapper-col="{span:19}"
             :rules="rules">
-      <a-form-item name="superiorID" label="上级名称">
-        <a-tree-select v-model:value="formData.superiorID" show-search
-                       tree-default-expand-all :tree-data="treeData"
-                       @change="treeSelectChange" dropdownClassName="tree2">
-        </a-tree-select>
-      </a-form-item>
-
       <a-form-item name="name" label="名称">
         <a-input v-model:value="formData.name"/>
       </a-form-item>
@@ -34,59 +27,51 @@ import {FormInstance, message} from "ant-design-vue";
 import {Rule} from "ant-design-vue/es/form";
 
 //树形图相关的数据
-interface treeDataFormat {
-  title: string
-  value: number
-  children: treeDataFormat[] | null
-}
+// interface treeDataFormat {
+//   title: string
+//   value: number
+//   children: treeDataFormat[] | null
+// }
 
-let treeData = ref<treeDataFormat[]>([])
+// let treeData = ref<treeDataFormat[]>([])
 
-async function loadTreeData() {
-  if (props.projectID) {
-    //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
-    treeData.value = []
-    const res = await disassemblyApi.getTree({project_id: props.projectID})
-    if (res.data) {
-      for (let index in res.data) {
-        treeData.value.push(switchToTreeData(res.data[index]))
-      }
-    }
-  } else {
-    treeData.value = []
-  }
-}
+// async function loadTreeData() {
+//   if (props.projectID) {
+//     //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
+//     treeData.value = []
+//     const res = await disassemblyApi.getTree({project_id: props.projectID})
+//     if (res.data) {
+//       for (let index in res.data) {
+//         treeData.value.push(switchToTreeData(res.data[index]))
+//       }
+//     }
+//   } else {
+//     treeData.value = []
+//   }
+// }
 
-interface rawTreeDataFormat {
-  name: string
-  id: number
-  children?: rawTreeDataFormat[] | null
-}
+// interface rawTreeDataFormat {
+//   name: string
+//   id: number
+//   children?: rawTreeDataFormat[] | null
+// }
 
 //后端返回的结果为：[{name:xxx,id:xxx,children:xxx}]，需要修改字段名称
-function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
-  return {
-    title: obj.name,
-    value: obj.id,
-    children: obj.children?.map(child => switchToTreeData(child)) || null
-  }
-}
-
-const props = defineProps({
-  projectID: Number,
-})
+// function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
+//   return {
+//     title: obj.name,
+//     value: obj.id,
+//     children: obj.children?.map(child => switchToTreeData(child)) || null
+//   }
+// }
 
 interface formDataFormat {
-  projectID: number
-  superiorID?: number
   name?: string
   weight?: number
-  level?: number
   disassemblyID: number
 }
 
 const formData = reactive<formDataFormat>({
-  projectID: 0,
   disassemblyID: 0,
 })
 
@@ -116,20 +101,12 @@ const emits = defineEmits(['loadData'])
 
 async function showModal(disassemblyID: number) {
   form.value?.resetFields()
-  if (props.projectID) {
-    formData.projectID = props.projectID
-    formData.disassemblyID = disassemblyID
-    let res = await disassemblyApi.get({id: disassemblyID})
-    if (res && res?.data) {
-      formData.name = res.data.name
-      formData.superiorID = res.data.superior_id
-      formData.weight = res.data.weight * 100
-      formData.level = res.data.level
-      visible.value = true
-    }
-    await loadTreeData()
-  } else {
-    message.warn("请先在左侧选择项目")
+  formData.disassemblyID = disassemblyID
+  let res = await disassemblyApi.get({id: disassemblyID})
+  if (res && res?.data) {
+    formData.name = res.data.name
+    formData.weight = res.data.weight * 100
+    visible.value = true
   }
 }
 
@@ -157,12 +134,12 @@ defineExpose({
 })
 
 //当树形图变化时
-async function treeSelectChange(disassemblyID: number) {
-  let res = await disassemblyApi.get({id: disassemblyID})
-  if (res && res?.data) {
-    formData.level = res.data.level + 1
-  }
-}
+// async function treeSelectChange(disassemblyID: number) {
+//   let res = await disassemblyApi.get({id: disassemblyID})
+//   if (res && res?.data) {
+//     formData.level = res.data.level + 1
+//   }
+// }
 </script>
 
 <style scoped lang="scss">

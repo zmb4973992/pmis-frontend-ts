@@ -2,7 +2,8 @@
   <a-modal v-model:visible="visible" title="删除" @ok="onSubmit" style="width: 350px">
     <div>确定要删除“
       <span style="color:red;">{{ disassemblyData.name }}</span>
-      ”吗？</div>
+      ”吗？
+    </div>
     <div>该分类和它的子分类都会被删除！</div>
   </a-modal>
 </template>
@@ -39,7 +40,7 @@ async function showModal(disassemblyID: number) {
 
 
 async function onSubmit() {
-  let res = await disassemblyApi.deleteWithSubitems({id: disassemblyData.disassemblyID as number})
+  let res = await disassemblyApi.deleteWithInferiors({id: disassemblyData.disassemblyID as number})
   if (res?.code === 0) {
     message.success('删除成功')
     visible.value = false
