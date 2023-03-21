@@ -26,14 +26,14 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('@/pages/progress/disassembly/disassembly.vue')
             },
             {
-                path: '/progress/status',
+                path: '/progress/list',
                 name: '当前情况',
                 meta: {
                     title: '当前情况',
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
-                component: () => import('@/pages/progress/status.vue')
+                component: () => import('@/pages/progress/progress-list/progress-list.vue')
             },
             {
                 path: '/progress/snapshot',

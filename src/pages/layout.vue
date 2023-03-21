@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="layout">
+  <a-layout class="general-layout">
     <!--左侧边栏-->
     <a-layout-sider collapsible :trigger="null" v-model:collapsed="isCollapsed"
                     class="left-layout" :width="isCollapsed? 'any':'140px'">
@@ -13,14 +13,9 @@
         <Header/>
       </a-layout-header>
       <!--content区域-->
-      <div class="layout-content-wrapper">
-        <a-layout-content>
-          <!--这里包裹一层div，是为了修改margin、padding、滚动条等，里面才是真正的内容区-->
-          <div class="layout-content">
-            <router-view/>
-          </div>
-        </a-layout-content>
-      </div>
+      <a-layout-content class="layout-content">
+        <router-view/>
+      </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
@@ -41,9 +36,8 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
 <style scoped lang="scss">
 @import "@/assets/styles/variables.scss";
 
-.layout {
+.general-layout {
   overflow: hidden;
-  //确保页面铺满视窗
   width: 100vw;
   height: 100vh;
   background-color: $background-color;
@@ -59,11 +53,7 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
     border-right-width: 1px;
     border-radius: 10px;
 
-    //定义左侧边栏的滚动条，要细一点，不应用全局样式
-    //2023.1.20 觉得还是隐藏起来好看点，依然可以滚动，不影响效果
     ::-webkit-scrollbar {
-      width: 3px;
-      height: 3px;
       display: none;
     }
 
@@ -84,12 +74,8 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
     .layout-header {
       background-color: white;
       height: 35px;
-      //取消所有的内边距
       padding: 0;
-      //该盒子实行弹性布局
       display: flex;
-      //均匀排列每个元素
-      //首个元素放置于起点，末尾元素放置于终点
       justify-content: space-between;
       align-items: center;
       border-bottom: #f3f3f4 2px solid;
@@ -99,14 +85,15 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
       //z-index: 1;
     }
 
-    .layout-content-wrapper {
+    .layout-content {
       //内容区域以浅灰色为底色
       background-color: #f3f3f4;
       height: calc(100vh - 35px);
       overflow-x: auto;
+      padding: 10px;
 
-      .layout-content {
-        margin: 10px;
+      &::-webkit-scrollbar {
+        display: none;
       }
     }
   }

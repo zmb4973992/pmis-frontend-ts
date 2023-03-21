@@ -1,5 +1,5 @@
 <template>
-  <!--  搜索框-->
+  <!--搜索框-->
   <div class="search-bar">
     <a-input id="chinese-name" v-model:value="queryCondition.chinese_name_include" placeholder="相关方中文名称">
     </a-input>

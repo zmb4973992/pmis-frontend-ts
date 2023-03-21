@@ -11,7 +11,7 @@ const menuList: menu[] = [
                 label: '拆解项目',
             },
             {
-                path: '/status',
+                path: '/list',
                 label: '当前情况',
             },
             {
@@ -48,10 +48,10 @@ const menuList: menu[] = [
         ],
     },
     {
-        path:'/contract',
-        label:'合同',
-        icon:'FileTextOutlined',
-        children:[
+        path: '/contract',
+        label: '合同',
+        icon: 'FileTextOutlined',
+        children: [
             {
                 path: '/list',
                 label: '合同列表',
@@ -86,9 +86,9 @@ const menuList: menu[] = [
         ],
     },
     {
-        path:'/test',
-        label:'测试',
-        icon:'QuestionCircleOutlined'
+        path: '/test',
+        label: '测试',
+        icon: 'QuestionCircleOutlined'
     },
 ]
 

@@ -1,40 +1,33 @@
 <template>
   <div class="a">
-    <a-tree class="tree" v-if="treeData?.length" :tree-data="treeData"
-            v-model:selectedKeys="selectedKeys" :default-expand-all="true"
-    />
+    大家分开睡的房间，份额冯绍富哥峰的。大家分开睡的房间份 额冯绍富哥峰的
+    大家分开睡的房间；份额冯绍富哥峰的大家，分开睡的房间份额冯绍富哥峰的
+    峰的大家，分开睡的，峰的大家，分开睡的，说的弗兰克
+    <div class="b">
+      哥峰的大家，分开睡的房间份额冯绍富哥峰的
+      峰的大家，分开睡的，峰的大家，分开睡
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-
-interface treeDataFormat {
-  title: string
-  key: number
-  children: treeDataFormat[] | null
-}
-
-let treeData = ref<treeDataFormat[]>([
-  {title: 'a', key: 1, children: null},
-  {
-    title: 'b', key: 2, children: [
-      {title: '反倒是考虑对方是考虑对方是考虑对方是考虑对方', key: 3, children: null}
-    ]
-  },
-])
-
-const selectedKeys = ref([]);
 </script>
 
 <style scoped lang="scss">
-.tree {
-  width: 200px;
-  overflow: auto;
-  .ant-tree-title {
-    background-color: burlywood;
-    //word-break: break-all;
-    //word-wrap: break-word;
+.a {
+  width: 150px;
+  height: 150px;
+  background-color: gold;
+  overflow-y: auto;
+  .b {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    overflow-y: auto;
+  }
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
+
 </style>

@@ -1,106 +1,140 @@
 <template>
-  <div class="layout1">
-    <a-row type="flex">
-      <!--左侧内容区-->
-      <a-col flex="280px" class="left-column">
-        <a-card size="small" :bordered="false">
-          <div class="label-and-selector" style="display: flex">
-<!--            <span>项目：</span>-->
-            <a-select class="project-selector" show-search placeholder="请选择项目"
-                      :filter-option="projectFilterOption" v-model:value="projectID"
-                      :options="projectOptions">
+  <div class="layout">
+    <!--左侧内容区-->
+    <div class="left-column">
+      <a-card size="small" :bordered="false">
+        <div class="label-and-selector" style="display: flex">
+          <a-select class="project-selector" show-search placeholder="请选择项目"
+                    :filter-option="projectFilterOption" v-model:value="projectID"
+                    :options="projectOptions">
+          </a-select>
+        </div>
+
+        <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
+
+        <a-tree v-if="treeData?.length" :tree-data="treeData"
+                v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true">
+        </a-tree>
+      </a-card>
+
+    </div>
+
+    <!--右侧内容区-->
+    <div class="right-column">
+      <!--搜索框-->
+      <a-card size="small" :bordered="false" style="margin-bottom: 10px">
+        <a-row :gutter="20">
+          <a-col>
+            <span>进度类型：</span>
+            <a-select id="type-in" mode="multiple" :max-tag-count="1" :max-tag-text-length="2" placeholder="进度类型"
+                      v-model:value="queryForm.type_in" :options="typeOptions"
+                      style="width:130px">
             </a-select>
-          </div>
+          </a-col>
+          <a-col>
+            <span>数据来源：</span>
+            <a-select id="data-source" mode="multiple" :max-tag-count="1" :max-tag-text-length="2"
+                      placeholder="数据来源"
+                      v-model:value="queryForm.data_source" :options="dataSourceOptions"
+                      style="width:130px">
+            </a-select>
+          </a-col>
 
-          <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
-
-          <a-tree class="tree1" v-if="treeData?.length" :tree-data="treeData"
-                  v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"
-          >
-            <template #title="{title,key,level}">
-          <span class="title">
-            <span>{{ title }}</span>
-              <a @click.stop="showModalForCreatingDisassembly(key)">
-                <PlusOutlined class="button"/>
-              </a>
-              <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
-                <EditOutlined class="button"/>
-              </a>
-              <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
-                  <DeleteOutlined class="button"/>
-              </a>
-          </span>
-            </template>
-          </a-tree>
-        </a-card>
-      </a-col>
-
-      <!--这是分割线gutter-->
-      <a-col flex="10px"></a-col>
-
-      <!--右侧内容区-->
-      <a-col flex="auto" class="right-column">
-        <a-card size="small">
-          <div class="table-buttons-row">
-            <a-space>
-              子分类数据：
-              <a-button v-if="projectID" size="small" type="primary"
-                        @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+          <a-col>
+            <span>日期范围：</span>
+            <a-range-picker v-model:value="dateRange" >
+            </a-range-picker>
+          </a-col>
+          <a-col>
+            <a-button-group>
+              <a-button class="button" type="primary" @click="loadList">
                 <template #icon>
-                  <PlusOutlined/>
+                  <SearchOutlined/>
                 </template>
-                添加
+                查询
               </a-button>
-
-              <a-button v-else size="small" type="primary" disabled
-                        @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+              <a-button class="button" @click="reset">
                 <template #icon>
-                  <PlusOutlined/>
+                  <RedoOutlined/>
                 </template>
-                添加
+                重置
               </a-button>
-              <!--              <a-button v-else size="small" type="primary" disabled>-->
-              <!--                <template #icon>-->
-              <!--                  <PlusOutlined/>-->
-              <!--                </template>-->
-              <!--                添加-->
-              <!--              </a-button>-->
-            </a-space>
-            <div class="buttons-for-table-setting">
-              <a-tooltip title="设置列" size="small">
-                <a-button type="text" @click="toBeCompleted" size="small">
-                  <template #icon>
-                    <setting-outlined style="font-size: 16px"/>
-                  </template>
-                </a-button>
-              </a-tooltip>
-            </div>
+            </a-button-group>
+          </a-col>
+        </a-row>
+      </a-card>
+
+      <a-card size="small" :bordered="false">
+        <div class="table-buttons-row">
+          <a-space>
+            <a-button v-if="projectID" size="small" type="primary"
+                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+              <template #icon>
+                <PlusOutlined/>
+              </template>
+              添加
+            </a-button>
+
+            <a-button v-else size="small" type="primary" disabled
+                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+              <template #icon>
+                <PlusOutlined/>
+              </template>
+              添加
+            </a-button>
+            <!--              <a-button v-else size="small" type="primary" disabled>-->
+            <!--                <template #icon>-->
+            <!--                  <PlusOutlined/>-->
+            <!--                </template>-->
+            <!--                添加-->
+            <!--              </a-button>-->
+          </a-space>
+          <div class="buttons-for-table-setting">
+            <a-tooltip title="设置列" size="small">
+              <a-button type="text" @click="toBeCompleted" size="small">
+                <template #icon>
+                  <setting-outlined style="font-size: 16px"/>
+                </template>
+              </a-button>
+            </a-tooltip>
           </div>
+        </div>
 
-          <a-table :data-source="tableData.dataList" :columns="columns"
-                   size="small" :pagination="false">
-            <template #bodyCell="{column,record,index}">
-              <template v-if="column.dataIndex === 'line_number'">
-                {{ index + 1 }}
-              </template>
-              <template v-else-if="column.dataIndex === 'action'">
-                <a @click="showModalForUpdatingDisassembly(record.id)">修改</a>
-                <a-divider type="vertical"/>
-                <a @click="showModalForDeletingDisassembly(record.id)" style="color: red">删除</a>
-              </template>
+        <a-table :data-source="tableData.dataList" :columns="columns"
+                 size="small" :pagination="false" :scroll="{x:1200}">
+          <template #bodyCell="{column,record,index}">
+            <template v-if="column.dataIndex === 'line_number'">
+              {{ index + 1 }}
             </template>
-          </a-table>
+            <template v-else-if="column.dataIndex === 'action'">
+              <a @click="showModalForUpdatingDisassembly(record.id)">修改</a>
+              <a-divider type="vertical"/>
+              <a @click="showModalForDeletingDisassembly(record.id)" style="color: red">删除</a>
+            </template>
+          </template>
+        </a-table>
 
-          <!--分页器-->
-          <a-pagination id="paginator" v-model:pageSize="queryCondition.page_size"
-                        :total="tableData.numberOfRecords" showSizeChanger
-                        :pageSizeOptions="pageSizeOptions"
-                        showQuickJumper @change="paginationChange"
-                        :show-total="total=>`共${total}条记录`"/>
+        <!--分页器-->
+        <a-pagination id="paginator" v-model:pageSize="queryCondition.page_size"
+                      :total="tableData.numberOfRecords" showSizeChanger
+                      :pageSizeOptions="pageSizeOptions"
+                      showQuickJumper @change="paginationChange"
+                      :show-total="total=>`共${total}条记录`"/>
 
-        </a-card>
-      </a-col>
-    </a-row>
+      </a-card>
+
+    </div>
+
+    <!--    <a-row type="flex">-->
+
+    <!--      &lt;!&ndash;这是分割线gutter&ndash;&gt;-->
+    <!--      <a-col flex="10px"></a-col>-->
+
+    <!--      &lt;!&ndash;右侧内容区&ndash;&gt;-->
+    <!--      <a-col flex="auto" class="right-column">-->
+
+    <!--      </a-col>-->
+    <!--    </a-row>-->
   </div>
 
   <!--添加子项目的模态框-->
@@ -139,10 +173,20 @@ import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/moda
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message} from "ant-design-vue";
 import {onMounted, reactive, ref, watch} from "vue";
-import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
+import {PlusOutlined, SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
-import {projectApi} from "@/api/project";
+import {iProjectGetList, projectApi} from "@/api/project";
+import {iProgressGetList} from "@/api/progress";
+
+//查询条件
+const queryForm = reactive<iProgressGetList>({
+  disassembly_id: 0,
+  page: 1,
+  page_size: 12,
+  order_by: "",
+  desc: false,
+})
 
 let tableData = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
 
@@ -151,32 +195,55 @@ let columns = ref([
     title: '行号',
     dataIndex: 'line_number',
     className: 'line_number',
+    width: '40px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '日期',
+    dataIndex: 'date',
+    className: 'date',
     width: '60px',
     ellipsis: true,
     align: 'center',
   },
   {
-    title: '名称',
-    dataIndex: 'name',
-    className: 'name',
-    width: '40%',
+    title: '类型',
+    dataIndex: 'type',
+    className: 'type',
+    width: '80px',
     ellipsis: true,
     align: 'center',
   },
   {
-    title: '权重',
-    dataIndex: 'weight',
-    className: 'weight',
-    width: '30%',
+    title: '进度值',
+    dataIndex: 'value',
+    className: 'value',
+    width: '60px',
+    align: 'center',
+  },
+  {
+    title: '数据来源',
+    dataIndex: 'data_source',
+    className: 'data_source',
+    width: '80px',
+    align: 'center',
+  },
+  {
+    title: '备注',
+    dataIndex: 'remarks',
+    className: 'remarks',
+    width: '10%',
     align: 'center',
   },
   {
     title: '操作',
     className: 'action',
     dataIndex: 'action',
-    width: '150px',
+    width: '80px',
     ellipsis: true,
     align: 'center',
+    fixed: 'right',
   },
 ])
 
@@ -184,7 +251,7 @@ let columns = ref([
 const modalForCreatingSubitems = ref()
 
 function showModalForCreatingDisassembly(superiorID: number | undefined) {
-    modalForCreatingSubitems.value.showModal(superiorID)
+  modalForCreatingSubitems.value.showModal(superiorID)
 }
 
 //用于修改选中项的模态框
@@ -433,16 +500,19 @@ const paginationChange = (page: number, pageSize: number) => {
 </script>
 
 <style scoped lang="scss">
-.layout1 {
-  overflow-x: auto;
+.layout {
+  overflow-x: hidden;
+  display: flex;
 
   .left-column {
     background-color: white;
+    width: 270px;
+    min-width: 270px;
     height: calc(100vh - 55px);
+    margin-right: 10px;
 
     :deep(.ant-tree) {
-      height: calc(100vh - 141px);
-      width: 255px;
+      height: calc(100vh - 140px);
       overflow: auto;
     }
 
@@ -456,23 +526,66 @@ const paginationChange = (page: number, pageSize: number) => {
       }
     }
   }
-}
 
-.right-column {
-  //这个宽度必须有！
-  //由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
-  //这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
-  width: 10px;
-
-  .table-buttons-row {
-    height: 35px;
+  .right-column {
+    width: calc(100vw - 440px);
+    max-width: calc(100vw - 440px);
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+
+    //.search-bar {
+    //  background-color: white;
+    //  padding: 7px;
+    //  margin-bottom: 7px;
+    //
+    //  #chinese-name, #english-name {
+    //    width: 180px;
+    //    margin-right: 10px;
+    //  }
+    //
+    //  .button {
+    //    margin-right: 10px;
+    //  }
+    //}
+
+    .table-buttons-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
   }
 }
 
+
+//滚动条样式，默认不显示表格的滚动条
+:deep(.ant-table) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  //鼠标移入后：
+  &:hover {
+    //显示滚动条
+    ::-webkit-scrollbar {
+      /* 滚动条整体样式 */
+      width: 8px;
+      height: 8px;
+      display: block;
+    }
+
+    //由于这里显示了滚动条，所以之前预留的padding需要取消
+    .ant-table-content {
+      padding-bottom: 0;
+    }
+  }
+}
+
+//由于滚动条默认不显示，这里需要给滚动条预留边界，否则鼠标移入表格时会影响下面内容的排布
+:deep(.ant-table-content) {
+  padding-bottom: 8px;
+}
 
 //鼠标移入节点时，显示相关操作
 :deep(.ant-tree) {
@@ -518,6 +631,20 @@ const paginationChange = (page: number, pageSize: number) => {
   .project-selector {
     flex: 1;
   }
+}
+
+//每个a-col增加下边距，这样换行时上下的col不会粘在一起
+.ant-col {
+  margin-bottom: 10px;
+}
+
+//由于上面的a-col设置了下边距，为了最后一行不跟row的padding冲突，这里调整一下row的下边距
+.ant-row {
+  margin-bottom: -10px;
+}
+
+.ant-picker-range {
+  width: 230px;
 }
 
 </style>
