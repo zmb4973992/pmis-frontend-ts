@@ -57,7 +57,7 @@
         </a-tooltip>
       </div>
     </a-row>
-    <a-table :data-source="data.dataList" :columns="columns"
+    <a-table :data-source="data.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1500}">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
@@ -100,7 +100,7 @@ const queryForm = reactive({
 })
 
 const data = reactive({
-  dataList: [],
+  list: [],
   numberOfPages: 1,
   numberOfRecords: 1,
 })

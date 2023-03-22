@@ -28,9 +28,10 @@ export interface iProgressGetList {
     disassembly_id: number
     date_gte?: string
     date_lte?: string
-    type_in?: number[]
-    value_gte?:number
-    value_lte?:number
+    type?:number
+    // type_in?: number[]
+    // value_gte?:number
+    // value_lte?:number
     data_source?:number
 
     page?: number

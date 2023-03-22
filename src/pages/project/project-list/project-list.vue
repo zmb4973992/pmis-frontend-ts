@@ -56,7 +56,7 @@
         </a-tooltip>
       </div>
     </a-row>
-    <a-table :data-source="data.dataList" :columns="columns"
+    <a-table :data-source="data.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1500}">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
@@ -131,7 +131,7 @@ const filterOption = (input: string, option: any) =>
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
 
-let data = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 0,})
+let data = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
 let columns = ref([
   {

@@ -77,7 +77,7 @@
             </div>
           </div>
 
-          <a-table :data-source="tableData.dataList" :columns="columns"
+          <a-table :data-source="tableData.list" :columns="columns"
                    size="small" :pagination="false">
             <template #bodyCell="{column,record,index}">
               <template v-if="column.dataIndex === 'line_number'">
@@ -144,7 +144,7 @@ import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 
-let tableData = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
+let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 1,})
 
 let columns = ref([
   {

@@ -20,7 +20,7 @@
   </div>
 
   <!--表格主体-->
-  <a-table :data-source="data.dataList" :columns="columns"
+  <a-table :data-source="data.list" :columns="columns"
            :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
            size="small" :pagination="false">
     <template #bodyCell="{ column, record }">
@@ -88,7 +88,7 @@ const queryCondition = reactive({
 })
 //查到的数据集
 let data = reactive({
-  dataList: [], totalPages: 1, totalRecords: 1,
+  list: [], totalPages: 1, totalRecords: 1,
 })
 //表格栏目
 let columns = ref([

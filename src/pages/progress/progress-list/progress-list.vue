@@ -23,31 +23,30 @@
     <div class="right-column">
       <!--搜索框-->
       <a-card size="small" :bordered="false" style="margin-bottom: 10px">
-        <a-row :gutter="20">
+        <a-row :gutter="10">
           <a-col>
             <span>进度类型：</span>
-            <a-select id="type-in" mode="multiple" :max-tag-count="1" :max-tag-text-length="2" placeholder="进度类型"
-                      v-model:value="queryForm.type_in" :options="typeOptions"
+            <a-select ref="progressType" placeholder="进度类型"
+                      v-model:value="queryCondition.type" :options="progressTypeOptions"
                       style="width:130px">
             </a-select>
           </a-col>
           <a-col>
             <span>数据来源：</span>
-            <a-select id="data-source" mode="multiple" :max-tag-count="1" :max-tag-text-length="2"
-                      placeholder="数据来源"
-                      v-model:value="queryForm.data_source" :options="dataSourceOptions"
+            <a-select ref="dataSource" placeholder="数据来源"
+                      v-model:value="queryCondition.data_source" :options="dataSourceOptions"
                       style="width:130px">
             </a-select>
           </a-col>
 
           <a-col>
             <span>日期范围：</span>
-            <a-range-picker v-model:value="dateRange" >
+            <a-range-picker v-model:value="dateRange">
             </a-range-picker>
           </a-col>
           <a-col>
             <a-button-group>
-              <a-button class="button" type="primary" @click="loadList">
+              <a-button class="button" type="primary" @click="loadTableData">
                 <template #icon>
                   <SearchOutlined/>
                 </template>
@@ -62,7 +61,11 @@
             </a-button-group>
           </a-col>
         </a-row>
+
+        {{ queryCondition }}
+
       </a-card>
+
 
       <a-card size="small" :bordered="false">
         <div class="table-buttons-row">
@@ -100,8 +103,8 @@
           </div>
         </div>
 
-        <a-table :data-source="tableData.dataList" :columns="columns"
-                 size="small" :pagination="false" :scroll="{x:1200}">
+        <a-table :data-source="tableData.list" :columns="columns"
+                 size="small" :pagination="false" :scroll="{x:1000}">
           <template #bodyCell="{column,record,index}">
             <template v-if="column.dataIndex === 'line_number'">
               {{ index + 1 }}
@@ -122,19 +125,7 @@
                       :show-total="total=>`共${total}条记录`"/>
 
       </a-card>
-
     </div>
-
-    <!--    <a-row type="flex">-->
-
-    <!--      &lt;!&ndash;这是分割线gutter&ndash;&gt;-->
-    <!--      <a-col flex="10px"></a-col>-->
-
-    <!--      &lt;!&ndash;右侧内容区&ndash;&gt;-->
-    <!--      <a-col flex="auto" class="right-column">-->
-
-    <!--      </a-col>-->
-    <!--    </a-row>-->
   </div>
 
   <!--添加子项目的模态框-->
@@ -176,76 +167,10 @@ import {onMounted, reactive, ref, watch} from "vue";
 import {PlusOutlined, SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
 import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
-import {iProjectGetList, projectApi} from "@/api/project";
-import {iProgressGetList} from "@/api/progress";
-
-//查询条件
-const queryForm = reactive<iProgressGetList>({
-  disassembly_id: 0,
-  page: 1,
-  page_size: 12,
-  order_by: "",
-  desc: false,
-})
-
-let tableData = reactive({dataList: [], numberOfPages: 1, numberOfRecords: 1,})
-
-let columns = ref([
-  {
-    title: '行号',
-    dataIndex: 'line_number',
-    className: 'line_number',
-    width: '40px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '日期',
-    dataIndex: 'date',
-    className: 'date',
-    width: '60px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '类型',
-    dataIndex: 'type',
-    className: 'type',
-    width: '80px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '进度值',
-    dataIndex: 'value',
-    className: 'value',
-    width: '60px',
-    align: 'center',
-  },
-  {
-    title: '数据来源',
-    dataIndex: 'data_source',
-    className: 'data_source',
-    width: '80px',
-    align: 'center',
-  },
-  {
-    title: '备注',
-    dataIndex: 'remarks',
-    className: 'remarks',
-    width: '10%',
-    align: 'center',
-  },
-  {
-    title: '操作',
-    className: 'action',
-    dataIndex: 'action',
-    width: '80px',
-    ellipsis: true,
-    align: 'center',
-    fixed: 'right',
-  },
-])
+import {projectApi} from "@/api/project";
+import {iProgressGetList, progressApi} from "@/api/progress";
+import {dictionaryItemApi} from "@/api/dictionary-item";
+import {Dayjs} from "dayjs";
 
 //用于创建子项的模态框
 const modalForCreatingSubitems = ref()
@@ -282,9 +207,8 @@ function toBeCompleted() {
   message.info('待完成')
 }
 
-const projectOptions = ref<{ value: number; label: string }[]>([])
-
 //树形图相关的数据
+
 interface treeDataFormat {
   title: string
   key: number
@@ -326,37 +250,18 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
   }
 }
 
-
 const selectedDisassemblyIDs = ref([]);
-watch(selectedDisassemblyIDs, () => loadTableData());
-
-async function loadTableData() {
-  //如果选择了拆解id
-  if (selectedDisassemblyIDs.value.length > 0) {
-    let res = await disassemblyApi.getList({
-      superior_id: selectedDisassemblyIDs.value[0],
-      page_size: queryCondition.page_size,
-      page: queryCondition.page,
-    })
-    if (res && res.data) {
-      for (let item of res.data) {
-        item.weight = (item.weight * 100).toFixed(1) + '%'
-      }
-      tableData.dataList = res?.data
-      tableData.numberOfPages = res?.paging?.number_of_pages
-      tableData.numberOfRecords = res?.paging?.number_of_records
-    } else {
-      tableData.dataList = []
-    }
-  } else {
-    tableData.dataList = []
-  }
-}
+watch(selectedDisassemblyIDs, () => {
+  console.log(selectedDisassemblyIDs.value)
+  loadTableData()
+});
 
 function loadData() {
   loadTreeData()
   loadTableData()
 }
+
+const projectOptions = ref<{ value: number; label: string }[]>([])
 
 //获取项目下拉框的选项
 async function loadProjectOptions() {
@@ -368,63 +273,63 @@ async function loadProjectOptions() {
 
 loadProjectOptions()
 
-function change(targetKey: string) {
-  let a = Number(targetKey)
-  if (a === 1) {
-    setTimeout(() => {
-      let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-      chart1.resize()
-    }, 1)
-  } else if (a === 2) {
-    setTimeout(() => {
-      let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
-      chart2.resize()
-      chart2.setOption({
-        tooltip: {
-          trigger: 'axis',
-        },
-        legend: {
-          show: true,
-          data: ['boys', 'girls'],
-        },
-        xAxis: {
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: 'boys',
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: 'line',
-            smooth: true
-          },
-          {
-            name: 'girls',
-            data: [480, 932, 401, 534, 1190, 1530, 1520],
-            type: 'line',
-            smooth: true
-          },
-        ],
-        dataZoom: [
-          {
-            type: 'slider',
-          },
-          {
-            type: 'inside',
-          }
-        ],
-
-      })
-      window.addEventListener('resize', () => {
-        chart2.resize()
-      })
-    }, 1)
-  }
-
-}
+// function change(targetKey: string) {
+//   let a = Number(targetKey)
+//   if (a === 1) {
+//     setTimeout(() => {
+//       let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
+//       chart1.resize()
+//     }, 1)
+//   } else if (a === 2) {
+//     setTimeout(() => {
+//       let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
+//       chart2.resize()
+//       chart2.setOption({
+//         tooltip: {
+//           trigger: 'axis',
+//         },
+//         legend: {
+//           show: true,
+//           data: ['boys', 'girls'],
+//         },
+//         xAxis: {
+//           type: 'category',
+//           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+//         },
+//         yAxis: {
+//           type: 'value'
+//         },
+//         series: [
+//           {
+//             name: 'boys',
+//             data: [820, 932, 901, 934, 1290, 1330, 1320],
+//             type: 'line',
+//             smooth: true
+//           },
+//           {
+//             name: 'girls',
+//             data: [480, 932, 401, 534, 1190, 1530, 1520],
+//             type: 'line',
+//             smooth: true
+//           },
+//         ],
+//         dataZoom: [
+//           {
+//             type: 'slider',
+//           },
+//           {
+//             type: 'inside',
+//           }
+//         ],
+//
+//       })
+//       window.addEventListener('resize', () => {
+//         chart2.resize()
+//       })
+//     }, 1)
+//   }
+//
+// }
 
 onMounted(() => {
   //需要等节点挂载完毕后，才开始echarts的相关操作，否则会找不到节点
@@ -478,13 +383,138 @@ onMounted(() => {
   // window.addEventListener('resize', () => chart1.resize())
 })
 
-//查询条件
-const queryCondition = reactive({
+const dateRange = ref<[Dayjs, Dayjs]>()
+
+console.log(dateRange.value);
+setTimeout(()=>console.log(dateRange.value[0].format("YYYY-MM-DD")),3000)
+
+//表格的查询条件
+const queryCondition = reactive<iProgressGetList>({
+  disassembly_id: 0,
   page: 1,
   page_size: 12,
   order_by: "",
   desc: false,
 })
+
+
+let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 1,})
+
+let columns = ref([
+  {
+    title: '行号',
+    dataIndex: 'line_number',
+    className: 'line_number',
+    width: '60px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '日期',
+    dataIndex: 'date',
+    className: 'date',
+    width: '10%',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+    className: 'type',
+    width: '120px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '进度值',
+    dataIndex: 'value',
+    className: 'value',
+    width: '100px',
+    align: 'center',
+  },
+  {
+    title: '数据来源',
+    dataIndex: 'data_source',
+    className: 'data_source',
+    align: 'center',
+  },
+  {
+    title: '备注',
+    dataIndex: 'remarks',
+    className: 'remarks',
+    align: 'center',
+  },
+  {
+    title: '操作',
+    className: 'action',
+    dataIndex: 'action',
+    width: '120px',
+    ellipsis: true,
+    align: 'center',
+    fixed: 'right',
+  },
+])
+
+async function loadTableData() {
+  //如果选择了拆解id
+  if (selectedDisassemblyIDs.value.length > 0) {
+    let res = await progressApi.getList({
+      disassembly_id: selectedDisassemblyIDs.value[0],
+      date_gte: queryCondition.date_gte,
+      date_lte: queryCondition.date_lte,
+      data_source: queryCondition.data_source,
+      page: queryCondition.page,
+      page_size: queryCondition.page_size,
+      order_by: queryCondition.order_by,
+      desc: queryCondition.desc,
+    })
+    if (res && res.data) {
+      console.log(res.data);
+      for (let item of res.data) {
+        item.weight = (item.weight * 100).toFixed(1) + '%'
+      }
+      tableData.list = res?.data
+      tableData.numberOfPages = res?.paging?.number_of_pages
+      tableData.numberOfRecords = res?.paging?.number_of_records
+    } else {
+      tableData.list = []
+    }
+  } else {
+    tableData.list = []
+  }
+}
+
+//获取进度类型的选项
+const progressTypeOptions = ref<{ value: number; label: string }[]>([])
+dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度类型'}).then(
+    res => {
+      for (let item of res.data) {
+        progressTypeOptions.value.push({value: item.id, label: item.name})
+      }
+    }
+)
+
+//获取数据来源的选项
+const dataSourceOptions = ref<{ value: number; label: string }[]>([])
+dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度的数据来源'}).then(
+    res => {
+      for (let item of res.data) {
+        dataSourceOptions.value.push({value: item.id, label: item.name})
+      }
+    }
+)
+
+
+// function reset() {
+//   queryCondition.department_id_in = []
+//   queryForm.name_include = ''
+//   queryForm.department_name_include = ''
+//   queryForm.page = 1
+//   queryForm.page_size = 12
+//   queryForm.order_by = ''
+//   queryForm.desc = false
+//   loadList()
+// }
 
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
@@ -533,21 +563,6 @@ const paginationChange = (page: number, pageSize: number) => {
     display: flex;
     flex-direction: column;
 
-    //.search-bar {
-    //  background-color: white;
-    //  padding: 7px;
-    //  margin-bottom: 7px;
-    //
-    //  #chinese-name, #english-name {
-    //    width: 180px;
-    //    margin-right: 10px;
-    //  }
-    //
-    //  .button {
-    //    margin-right: 10px;
-    //  }
-    //}
-
     .table-buttons-row {
       display: flex;
       justify-content: space-between;
@@ -555,36 +570,6 @@ const paginationChange = (page: number, pageSize: number) => {
       margin-bottom: 10px;
     }
   }
-}
-
-
-//滚动条样式，默认不显示表格的滚动条
-:deep(.ant-table) {
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
-
-  //鼠标移入后：
-  &:hover {
-    //显示滚动条
-    ::-webkit-scrollbar {
-      /* 滚动条整体样式 */
-      width: 8px;
-      height: 8px;
-      display: block;
-    }
-
-    //由于这里显示了滚动条，所以之前预留的padding需要取消
-    .ant-table-content {
-      padding-bottom: 0;
-    }
-  }
-}
-
-//由于滚动条默认不显示，这里需要给滚动条预留边界，否则鼠标移入表格时会影响下面内容的排布
-:deep(.ant-table-content) {
-  padding-bottom: 8px;
 }
 
 //鼠标移入节点时，显示相关操作
@@ -643,6 +628,7 @@ const paginationChange = (page: number, pageSize: number) => {
   margin-bottom: -10px;
 }
 
+//日期选择器的宽度
 .ant-picker-range {
   width: 230px;
 }
