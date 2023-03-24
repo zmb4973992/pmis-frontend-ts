@@ -10,6 +10,7 @@
           </a-select>
         </div>
 
+
         <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
         <a-tree v-if="treeData?.length" :tree-data="treeData"
@@ -34,15 +35,14 @@
           <a-col>
             <span>数据来源：</span>
             <a-select ref="dataSource" placeholder="数据来源"
-                      v-model:value="queryCondition.data_source" :options="dataSourceOptions"
+                      v-model:value="queryCondition.dataSource" :options="dataSourceOptions"
                       style="width:130px">
             </a-select>
           </a-col>
 
           <a-col>
             <span>日期范围：</span>
-            <a-range-picker v-model:value="dateRange">
-            </a-range-picker>
+            <a-range-picker v-model:value="dateRange"/>
           </a-col>
           <a-col>
             <a-button-group>
@@ -118,7 +118,7 @@
         </a-table>
 
         <!--分页器-->
-        <a-pagination id="paginator" v-model:pageSize="queryCondition.page_size"
+        <a-pagination id="paginator" v-model:pageSize="queryCondition.pageSize"
                       :total="tableData.numberOfRecords" showSizeChanger
                       :pageSizeOptions="pageSizeOptions"
                       showQuickJumper @change="paginationChange"
@@ -128,15 +128,15 @@
     </div>
   </div>
 
-  <!--添加子项目的模态框-->
-  <modal-for-creating-subitems
-      ref="modalForCreatingSubitems" @loadData="loadData" :projectID="projectID"/>
-  <!--修改单项的模态框-->
-  <modal-for-updating-subitem
-      ref="modalForUpdatingItem" @loadData="loadData"/>
-  <!--删除单项的模态框-->
-  <modal-for-deleting-item
-      ref="modalForDeletingItem" @loadData="loadData"/>
+  <!--添加进度的模态框-->
+  <modal-for-creating-progress
+      ref="modalForCreatingProgress" @loadData="loadData" :projectID="projectID"/>
+  <!--修改进度的模态框-->
+  <modal-for-updating-progress
+      ref="modalForUpdatingProgress" @loadData="loadData"/>
+  <!--删除进度的模态框-->
+  <modal-for-deleting-progress
+      ref="modalForDeletingProgress" @loadData="loadData"/>
 
 
   <!--      <a-tabs id="tabs" v-model:activeKey="activeKey"-->
@@ -159,16 +159,15 @@
 </template>
 
 <script setup lang="ts">
-import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/modal-for-creating-inferiors.vue";
-import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-inferiors.vue";
-import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
+import ModalForCreatingProgress from "@/pages/progress/progress-list/component/modal-for-creating-progress.vue";
+import ModalForUpdatingProgress from "@/pages/progress/progress-list/component/modal-for-updating-progress.vue";
+import ModalForDeletingProgress from "@/pages/progress/progress-list/component/modal-for-deleting-progress.vue";
 import {message} from "ant-design-vue";
-import {onMounted, reactive, ref, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import {PlusOutlined, SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
-import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
-import {iProgressGetList, progressApi} from "@/api/progress";
+import {progressApi} from "@/api/progress";
 import {dictionaryItemApi} from "@/api/dictionary-item";
 import {Dayjs} from "dayjs";
 
@@ -198,9 +197,14 @@ const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 let projectID = ref()
-watch(projectID, () => {
-  loadTreeData()
-  selectedDisassemblyIDs.value = []
+watch(projectID, async () => {
+  await loadTreeData()
+  //选完项目后，默认选择最顶层的拆解id
+  let res = await disassemblyApi.getList({project_id: projectID.value})
+  if (res && res.data) {
+    selectedDisassemblyIDs.value = []
+    selectedDisassemblyIDs.value[0] = res.data[0].id
+  }
 })
 
 function toBeCompleted() {
@@ -228,6 +232,7 @@ async function loadTreeData() {
         treeData.value.push(switchToTreeData(res.data[index]))
       }
     }
+
   } else {
     treeData.value = []
   }
@@ -250,11 +255,16 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
   }
 }
 
-const selectedDisassemblyIDs = ref([]);
-watch(selectedDisassemblyIDs, () => {
-  console.log(selectedDisassemblyIDs.value)
+const selectedDisassemblyIDs = ref<number[]>([]);
+watch(selectedDisassemblyIDs, (newValue) => {
+  if (newValue) {
+    queryCondition.disassemblyID = selectedDisassemblyIDs.value[0]
+  } else {
+    queryCondition.disassemblyID = undefined
+  }
   loadTableData()
-});
+})
+;
 
 function loadData() {
   loadTreeData()
@@ -273,132 +283,35 @@ async function loadProjectOptions() {
 
 loadProjectOptions()
 
-// function change(targetKey: string) {
-//   let a = Number(targetKey)
-//   if (a === 1) {
-//     setTimeout(() => {
-//       let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-//       chart1.resize()
-//     }, 1)
-//   } else if (a === 2) {
-//     setTimeout(() => {
-//       let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
-//       chart2.resize()
-//       chart2.setOption({
-//         tooltip: {
-//           trigger: 'axis',
-//         },
-//         legend: {
-//           show: true,
-//           data: ['boys', 'girls'],
-//         },
-//         xAxis: {
-//           type: 'category',
-//           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-//         },
-//         yAxis: {
-//           type: 'value'
-//         },
-//         series: [
-//           {
-//             name: 'boys',
-//             data: [820, 932, 901, 934, 1290, 1330, 1320],
-//             type: 'line',
-//             smooth: true
-//           },
-//           {
-//             name: 'girls',
-//             data: [480, 932, 401, 534, 1190, 1530, 1520],
-//             type: 'line',
-//             smooth: true
-//           },
-//         ],
-//         dataZoom: [
-//           {
-//             type: 'slider',
-//           },
-//           {
-//             type: 'inside',
-//           }
-//         ],
-//
-//       })
-//       window.addEventListener('resize', () => {
-//         chart2.resize()
-//       })
-//     }, 1)
-//   }
-//
-// }
-
-onMounted(() => {
-  //需要等节点挂载完毕后，才开始echarts的相关操作，否则会找不到节点
-  //这里只处理tabs第一个图表，其他图表都在切换标签时进行处理
-  // let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-  // chart1.resize()
-  // chart1.setOption({
-  //   tooltip: {
-  //     trigger: 'item'
-  //   },
-  //
-  //   title: {
-  //     text: '圆环图的例子',
-  //     left: 'center',
-  //     top: 'center'
-  //   },
-  //   legend: {
-  //     top: '5%',
-  //     left: 'center'
-  //   },
-  //   series: [
-  //     {
-  //       type: 'pie',
-  //       itemStyle: {
-  //         borderRadius: 10,
-  //         borderColor: '#fff',
-  //         borderWidth: 2
-  //       },
-  //       label: {
-  //         show: false,
-  //       },
-  //       data: [
-  //         {
-  //           value: 1548,
-  //           name: 'C'
-  //         },
-  //         {
-  //           value: 335,
-  //           name: 'A'
-  //         },
-  //         {
-  //           value: 234,
-  //           name: 'B'
-  //         },
-  //
-  //       ],
-  //       radius: ['40%', '70%']
-  //     }
-  //   ]
-  // })
-  // window.addEventListener('resize', () => chart1.resize())
-})
-
 const dateRange = ref<[Dayjs, Dayjs]>()
-
-console.log(dateRange.value);
-setTimeout(()=>console.log(dateRange.value[0].format("YYYY-MM-DD")),3000)
+watch(dateRange, (newValue) => {
+  if (newValue) {
+    queryCondition.dateGte = newValue[0].format("YYYY-MM-DD")
+    queryCondition.dateLte = newValue[1].format("YYYY-MM-DD")
+  } else {
+    queryCondition.dateGte = undefined
+    queryCondition.dateLte = undefined
+  }
+})
 
 //表格的查询条件
-const queryCondition = reactive<iProgressGetList>({
-  disassembly_id: 0,
-  page: 1,
-  page_size: 12,
-  order_by: "",
-  desc: false,
-})
+interface queryFormat {
+  disassemblyID?: number
+  dateGte?: string
+  dateLte?: string
+  type?: number
+  dataSource?: number
+
+  page?: number
+  pageSize?: number
+  orderBy?: string
+  desc?: boolean
+}
+
+const queryCondition = reactive<queryFormat>({})
 
 
-let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 1,})
+let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
 let columns = ref([
   {
@@ -457,15 +370,15 @@ let columns = ref([
 
 async function loadTableData() {
   //如果选择了拆解id
-  if (selectedDisassemblyIDs.value.length > 0) {
+  if (queryCondition.disassemblyID) {
     let res = await progressApi.getList({
-      disassembly_id: selectedDisassemblyIDs.value[0],
-      date_gte: queryCondition.date_gte,
-      date_lte: queryCondition.date_lte,
-      data_source: queryCondition.data_source,
+      disassembly_id: queryCondition.disassemblyID,
+      date_gte: queryCondition.dateGte,
+      date_lte: queryCondition.dateLte,
+      data_source: queryCondition.dataSource,
       page: queryCondition.page,
-      page_size: queryCondition.page_size,
-      order_by: queryCondition.order_by,
+      page_size: queryCondition.pageSize,
+      order_by: queryCondition.orderBy,
       desc: queryCondition.desc,
     })
     if (res && res.data) {
@@ -504,17 +417,17 @@ dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度的数据�
     }
 )
 
-
-// function reset() {
-//   queryCondition.department_id_in = []
-//   queryForm.name_include = ''
-//   queryForm.department_name_include = ''
-//   queryForm.page = 1
-//   queryForm.page_size = 12
-//   queryForm.order_by = ''
-//   queryForm.desc = false
-//   loadList()
-// }
+function reset() {
+  queryCondition.dateGte = undefined
+  queryCondition.dateLte = undefined
+  queryCondition.type = undefined
+  queryCondition.dataSource = undefined
+  queryCondition.page = undefined
+  queryCondition.pageSize = undefined
+  queryCondition.orderBy = undefined
+  queryCondition.desc = undefined
+  loadTableData()
+}
 
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
@@ -522,7 +435,7 @@ const pageSizeOptions = ['12', '20', '25', '30']
 //页码变化时的回调函数
 const paginationChange = (page: number, pageSize: number) => {
   queryCondition.page = page
-  queryCondition.page_size = pageSize
+  queryCondition.pageSize = pageSize
   console.log(page, pageSize)
   loadTableData()
 }

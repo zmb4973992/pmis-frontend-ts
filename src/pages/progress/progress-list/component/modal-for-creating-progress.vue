@@ -104,11 +104,11 @@ const visible = ref(false)
 
 const emit = defineEmits(['loadData'])
 
-async function showModal(superiorID?: number) {
+async function showModal(disassemblyID?: number) {
   form.value?.resetFields()
-  if (superiorID) {
-    formData.superiorID = superiorID
-    let res = await disassemblyApi.get({id: superiorID})
+  if (disassemblyID) {
+    formData.superiorID = disassemblyID
+    let res = await disassemblyApi.get({id: disassemblyID})
     if (res && res?.data) {
       visible.value = true
     }

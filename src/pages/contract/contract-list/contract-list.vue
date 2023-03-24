@@ -85,7 +85,8 @@
 <script setup lang="ts">
 //查询条件
 import {reactive, ref} from "vue";
-import {iProjectGetList} from "@/api/project";
+import {SearchOutlined,RedoOutlined,PlusOutlined} from "@ant-design/icons-vue";
+
 //查询条件
 const queryForm = reactive({
   is_showed_by_role: false,

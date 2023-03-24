@@ -144,7 +144,7 @@ import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 
-let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 1,})
+let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
 let columns = ref([
   {
@@ -275,14 +275,14 @@ async function loadTableData() {
       for (let item of res.data) {
         item.weight = (item.weight * 100).toFixed(1) + '%'
       }
-      tableData.dataList = res?.data
+      tableData.list = res?.data
       tableData.numberOfPages = res?.paging?.number_of_pages
       tableData.numberOfRecords = res?.paging?.number_of_records
     } else {
-      tableData.dataList = []
+      tableData.list = []
     }
   } else {
-    tableData.dataList = []
+    tableData.list = []
   }
 }
 

@@ -20,7 +20,7 @@
   </div>
 
   <!--表格主体-->
-  <a-table :data-source="data.list" :columns="columns"
+  <a-table :data-source="tableData.list" :columns="columns"
            :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
            size="small" :pagination="false">
     <template #bodyCell="{ column, record }">
@@ -45,7 +45,7 @@
   </a-table>
 
   <!--分页器-->
-  <a-pagination v-model:pageSize="queryCondition.page_size" :total="data.totalRecords"
+  <a-pagination v-model:pageSize="queryCondition.page_size" :total="tableData.totalRecords"
                 showSizeChanger :pageSizeOptions="pageSizeOptions"
                 showQuickJumper @change="paginationChange"
                 :show-total="total=>`共${total}条记录`"
@@ -87,7 +87,7 @@ const queryCondition = reactive({
   page: 1, page_size: 12, chinese_name_include: '', english_name_include: '',
 })
 //查到的数据集
-let data = reactive({
+let tableData = reactive({
   list: [], totalPages: 1, totalRecords: 1,
 })
 //表格栏目
@@ -103,9 +103,9 @@ onMounted(() => search())
 const search = () => {
   relatedPartyApi.getList(queryCondition).then(
       (res) => {
-        data.dataList = res.data
-        data.totalPages = res.paging.number_of_pages
-        data.totalRecords = res.paging.number_of_records
+        tableData.list = res.data
+        tableData.totalPages = res.paging.number_of_pages
+        tableData.totalRecords = res.paging.number_of_records
       },
   )
 }
@@ -169,9 +169,9 @@ const confirm = (id: number, params: any) => {
   }).then(
       () => relatedPartyApi.getList(queryCondition).then(
           (res) => {
-            data.dataList = res.data
-            data.totalPages = res.paging.total_pages
-            data.totalRecords = res.paging.total_records
+            tableData.list = res.data
+            tableData.totalPages = res.paging.total_pages
+            tableData.totalRecords = res.paging.total_records
           },
       ))
 }
@@ -184,9 +184,9 @@ function deleteRecord(id: number) {
         message.success('删除成功', 2)
         relatedPartyApi.getList(queryCondition).then(
             (res) => {
-              data.dataList = res.data
-              data.totalPages = res.paging.total_pages
-              data.totalRecords = res.paging.total_records
+              tableData.list = res.data
+              tableData.totalPages = res.paging.total_pages
+              tableData.totalRecords = res.paging.total_records
             },
         )
       }

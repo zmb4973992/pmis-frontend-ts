@@ -29,9 +29,6 @@ export interface iProgressGetList {
     date_gte?: string
     date_lte?: string
     type?:number
-    // type_in?: number[]
-    // value_gte?:number
-    // value_lte?:number
     data_source?:number
 
     page?: number

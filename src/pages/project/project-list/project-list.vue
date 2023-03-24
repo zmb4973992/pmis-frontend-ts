@@ -56,7 +56,7 @@
         </a-tooltip>
       </div>
     </a-row>
-    <a-table :data-source="data.list" :columns="columns"
+    <a-table :data-source="tableData.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1500}">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
@@ -74,7 +74,7 @@
 
     <!--分页器-->
     <a-pagination id="paginator" v-model:pageSize="queryForm.page_size"
-                  :total="data.numberOfRecords" showSizeChanger
+                  :total="tableData.numberOfRecords" showSizeChanger
                   :pageSizeOptions="pageSizeOptions"
                   showQuickJumper @change="paginationChange"
                   :show-total="total=>`共${total}条记录`"/>
@@ -131,7 +131,7 @@ const filterOption = (input: string, option: any) =>
 //分页器选项
 const pageSizeOptions = ['12', '20', '25', '30']
 
-let data = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
+let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
 let columns = ref([
   {
@@ -216,9 +216,9 @@ onMounted(() => loadList())
 function loadList() {
   projectApi.getList(queryForm).then(
       (res) => {
-        data.dataList = res.data
-        data.numberOfPages = res.paging?.number_of_pages
-        data.numberOfRecords = res.paging?.number_of_records
+        tableData.list = res.data
+        tableData.numberOfPages = res.paging?.number_of_pages
+        tableData.numberOfRecords = res.paging?.number_of_records
       },
   )
 }
@@ -248,9 +248,9 @@ const deleteRecord = (projectID: number) => {
         message.success('删除成功', 2)
         projectApi.getList(queryForm).then(
             (res) => {
-              data.dataList = res.data
-              data.numberOfPages = res.paging.number_of_pages
-              data.numberOfRecords = res.paging.number_of_records
+              tableData.list = res.data
+              tableData.numberOfPages = res.paging.number_of_pages
+              tableData.numberOfRecords = res.paging.number_of_records
             },
         )
       }
@@ -262,7 +262,7 @@ const create = () =>
 
 function reloadList() {
   projectApi.getList().then(res => {
-    data.dataList = res.data
+    tableData.list = res.data
   })
 }
 
