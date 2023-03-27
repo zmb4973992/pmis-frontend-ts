@@ -1,23 +1,32 @@
 <template>
-  <a-modal v-model:visible="visible" title="添加子项" @ok="onSubmit" style="width: 450px;">
+  <a-modal v-model:visible="visible" title="添加进度" @ok="onSubmit" style="width: 450px;">
 
     <a-form ref="form" :model="formData" :label-col="{span:5}" :wrapper-col="{span:19}"
             :rules="rules">
-      <a-form-item name="superiorID" label="上级名称">
-        <a-tree-select v-model:value="formData.superiorID" show-search
+      <a-form-item name="disassemblyID" label="名称">
+        <a-tree-select v-model:value="formData.disassemblyID"
                        tree-default-expand-all :tree-data="treeData"
-                       dropdownClassName="tree2">
-        </a-tree-select>
+                       dropdownClassName="tree2"/>
       </a-form-item>
 
-      <a-form-item name="name" label="名称">
-        <a-input v-model:value="formData.name"/>
+      <a-form-item name="date" label="日期">
+        <a-date-picker v-model:value="formData.date"/>
       </a-form-item>
 
-      <a-form-item name="weight" label="权重">
-        <a-input-number v-model:value="formData.weight" :controls="false"
+      <a-form-item name="type" label="类型">
+        <a-select v-model:value="formData.type" :options="options.type"/>
+      </a-form-item>
+
+      <a-form-item name="value" label="进度值">
+        <a-input-number v-model:value="formData.value" :controls="false"
                         addon-after="%" :min="0" :max="100" :precision="1"
                         style="width: 120px"/>
+      </a-form-item>
+
+      <a-form-item name="remarks" label="备注">
+        <a-input v-model:value="formData.remarks">
+
+        </a-input>
       </a-form-item>
 
       {{ formData }}
@@ -28,10 +37,13 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {FormInstance, message} from "ant-design-vue";
+import {reactive, ref, watch} from "vue";
+import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {Rule} from "ant-design-vue/es/form";
+import {Dayjs} from "dayjs";
+import {progressApi} from "@/api/progress";
+import {dictionaryItemApi} from "@/api/dictionary-item";
 
 //树形图相关的数据
 interface treeDataFormat {
@@ -45,7 +57,7 @@ let treeData = ref<treeDataFormat[]>([])
 async function loadTreeData() {
   //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
   treeData.value = []
-  const res = await disassemblyApi.getTree({project_id: props.projectID})
+  const res = await disassemblyApi.getTree({project_id: props.projectID as number})
   if (res.data) {
     for (let index in res.data) {
       treeData.value.push(switchToTreeData(res.data[index]))
@@ -75,29 +87,46 @@ const props = defineProps<{
 }>()
 
 interface formDataFormat {
-  name?: string
-  weight?: number
-  superiorID?: number
+  disassemblyID?: number
+  date?: Dayjs
+  type?: number
+  value?: number
+  dataSource?: number
+  remarks?: string
 }
 
 const formData = reactive<formDataFormat>({})
 
-//权重的校验规则
-let checkWeight = async (_rule: Rule, value: number) => {
+//进度值的校验规则
+let checkValue = async (_rule: Rule, value: number) => {
   if (!value && value !== 0) {
     return Promise.reject('请输入权重的值');
-  } else if (value <= 0 || value > 100) {
-    return Promise.reject('权重的值应该大于0、小于等于100');
+  } else if (value < 0 || value > 100) {
+    return Promise.reject('权重的值应该≥0、≤100');
   } else {
     return Promise.resolve();
   }
 };
 
+const options = reactive<{ type: SelectProps['options'], }>({
+  type: [],
+})
+dictionaryItemApi.getList({dictionary_type_name: "进度类型"}).then(
+    res => {
+      if (res.data) {
+        for (let item of res.data) {
+          options.type?.push({value: item.id, label: item.name})
+        }
+      }
+    }
+)
+
 //表单校验规则
 const rules: Record<string, Rule[]> = {
-  superiorID: [{required: true, trigger: 'change',}],
-  name: [{required: true, trigger: 'change'}],
-  weight: [{required: true, validator: checkWeight, trigger: 'change'}],
+  disassemblyID: [{required: true, trigger: 'change',}],
+  date: [{required: true, trigger: 'change',}],
+  type: [{required: true, trigger: 'change',}],
+  value: [{required: true, trigger: 'change', validator: checkValue,}],
 };
 
 const visible = ref(false)
@@ -107,25 +136,28 @@ const emit = defineEmits(['loadData'])
 async function showModal(disassemblyID?: number) {
   form.value?.resetFields()
   if (disassemblyID) {
-    formData.superiorID = disassemblyID
+    formData.disassemblyID = disassemblyID
     let res = await disassemblyApi.get({id: disassemblyID})
     if (res && res?.data) {
       visible.value = true
     }
   } else {
-    formData.superiorID = undefined
+    formData.disassemblyID = undefined
     visible.value = true
   }
   await loadTreeData()
 }
 
+
 function onSubmit() {
   form.value?.validateFields().then(
       async () => {
-        let res = await disassemblyApi.create({
-          name: formData.name as string,
-          superior_id: formData.superiorID as number,
-          weight: formData.weight as number / 100
+        let res = await progressApi.create({
+          disassembly_id: formData.disassemblyID as number,
+          date: formData.date?.format("YYYY-MM-DD") as string,
+          type: formData.type as number,
+          value: formData.value as number / 100,
+          remarks: formData.remarks,
         })
         if (res?.code === 0) {
           message.success('添加成功')
@@ -142,12 +174,6 @@ defineExpose({
   showModal,
 })
 
-//当树形图变化时
-// async function treeSelectChange(disassemblyID: number) {
-//   let res = await disassemblyApi.get({id: disassemblyID})
-//   if (res && res?.data) {
-//   }
-// }
 </script>
 
 <style lang="scss">

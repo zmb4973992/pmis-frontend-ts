@@ -9,7 +9,7 @@ export interface iProgressCreate {
     date: string
     type: number
     value: number
-    remark?: string
+    remarks?: string
 }
 
 export interface iProgressUpdate {
@@ -17,7 +17,7 @@ export interface iProgressUpdate {
 
     date?: string
     value?: number  //如果不行，可以加null试试
-    remark?: string
+    remarks?: string
 }
 
 export interface iProgressDelete {

@@ -71,15 +71,14 @@
         <div class="table-buttons-row">
           <a-space>
             <a-button v-if="projectID" size="small" type="primary"
-                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+                      @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
               <template #icon>
                 <PlusOutlined/>
               </template>
               添加
             </a-button>
 
-            <a-button v-else size="small" type="primary" disabled
-                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+            <a-button v-else size="small" type="primary" disabled>
               <template #icon>
                 <PlusOutlined/>
               </template>
@@ -110,13 +109,14 @@
               {{ index + 1 }}
             </template>
             <template v-else-if="column.dataIndex === 'action'">
-              <a @click="showModalForUpdatingDisassembly(record.id)">修改</a>
+              <a @click="showModalForUpdatingProgress(record.id)">修改</a>
               <a-divider type="vertical"/>
-              <a @click="showModalForDeletingDisassembly(record.id)" style="color: red">删除</a>
+              <a @click="showModalForDeletingProgress(record.id)" style="color: red">删除</a>
             </template>
           </template>
         </a-table>
 
+        {{ queryCondition }}
         <!--分页器-->
         <a-pagination id="paginator" v-model:pageSize="queryCondition.pageSize"
                       :total="tableData.numberOfRecords" showSizeChanger
@@ -171,25 +171,25 @@ import {progressApi} from "@/api/progress";
 import {dictionaryItemApi} from "@/api/dictionary-item";
 import {Dayjs} from "dayjs";
 
-//用于创建子项的模态框
-const modalForCreatingSubitems = ref()
+//用于创建进度的模态框
+const modalForCreatingProgress = ref()
 
-function showModalForCreatingDisassembly(superiorID: number | undefined) {
-  modalForCreatingSubitems.value.showModal(superiorID)
+function showModalForCreatingProgress(disassemblyID?: number) {
+  modalForCreatingProgress.value.showModal(disassemblyID)
 }
 
-//用于修改选中项的模态框
-const modalForUpdatingItem = ref()
+//用于修改进度的模态框
+const modalForUpdatingProgress = ref()
 
-function showModalForUpdatingDisassembly(disassemblyID: number) {
-  modalForUpdatingItem.value.showModal(disassemblyID)
+function showModalForUpdatingProgress(disassemblyID: number) {
+  modalForUpdatingProgress.value.showModal(disassemblyID)
 }
 
-//用于删除选中项的模态框
-const modalForDeletingItem = ref()
+//用于删除选进度的模态框
+const modalForDeletingProgress = ref()
 
-function showModalForDeletingDisassembly(disassemblyID: number) {
-  modalForDeletingItem.value.showModal(disassemblyID)
+function showModalForDeletingProgress(disassemblyID: number) {
+  modalForDeletingProgress.value.showModal(disassemblyID)
 }
 
 //项目选择框的过滤器
@@ -332,7 +332,7 @@ let columns = ref([
   },
   {
     title: '类型',
-    dataIndex: 'type',
+    dataIndex: ['type', 'name'],
     className: 'type',
     width: '120px',
     ellipsis: true,
@@ -347,7 +347,7 @@ let columns = ref([
   },
   {
     title: '数据来源',
-    dataIndex: 'data_source',
+    dataIndex: ['data_source', 'name'],
     className: 'data_source',
     align: 'center',
   },
@@ -373,6 +373,7 @@ async function loadTableData() {
   if (queryCondition.disassemblyID) {
     let res = await progressApi.getList({
       disassembly_id: queryCondition.disassemblyID,
+      type: queryCondition.type,
       date_gte: queryCondition.dateGte,
       date_lte: queryCondition.dateLte,
       data_source: queryCondition.dataSource,
@@ -382,9 +383,10 @@ async function loadTableData() {
       desc: queryCondition.desc,
     })
     if (res && res.data) {
-      console.log(res.data);
+      //获取表格数据时需要重置到第一页
+      queryCondition.page = 1
       for (let item of res.data) {
-        item.weight = (item.weight * 100).toFixed(1) + '%'
+        item.value = (item.value * 100).toFixed(1) + '%'
       }
       tableData.list = res?.data
       tableData.numberOfPages = res?.paging?.number_of_pages
