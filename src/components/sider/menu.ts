@@ -1,29 +1,33 @@
-import {menu} from "@/components/interface";
+import {menuFormat} from "@/components/interface/menu";
 
-const menuList: menu[] = [
+const menuList: menuFormat[] = [
     {
         path: '/progress',
         label: '进度',
         icon: 'PlayCircleOutlined',
         children: [
             {
-                path: '/disassembly',
+                path: '/progress/disassembly',
                 label: '拆解项目',
             },
             {
-                path: '/list',
-                label: '当前情况',
+                path: '/progress/list',
+                label: '当前情况（表格）',
             },
             {
-                path: '/snapshot',
+                path: '/progress/chart',
+                label:'当前情况（示意图）',
+            },
+            {
+                path: '/progress/snapshot',
                 label: '历史快照',
             },
             {
-                path: '/warning',
+                path: '/progress/warning',
                 label: '进度预警',
             },
             {
-                path: '/update_log',
+                path: '/progress/update_log',
                 label: '更新日志',
             },
         ],
@@ -34,53 +38,53 @@ const menuList: menu[] = [
         icon: 'DownOutlined',
         children: [
             {
-                path: '/list',
+                path: '/project/list',
                 label: '项目列表',
             },
             {
-                path: '/performance',
+                path: '/project/performance',
                 label: '历史业绩',
             },
             {
-                path: '/member',
+                path: '/project/member',
                 label: '成员管理',
             },
         ],
     },
     {
-        path: '/contract',
+        path: '/project/contract',
         label: '合同',
         icon: 'FileTextOutlined',
         children: [
             {
-                path: '/list',
+                path: '/project/list',
                 label: '合同列表',
             },
         ],
     },
     {
-        path: '/related-party',
+        path: '/project/related-party',
         label: '相关方',
         icon: 'UpOutlined',
         children: [
             {
-                path: '/list',
+                path: '/project/list',
                 label: '相关方列表',
             },
         ],
     },
     {
-        path: '/message',
+        path: '/project/message',
         label: '消息中心',
         icon: 'UpOutlined',
     },
     {
-        path: '/user_management',
+        path: '/project/user_management',
         label: '用户管理',
         icon: 'MessageOutlined',
         children: [
             {
-                path: '/organization_structure',
+                path: '/project/organization_structure',
                 label: '组织结构',
             },
         ],

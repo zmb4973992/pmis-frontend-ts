@@ -27,13 +27,23 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: '/progress/list',
-                name: '当前情况',
+                name: '当前情况（表格）',
                 meta: {
                     title: '当前情况',
                     requireAuth: true,
                     permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
                 },
                 component: () => import('@/pages/progress/progress-list/progress-list.vue')
+            },
+            {
+                path: '/progress/chart',
+                name: '当前情况（示意图）',
+                meta: {
+                    title: '当前情况',
+                    // requireAuth: true,
+                    // permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                },
+                component: () => import('@/pages/progress/progress-chart/progress-chart.vue')
             },
             {
                 path: '/progress/snapshot',

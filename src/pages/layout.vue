@@ -4,7 +4,7 @@
     <a-layout-sider collapsible :trigger="null" v-model:collapsed="isCollapsed"
                     class="left-layout" :width="isCollapsed? 'any':'140px'">
       <Logo/>
-      <Sider class="sider-bar"/>
+      <Sider class="sider-bar" :menuList="menuList"/>
     </a-layout-sider>
     <!--右侧内容区域-->
     <a-layout class="right-layout">
@@ -26,6 +26,7 @@ import Logo from '@/components/logo.vue'
 import Header from '@/components/header/header.vue'
 import useGlobalStore from "@/store/global";
 import {computed} from "vue";
+import {menuList} from "@/components/sider/menu";
 
 const globalStore = useGlobalStore()
 //这里的值是函数，使用计算属性可以利用缓存、提高性能

@@ -16,7 +16,8 @@ export interface iProgressUpdate {
     id: number
 
     date?: string
-    value?: number  //如果不行，可以加null试试
+    type?:number
+    value?: number
     remarks?: string
 }
 

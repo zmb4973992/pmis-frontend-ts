@@ -6,16 +6,13 @@
         <div class="label-and-selector" style="display: flex">
           <a-select class="project-selector" show-search placeholder="请选择项目"
                     :filter-option="projectFilterOption" v-model:value="projectID"
-                    :options="projectOptions">
-          </a-select>
+                    :options="projectOptions"/>
         </div>
-
 
         <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
         <a-tree v-if="treeData?.length" :tree-data="treeData"
-                v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true">
-        </a-tree>
+                v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"/>
       </a-card>
 
     </div>
@@ -29,15 +26,13 @@
             <span>进度类型：</span>
             <a-select ref="progressType" placeholder="进度类型"
                       v-model:value="queryCondition.type" :options="progressTypeOptions"
-                      style="width:130px">
-            </a-select>
+                      style="width:130px"/>
           </a-col>
           <a-col>
             <span>数据来源：</span>
             <a-select ref="dataSource" placeholder="数据来源"
                       v-model:value="queryCondition.dataSource" :options="dataSourceOptions"
-                      style="width:130px">
-            </a-select>
+                      style="width:130px"/>
           </a-col>
 
           <a-col>
@@ -61,35 +56,33 @@
             </a-button-group>
           </a-col>
         </a-row>
-
-        {{ queryCondition }}
-
       </a-card>
-
 
       <a-card size="small" :bordered="false">
         <div class="table-buttons-row">
           <a-space>
-            <a-button v-if="projectID" size="small" type="primary"
-                      @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-
-            <a-button v-else size="small" type="primary" disabled>
-              <template #icon>
-                <PlusOutlined/>
-              </template>
-              添加
-            </a-button>
-            <!--              <a-button v-else size="small" type="primary" disabled>-->
-            <!--                <template #icon>-->
-            <!--                  <PlusOutlined/>-->
-            <!--                </template>-->
-            <!--                添加-->
-            <!--              </a-button>-->
+            <template v-if="projectID">
+              <a-button size="small" type="primary"
+                        @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
+                <template #icon>
+                  <PlusOutlined/>
+                </template>
+                添加
+              </a-button>
+            </template>
+            <template v-else>
+              <a-tooltip>
+                <template #title>
+                  先在左侧选择项目后，才能添加进度
+                </template>
+                <a-button size="small" type="primary" disabled>
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  添加
+                </a-button>
+              </a-tooltip>
+            </template>
           </a-space>
           <div class="buttons-for-table-setting">
             <a-tooltip title="设置列" size="small">
@@ -103,27 +96,64 @@
         </div>
 
         <a-table :data-source="tableData.list" :columns="columns"
-                 size="small" :pagination="false" :scroll="{x:1000}">
+                 size="small" :pagination="false" :scroll="{x:1000}"
+                 @change="tableChange">
           <template #bodyCell="{column,record,index}">
             <template v-if="column.dataIndex === 'line_number'">
               {{ index + 1 }}
             </template>
             <template v-else-if="column.dataIndex === 'action'">
-              <a @click="showModalForUpdatingProgress(record.id)">修改</a>
-              <a-divider type="vertical"/>
-              <a @click="showModalForDeletingProgress(record.id)" style="color: red">删除</a>
+              <template v-if="record?.data_source?.name === '系统计算'">
+                <a-tooltip>
+                  <template #title>
+                    <span>”系统计算“的数据无法修改</span>
+                  </template>
+                  <a-button type="link" disabled style="padding: 0">
+                    修改
+                  </a-button>
+                </a-tooltip>
+                <a-divider type="vertical"/>
+                <a-tooltip placement="topRight">
+                  <template #title>
+                    <span>”系统计算“的数据无法删除</span>
+                  </template>
+                  <a-button type="link" disabled style="padding: 0">
+                    删除
+                  </a-button>
+                </a-tooltip>
+              </template>
+              <template v-else>
+                <a-button type="link" style="padding: 0"
+                          @click="showModalForUpdatingProgress(record.id)">
+                  修改
+                </a-button>
+                <a-divider type="vertical"/>
+                <a-button type="link" style="padding: 0" danger
+                          @click="showModalForDeletingProgress(record.id)">
+                  删除
+                </a-button>
+              </template>
+              <!--              <template v-else>-->
+              <!--                <a @click="showModalForUpdatingProgress(record.id)">-->
+              <!--                  <span>修改</span>-->
+              <!--                </a>-->
+              <!--                <a-divider type="vertical"/>-->
+              <!--                <a @click="showModalForDeletingProgress(record.id)" style="color: red">-->
+              <!--                  <span>删除</span>-->
+              <!--                </a>-->
+              <!--              </template>-->
+
             </template>
+
           </template>
         </a-table>
 
-        {{ queryCondition }}
         <!--分页器-->
         <a-pagination id="paginator" v-model:pageSize="queryCondition.pageSize"
                       :total="tableData.numberOfRecords" showSizeChanger
                       :pageSizeOptions="pageSizeOptions"
                       showQuickJumper @change="paginationChange"
                       :show-total="total=>`共${total}条记录`"/>
-
       </a-card>
     </div>
   </div>
@@ -308,7 +338,11 @@ interface queryFormat {
   desc?: boolean
 }
 
-const queryCondition = reactive<queryFormat>({})
+const queryCondition = reactive<queryFormat>({
+  orderBy: "date",
+  desc: true,
+  pageSize: 12,
+})
 
 
 let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
@@ -329,6 +363,8 @@ let columns = ref([
     width: '10%',
     ellipsis: true,
     align: 'center',
+    sorter: true,
+    defaultSortOrder: 'descend',
   },
   {
     title: '类型',
@@ -361,7 +397,7 @@ let columns = ref([
     title: '操作',
     className: 'action',
     dataIndex: 'action',
-    width: '120px',
+    width: '110px',
     ellipsis: true,
     align: 'center',
     fixed: 'right',
@@ -424,9 +460,9 @@ function reset() {
   queryCondition.dateLte = undefined
   queryCondition.type = undefined
   queryCondition.dataSource = undefined
-  queryCondition.page = undefined
-  queryCondition.pageSize = undefined
-  queryCondition.orderBy = undefined
+  queryCondition.page = 1
+  queryCondition.pageSize = 12
+  queryCondition.orderBy = "date"
   queryCondition.desc = undefined
   loadTableData()
 }
@@ -435,11 +471,22 @@ function reset() {
 const pageSizeOptions = ['12', '20', '25', '30']
 
 //页码变化时的回调函数
-const paginationChange = (page: number, pageSize: number) => {
+function paginationChange(page: number, pageSize: number) {
   queryCondition.page = page
   queryCondition.pageSize = pageSize
-  console.log(page, pageSize)
   loadTableData()
+}
+
+function tableChange(pagination: any, filter: any, sorter: any) {
+  if (sorter.order) {
+    queryCondition.orderBy = sorter.field
+    queryCondition.desc = sorter.order === "descend"
+  } else {
+    queryCondition.orderBy = undefined
+    queryCondition.desc = undefined
+  }
+  loadTableData()
+  console.log(queryCondition);
 }
 
 </script>
