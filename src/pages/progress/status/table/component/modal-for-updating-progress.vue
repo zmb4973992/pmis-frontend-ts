@@ -24,8 +24,6 @@
         </a-input>
       </a-form-item>
 
-      {{ formData }}
-
     </a-form>
 
   </a-modal>

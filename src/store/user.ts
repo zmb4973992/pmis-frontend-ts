@@ -2,6 +2,7 @@ import {defineStore} from "pinia";
 import request from "@/utils/request";
 import {userState} from "@/store/interface";
 import {GetRoles} from "@/api/role-and-user";
+import {message} from "ant-design-vue";
 
 //用来储存用户信息
 const useUserStore = defineStore(
@@ -49,8 +50,6 @@ const useUserStore = defineStore(
                             //如果token无效，就删掉本地的token
                             if (res.code === 0) {
                                 this.roles = res.data.role_names
-                            } else {
-                                localStorage.removeItem('access_token')
                             }
                         }
                     )

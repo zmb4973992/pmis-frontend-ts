@@ -14,7 +14,6 @@ const login = (data: Login) =>
         res => {
             // 如果返回的状态码是0
             if (res.data.code == 0) {
-                console.log(res.data.data);
                 //更新本地的access_token
                 localStorage.setItem('access_token', res.data.data.access_token)
                 //更新store里的token

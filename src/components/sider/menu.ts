@@ -2,96 +2,96 @@ import {menuFormat} from "@/components/interface/menu";
 
 const menuList: menuFormat[] = [
     {
-        path: '/progress',
         label: '进度',
         icon: 'PlayCircleOutlined',
         children: [
             {
-                path: '/progress/disassembly',
                 label: '拆解项目',
+                path: '/progress/disassembly',
             },
             {
-                path: '/progress/list',
-                label: '当前情况（表格）',
+                label: '当前情况',
+                children: [
+                    {
+                        label: '列表',
+                        path: '/progress/list',
+                    },
+                    {
+                        label: '示意图',
+                        path: '/progress/chart',
+                    },
+                ],
             },
             {
-                path: '/progress/chart',
-                label:'当前情况（示意图）',
-            },
-            {
-                path: '/progress/snapshot',
                 label: '历史快照',
+                path: '/progress/snapshot',
             },
             {
-                path: '/progress/warning',
                 label: '进度预警',
+                path: '/progress/warning',
             },
             {
-                path: '/progress/update_log',
                 label: '更新日志',
+                path: '/progress/update_log',
             },
         ],
     },
     {
-        path: '/project',
         label: '项目',
         icon: 'DownOutlined',
         children: [
             {
-                path: '/project/list',
                 label: '项目列表',
+                path: '/project/list',
             },
             {
-                path: '/project/performance',
                 label: '历史业绩',
+                path: '/project/performance',
             },
             {
-                path: '/project/member',
                 label: '成员管理',
+                path: '/project/member',
             },
         ],
     },
     {
-        path: '/project/contract',
         label: '合同',
         icon: 'FileTextOutlined',
         children: [
             {
-                path: '/project/list',
                 label: '合同列表',
+                path: '/contract/list',
             },
         ],
     },
     {
-        path: '/project/related-party',
         label: '相关方',
         icon: 'UpOutlined',
         children: [
             {
-                path: '/project/list',
                 label: '相关方列表',
+                path: '/related-party/list',
             },
         ],
     },
     {
-        path: '/project/message',
         label: '消息中心',
+        path: '/message',
         icon: 'UpOutlined',
     },
     {
-        path: '/project/user_management',
         label: '用户管理',
         icon: 'MessageOutlined',
         children: [
             {
-                path: '/project/organization_structure',
                 label: '组织结构',
+                path: '/user-management/organization-structure',
             },
         ],
     },
     {
-        path: '/test',
         label: '测试',
+        path: '/test',
         icon: 'QuestionCircleOutlined'
     },
 ]

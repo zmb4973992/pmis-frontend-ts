@@ -19,7 +19,7 @@ request.interceptors.request.use(
     },
     //error暂时可以不写，这里写上是为了占位
     err => {
-        console.log('发送请求错误'+err)
+        console.log('发送请求错误' + err)
         return Promise.reject(err)
     }
 )
@@ -32,9 +32,10 @@ request.interceptors.response.use(
         if (res.data.code === 18) {
             localStorage.clear()
             message.error('登录超时，请重新登录')
-            router.push({name:'登录'})
+            router.push({name: '登录'})
             return
         }
+
         return res
     },
     err => {
@@ -44,7 +45,7 @@ request.interceptors.response.use(
             message.error('网络超时');
         } else if (err.message == 'Network Error') {
             message.error('网络连接错误');
-        }else if (err.message.indexOf('Request') != -1) {
+        } else if (err.message.indexOf('Request') != -1) {
             message.error('请求发生错误');
         }
         return err

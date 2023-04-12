@@ -36,12 +36,12 @@ router.beforeEach(async (to, from) => {
                 }
             }
         } else {
-            //本地没有token，重定向到登录页
+            //页面需要登录，且本地没有token，则重定向到登录页
             return {name: '登录'}
         }
     }
 
-    let user = useUserStore()
+    const user = useUserStore()
     if (!user.accessToken) {
         user.updateUserInfo()
     }

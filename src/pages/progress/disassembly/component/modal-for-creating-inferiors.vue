@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="visible" title="添加子项" @ok="onSubmit" style="width: 450px;">
+  <a-modal v-model:visible="visible" title="添加下级" @ok="onSubmit" style="width: 450px;">
 
     <a-form ref="form" :model="formData" :label-col="{span:5}" :wrapper-col="{span:19}"
             :rules="rules">
@@ -19,8 +19,6 @@
                         addon-after="%" :min="0" :max="100" :precision="1"
                         style="width: 120px"/>
       </a-form-item>
-
-      {{ formData }}
 
     </a-form>
 
@@ -142,12 +140,6 @@ defineExpose({
   showModal,
 })
 
-//当树形图变化时
-// async function treeSelectChange(disassemblyID: number) {
-//   let res = await disassemblyApi.get({id: disassemblyID})
-//   if (res && res?.data) {
-//   }
-// }
 </script>
 
 <style lang="scss">
@@ -157,6 +149,5 @@ defineExpose({
     width: 1em;
   }
 }
-
 
 </style>

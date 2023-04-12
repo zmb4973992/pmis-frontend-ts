@@ -5,7 +5,6 @@
             <a-col flex="280px" class="left-column">
                 <a-card size="small" :bordered="false">
                     <div class="label-and-selector" style="display: flex">
-                        <!--            <span>项目：</span>-->
                         <a-select class="project-selector" show-search placeholder="请选择项目"
                                   :filter-option="projectFilterOption" v-model:value="projectID"
                                   :options="projectOptions">
@@ -15,19 +14,29 @@
                     <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
                     <a-tree class="tree1" v-if="treeData?.length" :tree-data="treeData"
-                            v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"
-                    >
+                            v-model:selectedKeys="disassemblyIDs" :default-expand-all="true">
                         <template #title="{title,key,level}">
           <span class="title">
             <span>{{ title }}</span>
               <a @click.stop="showModalForCreatingDisassembly(key)">
-                <PlusOutlined class="button"/>
+                <a-tooltip>
+                    <template #title>添加下级</template>
+                  <PlusOutlined class="button"/>
+                    </a-tooltip>
               </a>
               <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
-                <EditOutlined class="button"/>
+                <a-tooltip>
+                    <template #title>修改本项</template>
+                  <EditOutlined class="button"/>
+                </a-tooltip>
+
               </a>
               <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
+                  <a-tooltip>
+                      <template #title>删除本项</template>
                   <DeleteOutlined class="button"/>
+                  </a-tooltip>
+
               </a>
           </span>
                         </template>
@@ -43,9 +52,9 @@
                 <a-card size="small">
                     <div class="table-buttons-row">
                         <a-space>
-                            子分类数据：
+                            下级数据：
                             <a-button v-if="projectID" size="small" type="primary"
-                                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+                                      @click="showModalForCreatingDisassembly(disassemblyIDs[0])">
                                 <template #icon>
                                     <PlusOutlined/>
                                 </template>
@@ -53,7 +62,7 @@
                             </a-button>
 
                             <a-button v-else size="small" type="primary" disabled
-                                      @click="showModalForCreatingDisassembly(selectedDisassemblyIDs[0])">
+                                      @click="showModalForCreatingDisassembly(disassemblyIDs[0])">
                                 <template #icon>
                                     <PlusOutlined/>
                                 </template>
@@ -112,25 +121,6 @@
   <!--删除单项的模态框-->
     <modal-for-deleting-item
             ref="modalForDeletingItem" @loadData="loadData"/>
-
-
-  <!--      <a-tabs id="tabs" v-model:activeKey="activeKey"-->
-  <!--              @tabClick="change">-->
-  <!--        <a-tab-pane key="1" tab="Tab 1" forceRender>-->
-  <!--          <div id="chart1"></div>-->
-
-  <!--        </a-tab-pane>-->
-  <!--        <a-tab-pane key="2" tab="Tab 2" forceRender>-->
-  <!--          <div id="chart2"></div>-->
-
-  <!--        </a-tab-pane>-->
-  <!--        <a-tab-pane key="3" tab="Tab 3">-->
-  <!--          <div id="chart3"></div>-->
-  <!--        </a-tab-pane>-->
-
-  <!--        <a-tab-pane key="4" tab="Tab 4" force-render>-->
-  <!--        </a-tab-pane>-->
-  <!--      </a-tabs>-->
 </template>
 
 <script setup lang="ts">
@@ -138,11 +128,11 @@ import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/mod
 import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-inferiors.vue";
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message} from "ant-design-vue";
-import {onMounted, reactive, ref, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
-import * as echarts from 'echarts';
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
+import {localStorageItemName} from "@/utils/routeName";
 
 let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
@@ -159,7 +149,7 @@ let columns = ref([
         title: '名称',
         dataIndex: 'name',
         className: 'name',
-        width: '40%',
+        width: '50%',
         ellipsis: true,
         align: 'center',
     },
@@ -167,7 +157,7 @@ let columns = ref([
         title: '权重',
         dataIndex: 'weight',
         className: 'weight',
-        width: '30%',
+        width: '20%',
         align: 'center',
     },
     {
@@ -205,10 +195,13 @@ function showModalForDeletingDisassembly(disassemblyID: number) {
 const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-let projectID = ref()
+let projectID = ref<number>()
 watch(projectID, () => {
-    loadTreeData()
-    selectedDisassemblyIDs.value = []
+    localStorage.setItem(localStorageItemName.projectIDForDisassembly, String(projectID.value))
+    loadTreeData().then(() => {
+        disassemblyIDs.value = []
+        disassemblyIDs.value.push(treeData.value[0].key)
+    })
 })
 
 function toBeCompleted() {
@@ -228,17 +221,15 @@ interface treeDataFormat {
 let treeData = ref<treeDataFormat[]>([])
 
 async function loadTreeData() {
+    //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
+    treeData.value = []
     if (projectID.value) {
-        //要清空treeData、然后再重新加载，否则a-tree组件就不会自动展开
-        treeData.value = []
-        const res = await disassemblyApi.getTree({project_id: projectID.value})
+        let res = await disassemblyApi.getTree({project_id: projectID.value})
         if (res.data) {
             for (let index in res.data) {
                 treeData.value.push(switchToTreeData(res.data[index]))
             }
         }
-    } else {
-        treeData.value = []
     }
 }
 
@@ -259,15 +250,16 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
     }
 }
 
-
-const selectedDisassemblyIDs = ref([]);
-watch(selectedDisassemblyIDs, () => loadTableData());
+const disassemblyIDs = ref<number[]>([]);
+watch(disassemblyIDs, () => {
+    loadTableData()
+});
 
 async function loadTableData() {
     //如果选择了拆解id
-    if (selectedDisassemblyIDs.value.length > 0) {
+    if (disassemblyIDs.value.length > 0) {
         let res = await disassemblyApi.getList({
-            superior_id: selectedDisassemblyIDs.value[0],
+            superior_id: disassemblyIDs.value[0],
             page_size: queryCondition.page_size,
             page: queryCondition.page,
         })
@@ -287,8 +279,7 @@ async function loadTableData() {
 }
 
 function loadData() {
-    loadTreeData()
-    loadTableData()
+    loadTreeData().then(loadTableData)
 }
 
 //获取项目下拉框的选项
@@ -299,117 +290,15 @@ async function loadProjectOptions() {
     }
 }
 
-loadProjectOptions()
-
-function change(targetKey: string) {
-    let a = Number(targetKey)
-    if (a === 1) {
-        setTimeout(() => {
-            let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-            chart1.resize()
-        }, 1)
-    } else if (a === 2) {
-        setTimeout(() => {
-            let chart2 = echarts.init(document.getElementById('chart2') as HTMLElement)
-            chart2.resize()
-            chart2.setOption({
-                tooltip: {
-                    trigger: 'axis',
-                },
-                legend: {
-                    show: true,
-                    data: ['boys', 'girls'],
-                },
-                xAxis: {
-                    type: 'category',
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [
-                    {
-                        name: 'boys',
-                        data: [820, 932, 901, 934, 1290, 1330, 1320],
-                        type: 'line',
-                        smooth: true
-                    },
-                    {
-                        name: 'girls',
-                        data: [480, 932, 401, 534, 1190, 1530, 1520],
-                        type: 'line',
-                        smooth: true
-                    },
-                ],
-                dataZoom: [
-                    {
-                        type: 'slider',
-                    },
-                    {
-                        type: 'inside',
-                    }
-                ],
-
-            })
-            window.addEventListener('resize', () => {
-                chart2.resize()
-            })
-        }, 1)
+//加载本地存储的数据
+function loadLocalStorage() {
+    const tempProjectID = Number(localStorage.getItem(localStorageItemName.projectIDForDisassembly))
+    if (tempProjectID > 0) {
+        projectID.value = tempProjectID
     }
-
 }
 
-onMounted(() => {
-    //需要等节点挂载完毕后，才开始echarts的相关操作，否则会找不到节点
-    //这里只处理tabs第一个图表，其他图表都在切换标签时进行处理
-    // let chart1 = echarts.init(document.getElementById('chart1') as HTMLElement)
-    // chart1.resize()
-    // chart1.setOption({
-    //   tooltip: {
-    //     trigger: 'item'
-    //   },
-    //
-    //   title: {
-    //     text: '圆环图的例子',
-    //     left: 'center',
-    //     top: 'center'
-    //   },
-    //   legend: {
-    //     top: '5%',
-    //     left: 'center'
-    //   },
-    //   series: [
-    //     {
-    //       type: 'pie',
-    //       itemStyle: {
-    //         borderRadius: 10,
-    //         borderColor: '#fff',
-    //         borderWidth: 2
-    //       },
-    //       label: {
-    //         show: false,
-    //       },
-    //       data: [
-    //         {
-    //           value: 1548,
-    //           name: 'C'
-    //         },
-    //         {
-    //           value: 335,
-    //           name: 'A'
-    //         },
-    //         {
-    //           value: 234,
-    //           name: 'B'
-    //         },
-    //
-    //       ],
-    //       radius: ['40%', '70%']
-    //     }
-    //   ]
-    // })
-    // window.addEventListener('resize', () => chart1.resize())
-})
+loadProjectOptions().then(loadLocalStorage).then(tipsForSelectingProject)
 
 //查询条件
 const queryCondition = reactive({
@@ -426,8 +315,13 @@ const pageSizeOptions = ['12', '20', '25', '30']
 const paginationChange = (page: number, pageSize: number) => {
     queryCondition.page = page
     queryCondition.page_size = pageSize
-    console.log(page, pageSize)
     loadTableData()
+}
+
+function tipsForSelectingProject() {
+    if (!projectID.value) {
+        message.info('您没有选择项目，请先在左侧选择项目', 5)
+    }
 }
 
 </script>
@@ -507,7 +401,7 @@ const paginationChange = (page: number, pageSize: number) => {
   margin-top: 10px;
   text-align: right;
 
-  .ant-select-item-option {
+  :deep(.ant-select-item-option) {
     text-align: center;
   }
 }

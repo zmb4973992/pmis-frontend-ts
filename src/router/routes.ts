@@ -1,57 +1,87 @@
-//懒加载路由，避免一次性导入过多而卡顿
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 import {RouteRecordRaw} from "vue-router";
+import {routeName} from "@/utils/routeName";
 
-const routes: RouteRecordRaw[] = [
+//把route的meta限定的更细致一些，便于引用和类型判定
+export type customRouteRecord = RouteRecordRaw & {
+
+    meta?: {
+        label?: string, //标签、显示名称
+        icon?: string, //图标
+        hidden?: boolean, //是否在目录中隐藏
+        requireAuth?: boolean, //是否需要根据角色鉴权
+        permittedRoles?: string[] //允许哪些角色访问
+    }
+    children?: customRouteRecord[]
+}
+
+const routes: customRouteRecord[] = [
     {
-        path: '/',
-        name: 'home',
-        //meta用于自定义页面信息
+        path: '/home',
+        name: routeName.homePage,
         meta: {
-            title: '首页',
+            label: '首页',
+            icon: 'HomeOutlined',
             requireAuth: true,
-            permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],  //允许哪些角色访问
+            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+        },
+        component: () => import('@/pages/layout.vue'),
+    },
+    {
+        path: '/progress',
+        name: routeName.progress,
+        meta: {
+            label: '进度',
+            icon: 'PercentageOutlined',
         },
         component: () => import('@/pages/layout.vue'),
         children: [
-            //以下为进度
             {
                 path: '/progress/disassembly',
-                name: '拆解项目',
+                name: routeName.progressDisassembly,
                 meta: {
-                    title: '拆解项目',
+                    label: '拆解项目',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/progress/disassembly/disassembly.vue')
             },
             {
-                path: '/progress/list',
-                name: '当前情况（表格）',
+                path: '',
+                name: routeName.progressStatus,
                 meta: {
-                    title: '当前情况',
+                    label: '当前情况',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/progress/progress-list/progress-list.vue')
-            },
-            {
-                path: '/progress/chart',
-                name: '当前情况（示意图）',
-                meta: {
-                    title: '当前情况',
-                    // requireAuth: true,
-                    // permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
-                },
-                component: () => import('@/pages/progress/progress-chart/progress-chart.vue')
+                children: [
+                    {
+                        path: '/progress/status/table',
+                        name: routeName.progressStatusTable,
+                        meta: {
+                            label: '表格',
+                            requireAuth: true,
+                            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                        },
+                        component: () => import('@/pages/progress/status/table/table.vue'),
+                    },
+                    {
+                        path: '/progress/status/chart',
+                        name: routeName.progressStatusChart,
+                        meta: {
+                            label: '示意图',
+                        },
+                        component: () => import('@/pages/progress/status/chart/chart.vue')
+                    },
+                ],
             },
             {
                 path: '/progress/snapshot',
                 name: '历史快照',
                 meta: {
-                    title: '历史快照',
+                    label: '历史快照',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/progress/historical-snapshot.vue'),
             },
@@ -59,9 +89,9 @@ const routes: RouteRecordRaw[] = [
                 path: '/progress/warning',
                 name: '进度预警',
                 meta: {
-                    title: '历史快照',
+                    label: '历史快照',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/progress/historical-snapshot.vue'),
             },
@@ -69,101 +99,152 @@ const routes: RouteRecordRaw[] = [
                 path: '/progress/update_log',
                 name: '更新日志',
                 meta: {
-                    title: '更新日志',
+                    label: '更新日志',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/progress/update-log.vue'),
             },
-            //以下为项目
+        ],
+    },
+    {
+        path: '/project',
+        name: routeName.project,
+        component: () => import('@/pages/layout.vue'),
+        meta: {
+            label: '项目',
+            icon: 'ProfileOutlined',
+        },
+        children: [
             {
-                path: '/project/list',
+                path: '/project/table',
                 name: '项目列表',
                 meta: {
-                    title: '项目列表',
+                    label: '项目列表',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/project/project-list/project-list.vue'),
-            },
-            {
-                path: '/project/member',
-                name: '成员管理',
-                meta: {
-                    title: '成员管理',
-                    requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
-                },
-                component: () => import('@/pages/project/member-management.vue'),
+                component: () => import('@/pages/project/table/index.vue'),
             },
             {
                 path: '/project/performance',
                 name: '历史业绩',
                 meta: {
-                    title: '历史业绩',
+                    label: '历史业绩',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/project/historical-performance.vue'),
             },
-            //以下为合同
+        ],
+    },
+    {
+        path: '/contract',
+        name: '合同',
+        component: () => import('@/pages/layout.vue'),
+        meta: {
+            label: '合同',
+            icon: 'BookOutlined',
+        },
+        children: [
             {
-                path:'/contract/list',
-                name:'合同列表',
-                meta : {
-                    title: '合同列表',
+                path: '/contract/list',
+                name: '合同列表',
+                meta: {
+                    label: '合同列表',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component : () => import('@/pages/contract/contract-list/contract-list.vue')
+                component: () => import('@/pages/contract/contract-list/contract-list.vue')
             },
-            //以下为相关方
+        ],
+    },
+    {
+        path: '/user-management',
+        name: '用户管理',
+        meta: {
+            label: '用户管理',
+            icon: 'UserOutlined',
+        },
+        component: () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/user-management/organization-structure',
+                name: '组织结构',
+                meta: {
+                    label: '组织结构',
+                    requireAuth: true,
+                    permittedRoles: ['管理员'],
+                },
+                component: () => import('@/pages/user-management/organization-structure.vue')
+            },
+            {
+                path: '/project/member',
+                name: '成员管理',
+                meta: {
+                    label: '成员管理',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/project/member-management.vue'),
+            },
+        ],
+    },
+    //以下为消息中心
+    {
+        path: '/',
+        name: '消息中心',
+        meta: {
+            label: '消息中心',
+            icon: 'MessageOutlined',
+            requireAuth: true,
+            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+        },
+        component: () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/message',
+                name: '消息',
+                meta: {
+                    label: '消息',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/message/index.vue'),
+            }
+        ],
+
+    },
+    {
+        path: '/',
+        name: '相关方',
+        meta: {
+            label: '相关方',
+            icon: 'ApartmentOutlined',
+            requireAuth: true,
+            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+        },
+        component: () => import('@/pages/layout.vue'),
+        children: [
             {
                 path: '/related-party/list',
                 name: '相关方列表',
                 meta: {
-                    title: '相关方列表',
+                    label: '相关方列表',
                     requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/related_party/related-party-list.vue')
+                component: () => import('@/pages/related-party/table/index.vue')
             },
-            //以下为消息中心
-            {
-                path:'/message',
-                name:'消息中心',
-                meta:{
-                    title:'消息中心',
-                    requireAuth: true,
-                    permittedRoles: ['管理员','公司级','事业部级','部门级','项目级'],
-                },
-                component: () => import('@/pages/message/index.vue')
-            },
-            //以下为用户管理
-            {
-                path:'/user_management/organization_structure',
-                name:'组织结构',
-                meta:{
-                    title:'组织结构',
-                    requireAuth: true,
-                    permittedRoles: ['管理员'],
-                },
-                component: ()=>import('@/pages/user_management/organization_structure.vue')
-            },
-            //以下为测试
-            {
-                path:'/test',
-                name:'测试',
-                component: ()=>import('@/pages/test.vue')
-            },
-
         ],
+
     },
     {
         path: '/login',
         name: '登录',
         meta: {
-            title: '登录',
+            label: '登录',
+            hidden: true,
             requireAuth: false,
             permittedRoles: [],
         },
@@ -174,21 +255,49 @@ const routes: RouteRecordRaw[] = [
         path: '/403',
         name: '403',
         meta: {
-            title: '权限不足，无法访问',
+            label: '权限不足，无法访问',
+            hidden: true,
             requireAuth: false,
         },
-        component:
-            () => import('@/pages/403.vue'),
+        component: () => import('@/pages/403.vue'),
     },
     {
         path: '/:pathMatch(.*)*',
         name: '404',
         meta: {
-            title: '页面不存在',
+            label: '页面不存在',
+            hidden: true,
             requireAuth: false,
         },
-        component:
-            () => import('@/pages/404.vue'),
+        component: () => import('@/pages/404.vue'),
+    },
+    {
+        path: '/test1',
+        name: '测试1',
+        meta: {
+            label: '测试1',
+            icon: 'AuditOutlined',
+        },
+        component: () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/test2',
+                name: '测试2',
+                meta: {
+                    label: '测试2',
+                },
+                component: () => import('@/pages/test.vue')
+            },
+        ],
+    },
+    {
+        path: '/test3',
+        name: '测试3',
+        meta: {
+            label: '测试3',
+            icon: 'AntCloudOutlined',
+        },
+        component: () => import('@/pages/test.vue')
     },
 ]
 

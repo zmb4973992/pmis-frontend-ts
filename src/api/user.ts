@@ -29,7 +29,7 @@ const GetUser = () => request.get(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -41,7 +41,7 @@ const GetUserByID = (userID: number) => request.get(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -54,7 +54,7 @@ const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -67,7 +67,7 @@ const CreateUser = (param: ICreateUser) => request.post(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -75,7 +75,7 @@ const CreateUser = (param: ICreateUser) => request.post(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -87,7 +87,7 @@ const DeleteUser = (userID: number) => request.delete(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data
@@ -100,7 +100,7 @@ const GetUserList = (params: IUserList) => request.get(
 ).then(
     res => {
         //如果token无效，就删掉本地的token
-        if (res.data.code === 3001) {
+        if (res.data.code === 18) {
             localStorage.removeItem('access_token')
         }
         return res.data

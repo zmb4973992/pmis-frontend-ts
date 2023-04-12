@@ -95,8 +95,8 @@ import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 import {projectApi, iProjectGetList} from "@/api/project";
 import {departmentApi} from "@/api/department";
-import ModalForUpdating from "@/pages/project/project-list/component/modal-for-updating.vue";
-import ModalForDeleting from "@/pages/project/project-list/component/modal-for-deleting.vue";
+import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue";
+import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue";
 
 function toBeCompleted() {
 }

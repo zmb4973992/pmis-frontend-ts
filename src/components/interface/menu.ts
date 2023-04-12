@@ -1,6 +1,6 @@
 export interface menuFormat {
-    path: string,
     label: string,
+    path?: string,
     icon?: string,
     meta?: {},
     children?: menuFormat[],
