@@ -58,17 +58,6 @@ export interface iProjectGetList {
     desc?: boolean
 }
 
-export interface iProjectGetArray {
-    is_showed_by_role?: boolean
-    name_like?: string
-    department_id_in?: number[]
-    department_name_include?: string
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
-}
-
 const projectApi = {
     get: (param: iProjectGet) => request.get('/api/project/' + param.id)
         .then(res => res.data),
@@ -79,8 +68,6 @@ const projectApi = {
     delete: (param: iProjectDelete) => request.delete('/api/project/' + param.id)
         .then(res => res.data,),
     getList: (param?: iProjectGetList) => request.post('/api/project/list', param)
-        .then(res => res.data),
-    getArray: (param?: iProjectGetArray) => request.post('/api/project/array', param)
         .then(res => res.data),
 }
 

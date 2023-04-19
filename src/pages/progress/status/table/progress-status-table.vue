@@ -14,7 +14,6 @@
                 <a-tree v-if="treeData?.length" :tree-data="treeData"
                         v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"/>
             </a-card>
-
         </div>
 
         <!--右侧内容区-->
@@ -311,7 +310,7 @@ watch(dateRange, (newValue) => {
 })
 
 //表格的查询条件
-interface queryFormat {
+interface queryConditionFormat {
     disassemblyID?: number
     dateGte?: string
     dateLte?: string
@@ -324,7 +323,7 @@ interface queryFormat {
     desc?: boolean
 }
 
-const queryCondition = reactive<queryFormat>({
+const queryCondition = reactive<queryConditionFormat>({
     orderBy: "date",
     desc: true,
     pageSize: 12,

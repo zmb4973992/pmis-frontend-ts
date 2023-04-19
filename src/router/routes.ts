@@ -63,7 +63,7 @@ const routes: customRouteRecord[] = [
                             requireAuth: true,
                             permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                         },
-                        component: () => import('@/pages/progress/status/table/table.vue'),
+                        component: () => import('@/pages/progress/status/table/progress-status-table.vue'),
                     },
                     {
                         path: '/progress/status/chart',
@@ -124,7 +124,7 @@ const routes: customRouteRecord[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/project/table/index.vue'),
+                component: () => import('@/pages/project/table/project-table.vue'),
             },
             {
                 path: '/project/performance',
@@ -155,7 +155,7 @@ const routes: customRouteRecord[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/contract/contract-list/contract-list.vue')
+                component: () => import('@/pages/contract/table/contract-table.vue')
             },
         ],
     },
@@ -234,7 +234,7 @@ const routes: customRouteRecord[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/related-party/table/index.vue')
+                component: () => import('@/pages/related-party/table/related-party-table.vue')
             },
         ],
 
