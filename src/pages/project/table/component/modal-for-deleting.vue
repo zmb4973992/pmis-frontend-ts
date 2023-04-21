@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="visible"
-           title="删除" @ok="onSubmit" style="width: 300px">
+           title="删除" @ok="onSubmit" style="width: 400px">
     <div>确定要删除项目“<span style="color: red">{{ data.name }}</span>”吗？</div>
   </a-modal>
 </template>
@@ -13,7 +13,7 @@ import {message} from "ant-design-vue";
 
 const visible = ref()
 
-const emit = defineEmits(['loadList'])
+const emit = defineEmits(['loadTableData'])
 
 const data = reactive({id: 0, name: ''})
 
@@ -29,7 +29,7 @@ async function onSubmit() {
   let res = await projectApi.delete({id: data.id})
   message.success("删除成功")
   visible.value = false
-  emit("loadList")
+  emit("loadTableData")
 }
 
 defineExpose({showModal,})

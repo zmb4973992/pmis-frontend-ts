@@ -155,7 +155,7 @@ function resetForm() {
   //记得还要修改不在reactive里的数据
 }
 
-const emit = defineEmits(['loadList'])
+const emit = defineEmits(['loadTableData'])
 
 function showModal(projectID: number) {
   visible.value = true
@@ -290,7 +290,7 @@ function onSubmit() {
           if (res?.code === 0) {
             message.success('修改成功')
             visible.value = false
-            emit('loadList')
+            emit('loadTableData')
           } else {
             message.error(res?.message || '修改失败')
           }
