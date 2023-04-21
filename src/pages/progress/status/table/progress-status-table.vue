@@ -1,165 +1,169 @@
 <template>
-    <div id="layout">
-        <!--左侧内容区-->
-        <div class="left-column">
-            <a-card size="small" :bordered="false">
-                <div class="label-and-selector" style="display: flex">
-                    <a-select class="project-selector" show-search placeholder="请选择项目"
-                              :filter-option="projectFilterOption" v-model:value="projectID"
-                              :options="projectOptions"/>
-                </div>
+    <div class="layout">
+        <a-row type="=flex">
+            <!--左侧内容区-->
+            <a-col flex="280px" class="left-column">
+                <a-card size="small" :bordered="false">
+                    <div class="label-and-selector">
+                        <span>项目名称：</span>
+                        <a-select class="project-selector" show-search placeholder="项目名称" allow-clear
+                                  :filter-option="projectFilterOption" v-model:value="queryCondition.projectID"
+                                  :options="projectOptions">
+                        </a-select>
+                    </div>
 
-                <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
+                    <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
-                <a-tree v-if="treeData?.length" :tree-data="treeData"
-                        v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"/>
-            </a-card>
-        </div>
+                    <a-tree v-if="treeData?.length" :tree-data="treeData"
+                            v-model:selectedKeys="selectedDisassemblyIDs" :default-expand-all="true"/>
+                </a-card>
 
-        <!--右侧内容区-->
-        <div class="right-column">
-            <!--搜索框-->
-            <a-card size="small" :bordered="false" style="margin-bottom: 10px">
-                <!--id不能删，需要通过id获取组件的高度，从而给下面的表格调整高度-->
-                <a-row :gutter="10" id="query-row">
-                    <a-col>
-                        <span>进度类型：</span>
-                        <a-select ref="progressType" placeholder="进度类型"
-                                  v-model:value="queryCondition.type" :options="progressTypeOptions"
-                                  style="width:130px"/>
-                    </a-col>
-                    <a-col>
-                        <span>数据来源：</span>
-                        <a-select ref="dataSource" placeholder="数据来源"
-                                  v-model:value="queryCondition.dataSource" :options="dataSourceOptions"
-                                  style="width:130px"/>
-                    </a-col>
+            </a-col>
 
-                    <a-col>
-                        <span>日期范围：</span>
-                        <a-range-picker v-model:value="dateRange"/>
-                    </a-col>
-                    <a-col>
-                        <a-button-group>
-                            <a-button class="button" type="primary" @click="loadTableData">
-                                <template #icon>
-                                    <SearchOutlined/>
-                                </template>
-                                查询
-                            </a-button>
-                            <a-button class="button" @click="reset">
-                                <template #icon>
-                                    <RedoOutlined/>
-                                </template>
-                                重置
-                            </a-button>
-                        </a-button-group>
-                    </a-col>
-                </a-row>
-            </a-card>
+            <!--这是分割线-->
+            <a-col flex="10px"/>
 
-            <a-card size="small" :bordered="false">
-                <div class="table-buttons-row">
-                    <a-space>
-                        <template v-if="projectID">
-                            <a-button size="small" type="primary"
-                                      @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
-                                <template #icon>
-                                    <PlusOutlined/>
-                                </template>
-                                添加
-                            </a-button>
-                        </template>
-                        <template v-else>
-                            <a-tooltip>
-                                <template #title>
-                                    先在左侧选择项目后，才能添加进度
-                                </template>
-                                <a-button size="small" type="primary" disabled>
+            <!--右侧内容区-->
+            <a-col flex="auto" class="right-column">
+                <!--搜索框-->
+                <a-card size="small" :bordered="false" style="margin-bottom: 10px">
+                    <a-row :gutter="10">
+                        <a-col>
+                            <span>进度类型：</span>
+                            <a-select ref="progressType" placeholder="进度类型"
+                                      v-model:value="queryCondition.type" :options="progressTypeOptions"
+                                      style="width:130px"/>
+                        </a-col>
+                        <a-col>
+                            <span>数据来源：</span>
+                            <a-select ref="dataSource" placeholder="数据来源"
+                                      v-model:value="queryCondition.dataSource" :options="dataSourceOptions"
+                                      style="width:130px"/>
+                        </a-col>
+
+                        <a-col>
+                            <span>日期：</span>
+                            <a-range-picker v-model:value="dateRange" @change="dateChange"/>
+                        </a-col>
+                        <a-col>
+                            <a-button-group>
+                                <a-button class="button" type="primary" @click="loadTableData">
+                                    <template #icon>
+                                        <SearchOutlined/>
+                                    </template>
+                                    查询
+                                </a-button>
+                                <a-button class="button" @click="reset">
+                                    <template #icon>
+                                        <RedoOutlined/>
+                                    </template>
+                                    重置
+                                </a-button>
+                            </a-button-group>
+                        </a-col>
+                    </a-row>
+                </a-card>
+
+                <a-card size="small" :bordered="false">
+                    <div class="table-buttons-row">
+                        <a-space>
+                            <template v-if="projectID">
+                                <a-button size="small" type="primary"
+                                          @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
                                     <template #icon>
                                         <PlusOutlined/>
                                     </template>
                                     添加
                                 </a-button>
-                            </a-tooltip>
-                        </template>
-                    </a-space>
-                    <div class="buttons-for-table-setting">
-                        <a-tooltip title="设置列" size="small">
-                            <a-button type="text" @click="toBeCompleted" size="small">
-                                <template #icon>
-                                    <setting-outlined style="font-size: 16px"/>
-                                </template>
-                            </a-button>
-                        </a-tooltip>
-                    </div>
-                </div>
-
-                <a-table :data-source="tableData.list" :columns="columns"
-                         size="small" :pagination="false" :scroll="{x:1000,y:heightOfTable}"
-                         @change="tableChange">
-                    <template #bodyCell="{column,record,index}">
-                        <template v-if="column.dataIndex === 'line_number'">
-                            {{ index + 1 }}
-                        </template>
-                        <template v-else-if="column.dataIndex === 'action'">
-                            <template v-if="record?.data_source?.name === '系统计算'">
-                                <a-tooltip>
-                                    <template #title>
-                                        <span>”系统计算“的数据无法修改</span>
-                                    </template>
-                                    <a-button type="link" disabled style="padding: 0">
-                                        修改
-                                    </a-button>
-                                </a-tooltip>
-                                <a-divider type="vertical"/>
-                                <a-tooltip placement="topRight">
-                                    <template #title>
-                                        <span>”系统计算“的数据无法删除</span>
-                                    </template>
-                                    <a-button type="link" disabled style="padding: 0">
-                                        删除
-                                    </a-button>
-                                </a-tooltip>
                             </template>
                             <template v-else>
-                                <a-button type="link" style="padding: 0"
-                                          @click="showModalForUpdatingProgress(record.id)">
-                                    修改
+                                <a-tooltip>
+                                    <template #title>
+                                        先在左侧选择项目后，才能添加进度
+                                    </template>
+                                    <a-button size="small" type="primary" disabled>
+                                        <template #icon>
+                                            <PlusOutlined/>
+                                        </template>
+                                        添加
+                                    </a-button>
+                                </a-tooltip>
+                            </template>
+                        </a-space>
+                        <div class="buttons-for-table-setting">
+                            <a-tooltip title="设置列" size="small">
+                                <a-button type="text" @click="toBeCompleted" size="small">
+                                    <template #icon>
+                                        <setting-outlined style="font-size: 16px"/>
+                                    </template>
                                 </a-button>
-                                <a-divider type="vertical"/>
-                                <a-button type="link" style="padding: 0" danger
-                                          @click="showModalForDeletingProgress(record.id)">
-                                    删除
-                                </a-button>
+                            </a-tooltip>
+                        </div>
+                    </div>
+
+                    <a-table :data-source="tableData.list" :columns="columns"
+                             size="small" :pagination="false" :scroll="{x:1000,y:heightOfTable}"
+                             @change="tableChange">
+                        <template #bodyCell="{column,record,index}">
+                            <template v-if="column.dataIndex === 'line_number'">
+                                {{ index + 1 }}
                             </template>
+                            <template v-else-if="column.dataIndex === 'action'">
+                                <template v-if="record?.data_source?.name === '系统计算'">
+                                    <a-tooltip>
+                                        <template #title>
+                                            <span>”系统计算“的数据无法修改</span>
+                                        </template>
+                                        <a-button type="link" disabled style="padding: 0">
+                                            修改
+                                        </a-button>
+                                    </a-tooltip>
+                                    <a-divider type="vertical"/>
+                                    <a-tooltip placement="topRight">
+                                        <template #title>
+                                            <span>”系统计算“的数据无法删除</span>
+                                        </template>
+                                        <a-button type="link" disabled style="padding: 0">
+                                            删除
+                                        </a-button>
+                                    </a-tooltip>
+                                </template>
+                                <template v-else>
+                                    <a-button type="link" style="padding: 0"
+                                              @click="showModalForUpdatingProgress(record.id)">
+                                        修改
+                                    </a-button>
+                                    <a-divider type="vertical"/>
+                                    <a-button type="link" style="padding: 0" danger
+                                              @click="showModalForDeletingProgress(record.id)">
+                                        删除
+                                    </a-button>
+                                </template>
+                            </template>
+                            <template v-else-if="column.dataIndex[0] === 'type' && column.dataIndex[1] === 'name' ">
+                                <template v-if="record.type.name === '计划进度'">
+                                    <span style="color:#1890ff">{{ record.type.name }}</span>
+                                </template>
+                                <template v-if="record.type.name === '实际进度'">
+                                    <span style="color:red">{{ record.type.name }}</span>
+                                </template>
+                                <template v-if="record.type.name === '预测进度'">
+                                    <span style="color:orange">{{ record.type.name }}</span>
+                                </template>
+                            </template>
+
                         </template>
-                        <template v-else-if="column.dataIndex[0] === 'type' && column.dataIndex[1] === 'name' ">
-                            <template v-if="record.type.name === '计划进度'">
-                                <span style="color:#1890ff">{{ record.type.name }}</span>
-                            </template>
-                            <template v-if="record.type.name === '实际进度'">
-                                <span style="color:red">{{ record.type.name }}</span>
-                            </template>
-                            <template v-if="record.type.name === '预测进度'">
-                                <span style="color:orange">{{ record.type.name }}</span>
-                            </template>
-                        </template>
+                    </a-table>
 
-                    </template>
-                </a-table>
-
-                <!--分页器-->
-                <a-pagination id="paginator" v-model:pageSize="queryCondition.pageSize"
-                              :total="tableData.numberOfRecords" showSizeChanger
-                              :pageSizeOptions="pageSizeOptions"
-                              showQuickJumper @change="paginationChange"
-                              :show-total="total=>`共${total}条记录`"/>
-            </a-card>
-
-            {{}}
-
-        </div>
+                    <!--分页器-->
+                    <a-pagination id="paginator" v-model:pageSize="queryCondition.pageSize"
+                                  :total="tableData.numberOfRecords" showSizeChanger
+                                  :pageSizeOptions="pageSizeOptions"
+                                  showQuickJumper @change="paginationChange"
+                                  :show-total="total=>`共${total}条记录`"/>
+                </a-card>
+            </a-col>
+        </a-row>
     </div>
 
   <!--添加进度的模态框-->
@@ -179,12 +183,13 @@ import ModalForUpdatingProgress from "@/pages/progress/status/table/component/mo
 import ModalForDeletingProgress from "@/pages/progress/status/table/component/modal-for-deleting-progress.vue";
 import {message} from "ant-design-vue";
 import {onMounted, reactive, ref, watch} from "vue";
-import {PlusOutlined, SearchOutlined, RedoOutlined} from "@ant-design/icons-vue";
+import {PlusOutlined, SearchOutlined, RedoOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons-vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {progressApi} from "@/api/progress";
 import {dictionaryItemApi} from "@/api/dictionary-item";
-import {Dayjs} from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
+import {pagingFormat} from "@/interfaces/paging-interface";
 
 //用于创建进度的模态框
 const modalForCreatingProgress = ref()
@@ -309,18 +314,14 @@ watch(dateRange, (newValue) => {
     }
 })
 
-//表格的查询条件
-interface queryConditionFormat {
-    disassemblyID?: number
+//查询条件
+interface queryConditionFormat extends pagingFormat {
+    projectID?: number
+    disassemblyIDs?: number[] //按tree组件要求，必须为数组
+    progressType?: number
+    dataSource?: number
     dateGte?: string
     dateLte?: string
-    type?: number
-    dataSource?: number
-
-    page?: number
-    pageSize?: number
-    orderBy?: string
-    desc?: boolean
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -329,6 +330,11 @@ const queryCondition = reactive<queryConditionFormat>({
     pageSize: 12,
 })
 
+//当日期变化时，将值传给queryCondition
+function dateChange(date: Dayjs | string, dateString: string) {
+    queryCondition.dateGte = dateString[0]
+    queryCondition.dateLte = dateString[1]
+}
 
 let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
@@ -497,19 +503,16 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-#layout {
-  overflow-x: hidden;
-  display: flex;
+.layout {
+  overflow-x: auto;
 
   .left-column {
     background-color: white;
-    width: 270px;
-    min-width: 270px;
     height: calc(100vh - 55px);
-    margin-right: 10px;
 
     :deep(.ant-tree) {
-      height: calc(100vh - 140px);
+      height: calc(100vh - 141px);
+      width: 255px;
       overflow: auto;
     }
 
@@ -525,11 +528,12 @@ onMounted(() => {
   }
 
   .right-column {
-    flex: 1;
-    width: 1px; //必须有，否则表格的scroll属性无法生效
-    display: flex;
-    flex-direction: column;
+    //这个宽度必须有！
+    //由于right-column是grid模式，如果在没有宽度、且column设置了ellipsis=true的情况下，表格会另起一行
+    //这里的宽度值任意填，不会影响布局，只是告诉table有宽度而已
+    width: 10px;
 
+    //表格上方按钮行的样式
     .table-buttons-row {
       display: flex;
       justify-content: space-between;
@@ -538,6 +542,7 @@ onMounted(() => {
     }
   }
 }
+
 
 //鼠标移入节点时，显示相关操作
 :deep(.ant-tree) {
@@ -568,7 +573,7 @@ onMounted(() => {
   }
 }
 
-#paginator {
+.paginator {
   margin-top: 10px;
   text-align: right;
 
@@ -578,6 +583,7 @@ onMounted(() => {
 }
 
 .label-and-selector {
+  display: flex;
   align-items: center;
 
   .project-selector {
@@ -585,14 +591,11 @@ onMounted(() => {
   }
 }
 
-//每个a-col增加下边距，这样换行时上下的col不会粘在一起
-.ant-col {
-  margin-bottom: 10px;
-}
-
-//由于上面的a-col设置了下边距，为了最后一行不跟row的padding冲突，这里调整一下row的下边距
-.ant-row {
-  margin-bottom: -10px;
+//表格的表头样式
+:deep(.ant-table-thead) {
+  > tr > th {
+    text-align: center !important;
+  }
 }
 
 //日期选择器的宽度

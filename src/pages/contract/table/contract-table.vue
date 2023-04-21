@@ -1,22 +1,23 @@
 <template>
     <div id="layout">
         <!--查询区域-->
-        <a-card size="small" :bordered="false" style="margin-bottom: 10px"
+        <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
                 :body-style="{padding:'0 10px 10px 10px'}">
             <a-form :model="queryCondition" ref="formRef">
-                <!--这里要改，后期用card来确定高度-->
-                <!--id不能删，需要通过id获取组件的高度，从而给下面的表格调整高度-->
                 <a-row :gutter="10">
                     <a-col>
                         <a-form-item class="query-item" label="项目名称" name="projectID">
-                            <a-select placeholder="项目名称" show-search :filter-option="projectFilterOption"
-                                      v-model:value="queryCondition.projectID" :options="projectOptions"
+                            <a-select placeholder="项目名称" show-search allow-clear
+                                      :filter-option="projectFilterOption"
+                                      v-model:value="queryCondition.projectID"
+                                      :options="projectOptions"
                                       style="width:130px"/>
                         </a-form-item>
                     </a-col>
                     <a-col>
                         <a-form-item class="query-item" label="合同名称" name="nameInclude">
-                            <a-input placeholder="支持模糊搜索" v-model:value="queryCondition.nameInclude"/>
+                            <a-input placeholder="支持模糊搜索"
+                                     v-model:value="queryCondition.nameInclude"/>
                         </a-form-item>
                     </a-col>
                     <a-col>
@@ -34,12 +35,6 @@
                                     </template>
                                     重置
                                 </a-button>
-                                <a-button class="button" @click="showAllQueryItems">
-                                    <template #icon>
-                                        <DownOutlined/>
-                                    </template>
-                                    高级搜索
-                                </a-button>
                             </a-button-group>
                         </a-form-item>
                     </a-col>
@@ -47,10 +42,8 @@
             </a-form>
         </a-card>
 
-<!--        {{ queryCondition }}-->
-
         <a-card size="small" :bordered="false">
-            <div class="table-buttons-row">
+            <a-row class="table-buttons-row">
                 <a-button size="small" type="primary"
                           @click="createContract">
                     <template #icon>
@@ -67,48 +60,42 @@
                         </a-button>
                     </a-tooltip>
                 </div>
-            </div>
+            </a-row>
 
             <a-table :data-source="tableData.list" :columns="columns"
                      size="small" :pagination="false" :scroll="{x:1000}"
-                     @change="tableChange">
+                     @change="tableChange" :loading="loading">
                 <template #bodyCell="{column,record,index}">
                     <template v-if="column.dataIndex === 'line_number'">
                         {{ index + 1 }}
                     </template>
                     <template v-else-if="column.dataIndex === 'operation'">
-                        <a-button type="link" style="padding: 0"
-                                  @click="updateContract">
+                        <a-button type="link" style="padding: 0" @click="toBeCompleted">
+                            查看
+                        </a-button>
+                        <a-divider type="vertical"/>
+                        <a-button type="link" style="padding: 0" @click="updateContract">
                             修改
                         </a-button>
                         <a-divider type="vertical"/>
-                        <a-button type="link" style="padding: 0" danger
-                                  @click="showModalForDeletingProgress(record.id)">
-                            删除
-                        </a-button>
-                    </template>
-                    <template v-else-if="column.dataIndex[0] === 'type' && column.dataIndex[1] === 'name' ">
-                        <template v-if="record?.type?.name === '计划进度'">
-                            <span style="color:#1890ff">{{ record.type.name }}</span>
-                        </template>
-                        <template v-if="record?.type?.name === '实际进度'">
-                            <span style="color:red">{{ record.type.name }}</span>
-                        </template>
-                        <template v-if="record?.type?.name === '预测进度'">
-                            <span style="color:orange">{{ record.type.name }}</span>
-                        </template>
+                        <a-tooltip>
+                            <template #title>禁止删除</template>
+                            <a-button type="link" style="padding: 0" danger disabled
+                                      @click="deleteContract">
+                                删除
+                            </a-button>
+                        </a-tooltip>
                     </template>
 
                 </template>
             </a-table>
 
             <!--分页器-->
-            <a-pagination id="paginator" v-model:current="queryCondition.page"
-                          v-model:pageSize="queryCondition.pageSize"
-                          :total="tableData.numberOfRecords" showSizeChanger
-                          :pageSizeOptions="pageSizeOptions"
-                          showQuickJumper @change="loadTableData"
-                          :show-total="total=>`共${total}条记录`"/>
+            <a-pagination class="paginator" v-model:current="queryCondition.page"
+                          v-model:pageSize="queryCondition.pageSize" show-less-items
+                          :total="tableData.numberOfRecords" show-size-changer
+                          :pageSizeOptions="pageSizeOptions" show-quick-jumper
+                          @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
         </a-card>
     </div>
 
@@ -116,28 +103,30 @@
 
 <script setup lang="ts">
 import {reactive, ref} from "vue";
-import {SearchOutlined, RedoOutlined, DownOutlined, PlusOutlined} from "@ant-design/icons-vue";
+import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {contractApi} from "@/api/contract";
 import {projectApi} from "@/api/project";
+import {pageSizeOptions} from "@/constants/paging-constant";
+import {pagingFormat} from "@/interfaces/paging-interface";
+import {authFormat} from "@/interfaces/auth-interface";
 
 function createContract() {
-    message.warn('为确保数据的一致性，新合同会从OA自动同步，无需手动添加', 5)
+    message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动添加', 5)
 }
 
 function updateContract() {
-    message.warn('为确保数据的一致性，新合同会从OA自动同步，无需手动修改', 5)
+    message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动修改', 5)
+}
+
+function deleteContract() {
+    message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动删除', 5)
 }
 
 //查询条件
-interface queryConditionFormat {
+interface queryConditionFormat extends pagingFormat, authFormat {
     projectID?: number
     nameInclude?: string
-
-    page?: number
-    pageSize?: number
-    orderBy?: string
-    desc?: boolean
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -145,13 +134,13 @@ const queryCondition = reactive<queryConditionFormat>({
     pageSize: 12,
 })
 
-const projectOptions = ref<SelectProps['options']>()
-
 //部门选项的过滤器（下拉框搜索）
 const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 const tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
+
+const loading = ref(false)
 
 const columns = ref([
     {
@@ -227,12 +216,15 @@ function toBeCompleted() {
     message.info('待完成')
 }
 
-function showAllQueryItems() {
-    message.info('待完成')
-}
-
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
+
+//查询按钮
+function query() {
+    //所有查询都从第一页开始
+    queryCondition.page = 1
+    loadTableData()
+}
 
 //重置查询条件
 function resetQueryCondition() {
@@ -258,42 +250,43 @@ function tableChange(pagination: any, filter: any, sorter: any) {
     loadTableData()
 }
 
-//分页器选项
-const pageSizeOptions = ['12', '20', '25', '30']
-
-//查询按钮
-function query() {
-    //所有查询都从第一页开始
-    queryCondition.page = 1
-    loadTableData()
-}
-
 async function loadTableData() {
-    let res = await contractApi.getList({
-        project_id: queryCondition.projectID,
-        name_include: queryCondition.nameInclude,
-        page: queryCondition.page,
-        page_size: queryCondition.pageSize,
-        order_by: queryCondition.orderBy,
-        desc: queryCondition.desc,
-    })
-    if (res && res.data) {
+    try {
+        loading.value = true
+        let res = await contractApi.getList({
+            project_id: queryCondition.projectID,
+            name_include: queryCondition.nameInclude,
+            is_showed_by_role: queryCondition.isShowedByRole,
+            page: queryCondition.page,
+            page_size: queryCondition.pageSize,
+            order_by: queryCondition.orderBy,
+            desc: queryCondition.desc,
+        })
         tableData.list = res?.data
         tableData.numberOfPages = res?.paging?.number_of_pages
         tableData.numberOfRecords = res?.paging?.number_of_records
-    } else {
+    } catch (err) {
         tableData.list = []
+        console.log(err);
+    } finally {
+        loading.value = false
     }
 }
 
 loadTableData()
 
+const projectOptions = ref<SelectProps['options']>()
+
 //获取项目下拉框的选项
 async function loadProjectOptions() {
-    let res = await projectApi.getList({page_size: 0})
-    projectOptions.value = []
-    for (let item of res.data) {
-        projectOptions.value.push({label: item.name, value: item.id})
+    try {
+        let res = await projectApi.getList({page_size: 0})
+        projectOptions.value = []
+        for (let item of res.data) {
+            projectOptions.value.push({label: item.name, value: item.id})
+        }
+    } catch (err) {
+        console.log(err)
     }
 }
 
@@ -339,7 +332,7 @@ loadProjectOptions()
 }
 
 //分页器的样式
-#paginator {
+.paginator {
   margin-top: 10px;
   text-align: right;
 

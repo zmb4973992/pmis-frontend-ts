@@ -44,7 +44,7 @@ const routes: customRouteRecord[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/progress/disassembly/disassembly.vue')
+                component: () => import('@/pages/progress/disassembly/progress-disassembly.vue')
             },
             {
                 path: '',
@@ -71,7 +71,7 @@ const routes: customRouteRecord[] = [
                         meta: {
                             label: '示意图',
                         },
-                        component: () => import('@/pages/progress/status/chart/chart.vue')
+                        component: () => import('@/pages/progress/status/chart/progress-status-chart.vue')
                     },
                 ],
             },

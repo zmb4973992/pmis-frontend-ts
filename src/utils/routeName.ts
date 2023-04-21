@@ -11,7 +11,3 @@ export enum routeName {
     project = '项目',
     projectTable = '项目列表',
 }
-
-export enum localStorageItemName {
-    projectIDForDisassembly = 'project-id-for-disassembly'
-}
