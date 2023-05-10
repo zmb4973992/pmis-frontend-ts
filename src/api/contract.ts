@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 interface contractGet {
-    id: number
+    contract_snow_id: number
 }
 
 interface contractCreate {
@@ -69,15 +69,15 @@ interface contractGetList {
 }
 
 const contractApi = {
-    get: (param: contractGet) => request.get('/api/contract/' + param.id)
+    get: (param: contractGet) => request.get('/contract/' + param.id)
         .then(res => res.data),
-    create: (param: contractCreate) => request.post('/api/contract', param)
+    create: (param: contractCreate) => request.post('/contract', param)
         .then(res => res.data,),
-    update: (param: contractUpdate) => request.patch('/api/contract/' + param.id, param)
+    update: (param: contractUpdate) => request.patch('/contract/' + param.id, param)
         .then(res => res.data),
-    delete: (param: contractDelete) => request.delete('/api/contract/' + param.id)
+    delete: (param: contractDelete) => request.delete('/contract/' + param.id)
         .then(res => res.data,),
-    getList: (param?: contractGetList) => request.post('/api/contract/list', param)
+    getList: (param?: contractGetList) => request.post('/contract/list', param)
         .then(res => res.data),
 }
 
