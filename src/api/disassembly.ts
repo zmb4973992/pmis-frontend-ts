@@ -46,22 +46,22 @@ export interface iDisassemblyGetList {
 
 const disassemblyApi = {
     get: (param: iDisassemblyGet) => request.get(
-        '/api/disassembly/' + param.id).then(res => res.data,),
+        '/disassembly/' + param.id).then(res => res.data,),
     getTree: (param: iDisassemblyGetTree) => request.post(
-        '/api/disassembly/tree', param).then(res => res.data,),
+        '/disassembly/tree', param).then(res => res.data,),
     create: (param: iDisassemblyCreate) => request.post(
-        '/api/disassembly', param).then(res => res.data,),
+        '/disassembly', param).then(res => res.data,),
     createInBatches: (param: iDisassemblyCreateInBatches) => request.post(
-        '/api/disassembly/batch', param).then(res => res.data,),
+        '/disassembly/batch', param).then(res => res.data,),
     update: (param: iDisassemblyUpdate) => request.patch(
-        '/api/disassembly/' + param.id, param).then(res => res.data,),
+        '/disassembly/' + param.id, param).then(res => res.data,),
     delete: (param: iDisassemblyDelete) => request.delete(
-        '/api/disassembly/' + param.id,).then(res => res.data,),
+        '/disassembly/' + param.id,).then(res => res.data,),
     deleteWithInferiors: (param: iDisassemblyDeleteWithInferiors) =>
-        request.delete('/api/disassembly/with-inferiors/' + param.id,)
+        request.delete('/disassembly/with-inferiors/' + param.id,)
             .then(res => res.data,),
     getList: (param?: iDisassemblyGetList) => request.post(
-        '/api/disassembly/list', param).then(res => res.data,),
+        '/disassembly/list', param).then(res => res.data,),
 }
 
 export {disassemblyApi,}

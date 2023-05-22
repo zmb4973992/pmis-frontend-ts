@@ -11,7 +11,7 @@ export interface iDictionaryItemGetList {
 
 const dictionaryItemApi = {
     getList: (param?: iDictionaryItemGetList) => request.post(
-        '/api/dictionary-item/list', param).then(res=>res.data)
+        '/dictionary-item/list', param).then(res=>res.data)
 }
 
 export {dictionaryItemApi}

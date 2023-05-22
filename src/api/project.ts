@@ -59,15 +59,15 @@ export interface iProjectGetList {
 }
 
 const projectApi = {
-    get: (param: iProjectGet) => request.get('/api/project/' + param.id)
+    get: (param: iProjectGet) => request.get('/project/' + param.id)
         .then(res => res.data),
-    create: (param: iProjectCreate) => request.post('/api/project', param)
+    create: (param: iProjectCreate) => request.post('/project', param)
         .then(res => res.data,),
-    update: (param: iProjectUpdate) => request.patch('/api/project/' + param.id, param)
+    update: (param: iProjectUpdate) => request.patch('//project/' + param.id, param)
         .then(res => res.data),
-    delete: (param: iProjectDelete) => request.delete('/api/project/' + param.id)
+    delete: (param: iProjectDelete) => request.delete('/project/' + param.id)
         .then(res => res.data,),
-    getList: (param?: iProjectGetList) => request.post('/api/project/list', param)
+    getList: (param?: iProjectGetList) => request.post('/project/list', param)
         .then(res => res.data),
 }
 

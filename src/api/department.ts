@@ -47,17 +47,17 @@ export interface iDepartmentGetList {
 
 
 const departmentApi = {
-    get: (param: iDepartmentGet) => request.get('/api/department/' + param.id)
+    get: (param: iDepartmentGet) => request.get('/department/' + param.id)
         .then(res => res.data,),
-    update: (param: iDepartmentUpdate) => request.patch('/api/department/' + param.id, param)
+    update: (param: iDepartmentUpdate) => request.patch('/department/' + param.id, param)
         .then(res => res.data,),
-    create: (param: iDepartmentCreate) => request.post('/api/department', param)
+    create: (param: iDepartmentCreate) => request.post('/department', param)
         .then(res => res.data,),
-    delete: (param:iDepartmentDelete) => request.delete('/api/department'+param.id)
+    delete: (param:iDepartmentDelete) => request.delete('/department'+param.id)
         .then(res => res.data),
-    getArray: (param:iDepartmentGetArray) => request.post('/api/department/array',param)
+    getArray: (param:iDepartmentGetArray) => request.post('/department/array',param)
         .then(res => res.data),
-    getList: (param?:iDepartmentGetList) => request.post('/api/department/list',param)
+    getList: (param?:iDepartmentGetList) => request.post('/department/list',param)
         .then(res => res.data),
 }
 

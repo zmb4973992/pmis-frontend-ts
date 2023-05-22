@@ -37,15 +37,15 @@ export interface iRelatedPartyGetList {
 
 const relatedPartyApi = {
     get: (param: iRelatedPartyGet) => request.get(
-        '/api/related-party/' + param.id).then(res => res.data,),
+        '/related-party/' + param.id).then(res => res.data,),
     update: (param: iRelatedPartyUpdate) => request.patch(
-        '/api/related-party/' + param.id, param).then(res => res.data,),
+        '/related-party/' + param.id, param).then(res => res.data,),
     create: (param: iRelatedPartyCreate) => request.post(
-        '/api/related-party', param).then(res => res.data,),
+        '/related-party', param).then(res => res.data,),
     delete: (param:iRelatedPartyDelete) => request.delete(
-        '/api/related-party/' + param.id,).then(res => res.data,),
+        '/related-party/' + param.id,).then(res => res.data,),
     getList: (param?: iRelatedPartyGetList) => request.post(
-        '/api/related-party/list', param).then(res => res.data,),
+        '/related-party/list', param).then(res => res.data,),
 }
 
 export {relatedPartyApi}

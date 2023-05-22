@@ -4,7 +4,6 @@ import {routeName} from "@/utils/routeName";
 
 //把route的meta限定的更细致一些，便于引用和类型判定
 export type customRouteRecord = RouteRecordRaw & {
-
     meta?: {
         label?: string, //标签、显示名称
         icon?: string, //图标

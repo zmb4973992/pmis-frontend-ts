@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 interface contractGet {
-    contract_snow_id: number
+    id: number
 }
 
 interface contractCreate {
@@ -11,7 +11,7 @@ interface contractCreate {
     fund_direction?: number
     our_signatory?: number
     currency?: number
-    type?:number
+    type?: number
     signing_date?: string
     effective_date?: string
     commissioning_date?: string
@@ -36,7 +36,7 @@ interface contractUpdate {
     fund_direction?: number
     our_signatory?: number
     currency?: number
-    type?:number
+    type?: number
     signing_date?: string
     effective_date?: string
     commissioning_date?: string
@@ -58,9 +58,9 @@ interface contractDelete {
 }
 
 interface contractGetList {
-    project_id?:number
-    fund_direction?:number
-    name_include?:string
+    project_id?: number
+    fund_direction?: number
+    name_include?: string
     is_showed_by_role?: boolean
     page?: number
     page_size?: number

@@ -25,7 +25,7 @@ export interface ICreateUser extends IUpdateUser {
 }
 
 const GetUser = () => request.get(
-    '/api/user'
+    '/user'
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -37,7 +37,7 @@ const GetUser = () => request.get(
 )
 
 const GetUserByID = (userID: number) => request.get(
-    '/api/user/' + userID
+    '/user/' + userID
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -49,7 +49,7 @@ const GetUserByID = (userID: number) => request.get(
 )
 
 const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
-    '/api/user/' + userID,
+    '/user/' + userID,
     param,
 ).then(
     res => {
@@ -62,7 +62,7 @@ const UpdateUser = (userID: number, param: IUpdateUser) => request.put(
 )
 
 const CreateUser = (param: ICreateUser) => request.post(
-    '/api/user',
+    '/user',
     param
 ).then(
     res => {
@@ -83,7 +83,7 @@ const CreateUser = (param: ICreateUser) => request.post(
 )
 
 const DeleteUser = (userID: number) => request.delete(
-    '/api/user/' + userID,
+    '/user/' + userID,
 ).then(
     res => {
         //如果token无效，就删掉本地的token
@@ -95,7 +95,7 @@ const DeleteUser = (userID: number) => request.delete(
 )
 
 const GetUserList = (params: IUserList) => request.get(
-    '/api/user/list',
+    '/user/list',
     {params}
 ).then(
     res => {

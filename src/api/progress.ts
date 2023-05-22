@@ -39,15 +39,15 @@ export interface iProgressGetList {
 }
 
 const progressApi = {
-    get: (param: iProgressGet) => request.get('/api/progress/' + param.id)
+    get: (param: iProgressGet) => request.get('/progress/' + param.id)
         .then(res => res.data),
-    create: (param: iProgressCreate) => request.post('/api/progress', param)
+    create: (param: iProgressCreate) => request.post('/progress', param)
         .then(res => res.data,),
-    update: (param: iProgressUpdate) => request.patch('/api/progress/' + param.id, param)
+    update: (param: iProgressUpdate) => request.patch('/progress/' + param.id, param)
         .then(res => res.data),
-    delete: (param: iProgressDelete) => request.delete('/api/progress/' + param.id)
+    delete: (param: iProgressDelete) => request.delete('/progress/' + param.id)
         .then(res => res.data,),
-    getList: (param?: iProgressGetList) => request.post('/api/progress/list', param)
+    getList: (param?: iProgressGetList) => request.post('/progress/list', param)
         .then(res => res.data),
 }
 

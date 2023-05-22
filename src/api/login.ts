@@ -9,7 +9,7 @@ export interface Login {
 let user = useUserStore()
 
 const login = (data: Login) =>
-    request.post('/api/login', data).then(
+    request.post('/login', data).then(
         // 如果请求成功发出、收到结果
         res => {
             // 如果返回的状态码是0
