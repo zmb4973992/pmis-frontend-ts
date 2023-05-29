@@ -16,12 +16,17 @@
     ],
     "skipLibCheck": true,
     //自己后添加的，用于设置别名
-    "baseUrl": ".",   // 用于设置解析非相对模块名称的基本目录，相对模块不会受到baseUrl的影响
-    "paths": {        // 用于设置模块名到基于baseUrl的路径映射
+    "baseUrl": ".",
+    // 用于设置解析非相对模块名称的基本目录，相对模块不会受到baseUrl的影响
+    "paths": {
+      // 用于设置模块名到基于baseUrl的路径映射
       "@/*": [
         "src/*"
       ]
     },
+    "types": [
+      "vite/client"
+    ]
   },
   "include": [
     "src/**/*.ts",

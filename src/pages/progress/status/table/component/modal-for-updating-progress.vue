@@ -75,7 +75,6 @@ async function showModal(progressID: number) {
   formData.progressID = progressID
   let res = await progressApi.get({id: progressID})
   if (res && res.data) {
-    console.log(res.data);
     formData.date = dayjs(res.data?.date)
     formData.type = res.data?.type?.id
     formData.value = res.data?.value * 100

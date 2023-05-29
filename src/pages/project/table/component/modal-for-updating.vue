@@ -108,7 +108,7 @@ import {iProjectUpdate, projectApi,} from "@/api/project";
 import {dictionaryItemApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import useUserStore from "@/store/user";
-import {departmentApi} from "@/api/department";
+import {organizationApi} from "@/api/organization";
 import {relatedPartyApi} from "@/api/related-party";
 import {UploadOutlined} from "@ant-design/icons-vue";
 
@@ -228,7 +228,7 @@ function showModal(projectID: number) {
       }
   )
 
-  departmentApi.getList({page_size: 100, level_name: "部门",}).then(
+  organizationApi.getList({page_size: 100, level_name: "部门",}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []

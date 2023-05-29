@@ -1,7 +1,6 @@
 import {defineStore} from "pinia";
 import request from "@/utils/request";
 import {userState} from "@/store/interface";
-import {GetRoles} from "@/api/role-and-user";
 import {message} from "ant-design-vue";
 
 //用来储存用户信息
@@ -30,7 +29,7 @@ const useUserStore = defineStore(
                     this.accessToken = token
                     //获取基本的用户信息
                     request.get(
-                        '/api/user'
+                        '/user'
                     ).then(
                         res => {
                             //如果token有效，就保留到store；

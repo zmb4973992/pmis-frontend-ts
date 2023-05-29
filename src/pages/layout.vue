@@ -4,7 +4,10 @@
     <a-layout-sider collapsible :trigger="null" v-model:collapsed="isCollapsed"
                     class="left-layout" :width="isCollapsed? 'any':'140px'">
       <Logo/>
-      <Sider class="sider-bar" :menuList="menuList"/>
+      <!--      <Sider class="sider-bar" :menuList="menuList"/>-->
+      <Sider class="sider-bar"/>
+
+
     </a-layout-sider>
     <!--右侧内容区域-->
     <a-layout class="right-layout">

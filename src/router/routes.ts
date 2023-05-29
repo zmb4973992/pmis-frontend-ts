@@ -1,6 +1,7 @@
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 import {RouteRecordRaw} from "vue-router";
 import {routeName} from "@/utils/routeName";
+import useMenuStore from "@/store/menu";
 
 //把route的meta限定的更细致一些，便于引用和类型判定
 export type customRouteRecord = RouteRecordRaw & {
@@ -8,11 +9,12 @@ export type customRouteRecord = RouteRecordRaw & {
         label?: string, //标签、显示名称
         icon?: string, //图标
         hidden?: boolean, //是否在目录中隐藏
-        requireAuth?: boolean, //是否需要根据角色鉴权
-        permittedRoles?: string[] //允许哪些角色访问
     }
     children?: customRouteRecord[]
 }
+
+const privateRoutes: customRouteRecord[] = []
+
 
 const routes: customRouteRecord[] = [
     {
@@ -239,6 +241,68 @@ const routes: customRouteRecord[] = [
 
     },
     {
+        path: '/finance',
+        name: '财务',
+        meta: {
+            label: '财务',
+            requireAuth: true,
+            icon: 'MoneyCollectOutlined',
+        },
+        component : () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/finance/income',
+                name: '收款',
+                meta: {
+                    label:'收款',
+                },
+                children: [
+                    {
+                        path:'/finance/income/forecast',
+                        name:'预测收款',
+                        meta:{
+                            label:'预测收款',
+                        },
+                        component:()=>import('@/pages/test.vue')
+                    },
+                    {
+                        path:'/finance/income/actual',
+                        name:'实际收款',
+                        meta:{
+                            label:'实际收款',
+                        },
+                        component:()=>import('@/pages/test.vue')
+                    },
+                ]
+            },
+            {
+                path: '/finance/expenditure',
+                name: '付款',
+                meta: {
+                    label:'付款',
+                },
+                children: [
+                    {
+                        path:'/finance/expenditure/actual',
+                        name:'实际付款',
+                        meta:{
+                            label:'实际付款',
+                        },
+                        component:()=>import('@/pages/test.vue')
+                    },
+                    {
+                        path:'/finance/expenditure/forecast',
+                        name:'预测付款',
+                        meta:{
+                            label:'预测付款',
+                        },
+                        component:()=>import('@/pages/test.vue')
+                    },
+                ]
+            },
+        ],
+    },
+    {
         path: '/login',
         name: '登录',
         meta: {
@@ -260,6 +324,7 @@ const routes: customRouteRecord[] = [
         },
         component: () => import('@/pages/403.vue'),
     },
+
     {
         path: '/:pathMatch(.*)*',
         name: '404',
@@ -301,3 +366,4 @@ const routes: customRouteRecord[] = [
 ]
 
 export default routes
+export {privateRoutes,}

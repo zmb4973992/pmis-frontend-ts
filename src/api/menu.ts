@@ -65,6 +65,14 @@ interface menuGetList {
     desc?: boolean
 }
 
+interface menuGetTree {
+    group?: string
+    page?: number
+    page_size?: number
+    order_by?: string
+    desc?: boolean
+}
+
 const menuApi = {
     // get: (param: contractGet) => request.get('/contract/' + param.id)
     //     .then(res => res.data),
@@ -75,6 +83,8 @@ const menuApi = {
     // delete: (param: contractDelete) => request.delete('/contract/' + param.id)
     //     .then(res => res.data,),
     getList: (param?: menuGetList) => request.post('/menu/list', param)
+        .then(res => res.data),
+    getTree: (param?: menuGetTree) => request.post('/menu/tree', param)
         .then(res => res.data),
 }
 
