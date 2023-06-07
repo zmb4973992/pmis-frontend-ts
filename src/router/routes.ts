@@ -160,37 +160,37 @@ const routes: customRouteRecord[] = [
             },
         ],
     },
-    {
-        path: '/user-management',
-        name: '用户管理',
-        meta: {
-            label: '用户管理',
-            icon: 'UserOutlined',
-        },
-        component: () => import('@/pages/layout.vue'),
-        children: [
-            {
-                path: '/user-management/organization-structure',
-                name: '组织结构',
-                meta: {
-                    label: '组织结构',
-                    requireAuth: true,
-                    permittedRoles: ['管理员'],
-                },
-                component: () => import('@/pages/user-management/organization-structure.vue')
-            },
-            {
-                path: '/project/member',
-                name: '成员管理',
-                meta: {
-                    label: '成员管理',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/project/member-management.vue'),
-            },
-        ],
-    },
+    // {
+    //     path: '/user-management',
+    //     name: '用户管理',
+    //     meta: {
+    //         label: '用户管理',
+    //         icon: 'UserOutlined',
+    //     },
+    //     component: () => import('@/pages/layout.vue'),
+    //     children: [
+    //         {
+    //             path: '/user-management/organization-structure',
+    //             name: '组织结构',
+    //             meta: {
+    //                 label: '组织结构',
+    //                 requireAuth: true,
+    //                 permittedRoles: ['管理员'],
+    //             },
+    //             component: () => import('@/pages/user-management/organization-structure.vue')
+    //         },
+    //         {
+    //             path: '/project/member',
+    //             name: '成员管理',
+    //             meta: {
+    //                 label: '成员管理',
+    //                 requireAuth: true,
+    //                 permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+    //             },
+    //             component: () => import('@/pages/project/member-management.vue'),
+    //         },
+    //     ],
+    // },
     //以下为消息中心
     {
         path: '/',
@@ -248,30 +248,30 @@ const routes: customRouteRecord[] = [
             requireAuth: true,
             icon: 'MoneyCollectOutlined',
         },
-        component : () => import('@/pages/layout.vue'),
+        component: () => import('@/pages/layout.vue'),
         children: [
             {
                 path: '/finance/income',
                 name: '收款',
                 meta: {
-                    label:'收款',
+                    label: '收款',
                 },
                 children: [
                     {
-                        path:'/finance/income/forecast',
-                        name:'预测收款',
-                        meta:{
-                            label:'预测收款',
+                        path: '/finance/income/actual',
+                        name: '实际收款',
+                        meta: {
+                            label: '实际收款',
                         },
-                        component:()=>import('@/pages/test.vue')
+                        component: () => import('@/pages/finance/income/actual/actual-income.vue')
                     },
                     {
-                        path:'/finance/income/actual',
-                        name:'实际收款',
-                        meta:{
-                            label:'实际收款',
+                        path: '/finance/income/forecast',
+                        name: '预测收款',
+                        meta: {
+                            label: '预测收款',
                         },
-                        component:()=>import('@/pages/test.vue')
+                        component: () => import('@/pages/finance/income/forecast/forecast-income.vue')
                     },
                 ]
             },
@@ -279,26 +279,32 @@ const routes: customRouteRecord[] = [
                 path: '/finance/expenditure',
                 name: '付款',
                 meta: {
-                    label:'付款',
+                    label: '付款',
                 },
                 children: [
                     {
-                        path:'/finance/expenditure/actual',
-                        name:'实际付款',
-                        meta:{
-                            label:'实际付款',
+                        path: '/finance/expenditure/actual',
+                        name: '实际付款',
+                        meta: {
+                            label: '实际付款',
                         },
-                        component:()=>import('@/pages/test.vue')
+                        component: () => import('@/pages/finance/expenditure/actual/actual-expenditure.vue')
                     },
                     {
-                        path:'/finance/expenditure/forecast',
-                        name:'预测付款',
-                        meta:{
-                            label:'预测付款',
+                        path: '/finance/expenditure/forecast',
+                        name: '预测付款',
+                        meta: {
+                            label: '预测付款',
                         },
-                        component:()=>import('@/pages/test.vue')
+                        component: () => import('@/pages/finance/expenditure/forecast/forecast-expenditure.vue')
                     },
                 ]
+            },
+            {
+                path: '/finance/project-fund-status',
+                name: '项目资金情况',
+                meta: {label: '项目资金情况'},
+                component: () => import('@/pages/finance/project-fund-status/project-fund-status.vue')
             },
         ],
     },

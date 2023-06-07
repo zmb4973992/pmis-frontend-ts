@@ -6,18 +6,17 @@
       <a-form :model="queryCondition" ref="formRef">
         <a-row :gutter="10">
           <a-col>
-            <a-form-item class="query-item" label="部门" name="departmentIDIn">
-              <a-select show-search allow-clear mode="multiple" :filter-option="departmentFilterOption"
-                        :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
-                        v-model:value="queryCondition.departmentIDIn" :options="organizationOptions"
-                        style="width:170px">
-              </a-select>
+            <a-form-item class="query-item" label="项目名称" name="projectID">
+              <a-select placeholder="项目名称" show-search allow-clear
+                        :filter-option="projectFilterOption"
+                        v-model:value="queryCondition.projectID"
+                        :options="projectOptions"
+                        style="width:130px"/>
             </a-form-item>
           </a-col>
           <a-col>
-            <a-form-item class="query-item" label="项目全称" name="nameInclude">
-              <a-input v-model:value="queryCondition.nameInclude"
-                       placeholder="支持模糊搜索" style="width: 180px"/>
+            <a-form-item class="query-item" label="付款日期" name="dateRange">
+              <a-range-picker v-model:value="queryCondition.dateRange" value-format="YYYY-MM-DD"/>
             </a-form-item>
           </a-col>
           <a-col>
@@ -44,11 +43,12 @@
 
     <a-card size="small" :bordered="false">
       <a-row class="table-buttons-row">
-        <a-button size="small" type="primary" @click="createProject">
+        <a-button size="small" type="primary"
+                  @click="createIncome">
           <template #icon>
             <PlusOutlined/>
           </template>
-          添加项目
+          添加实际收款记录
         </a-button>
         <div class="buttons-for-table-setting">
           <a-tooltip title="设置列" size="small">
@@ -62,26 +62,30 @@
       </a-row>
 
       <a-table :data-source="tableData.list" :columns="columns"
-               size="small" :pagination="false" :scroll="{x:1200}"
+               size="small" :pagination="false" :scroll="{x:1000}"
                @change="tableChange" :loading="loading">
         <template #bodyCell="{column,record,index}">
           <template v-if="column.dataIndex === 'line_number'">
             {{ index + 1 }}
           </template>
-          <template v-else-if="column.dataIndex === 'action'">
-            <a-button type="link" style="padding: 0" @click="showModalForDetail(record.id)">
+          <template v-else-if="column.dataIndex === 'operation'">
+            <a-button type="link" style="padding: 0" @click="toBeCompleted">
               查看
             </a-button>
             <a-divider type="vertical"/>
-            <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
+            <a-button type="link" style="padding: 0" @click="updateIncome">
               修改
             </a-button>
             <a-divider type="vertical"/>
-            <a-button type="link" style="padding: 0" danger
-                      @click="showModalForDeleting(record.id)">
-              删除
-            </a-button>
+            <a-tooltip>
+              <template #title>禁止删除</template>
+              <a-button type="link" style="padding: 0" danger disabled
+                        @click="deleteIncome">
+                删除
+              </a-button>
+            </a-tooltip>
           </template>
+
         </template>
       </a-table>
 
@@ -94,28 +98,111 @@
     </a-card>
   </div>
 
-  <!--展示项目详情的模态框-->
-  <modal-for-detail ref="modalForDetail"/>
-
-  <!--修改项目信息的模态框-->
-  <Modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
-
-  <!--删除项目信息的模态框-->
-  <Modal-for- deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
-
 </template>
 
 <script setup lang="ts">
-import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import {reactive, ref} from "vue";
+import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {projectApi} from "@/api/project";
-import {organizationApi} from "@/api/organization";
-import ModalForDetail from "@/pages/project/table/component/modal-for-detail.vue";
-import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue";
-import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue";
-import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
+import {pagingFormat} from "@/interfaces/paging-interface";
+import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
+
+function createIncome() {
+  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动添加', 5)
+}
+
+function updateIncome() {
+  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动修改', 5)
+}
+
+function deleteIncome() {
+  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动删除', 5)
+}
+
+//查询条件
+interface queryConditionFormat extends pagingFormat {
+  projectID?: number
+  nameInclude?: string
+  dateRange?: [string, string]
+}
+
+const queryCondition = reactive<queryConditionFormat>({
+  page: 1,
+  pageSize: 12,
+})
+
+//部门选项的过滤器（下拉框搜索）
+const projectFilterOption = (input: string, option: any) =>
+    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
+const tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
+
+const loading = ref(false)
+
+const columns = ref([
+  {
+    title: '行号',
+    dataIndex: 'line_number',
+    width: '50px',
+    fixed: 'left',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '项目名称',
+    dataIndex: ['project', 'name'],
+    width: '260px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '合同名称',
+    dataIndex: 'name',
+    width: '260px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+    width: '200px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '日期',
+    dataIndex: 'date',
+    width: '120px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '金额',
+    dataIndex: 'amount',
+    className: 'amount',
+    width: '160px',
+    ellipsis: true,
+    align: 'right',
+    sorter: true,
+  },
+  {
+    title: '币种',
+    dataIndex: ['currency', 'name'],
+    width: '120px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    width: '150px',
+    fixed: 'right',
+    ellipsis: true,
+    align: 'center',
+  },
+])
 
 function toBeCompleted() {
   message.info('待完成')
@@ -155,136 +242,15 @@ function tableChange(pagination: any, filter: any, sorter: any) {
   loadTableData()
 }
 
-//查询条件
-interface queryConditionFormat extends pagingFormat {
-  departmentIDIn?: number[]
-  nameInclude?: string
-}
-
-const queryCondition = reactive<queryConditionFormat>({
-  nameInclude: "",
-  page: 1,
-  pageSize: 12,
-})
-
-let organizationOptions = ref<SelectProps['options']>()
-
-//获取部门下拉框的值
-async function loadOrganizationOptions() {
-  try {
-    let res = await organizationApi.getList({
-      page_size: 0,
-    })
-    organizationOptions.value = []
-    if (res?.code === 0) {
-      for (let item of res.data) {
-        console.log(item);
-        organizationOptions.value.push({value: item.id, label: item.name})
-      }
-    } else {
-
-    }
-
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-loadOrganizationOptions()
-
-//部门选项的过滤器（下拉框搜索）
-const departmentFilterOption = (input: string, option: any) =>
-    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-
-//分页器选项
-
-let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
-
-let columns = ref([
-  {
-    title: '行号',
-    dataIndex: 'line_number',
-    width: '50px',
-    fixed: 'left',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '项目名称',
-    dataIndex: 'name',
-    width: '260px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '项目号',
-    dataIndex: 'code',
-    width: '160px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '所在国家',
-    dataIndex: ['country', 'name'],
-    width: '100px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '项目类型',
-    dataIndex: ['type', 'name'],
-    width: '300px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '金额',
-    className: 'amount',
-    dataIndex: 'amount',
-    width: '100px',
-    ellipsis: true,
-    align: 'right',
-    sorter: true,
-  },
-  {
-    title: '币种',
-    dataIndex: ['currency', 'name'],
-    width: '150px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '状态',
-    dataIndex: ['status', 'name'],
-    width: '100px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '所属部门',
-    dataIndex: ['organization', 'name'],
-    width: '300px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '150px',
-    fixed: 'right',
-    ellipsis: true,
-    align: 'center',
-  },
-])
-
-const loading = ref(false)
-
 async function loadTableData() {
   try {
     loading.value = true
-    let res = await projectApi.getList({
-      department_id_in: queryCondition.departmentIDIn,
-      name_include: queryCondition.nameInclude,
+    let res = await incomeAndExpenditureApi.getList({
+      project_id: queryCondition.projectID,
+      kind:"实际",
+      fund_direction: "收款",
+      date_gte: queryCondition.dateRange ? queryCondition.dateRange[0] : undefined,
+      date_lte: queryCondition.dateRange ? queryCondition.dateRange[1] : undefined,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -311,30 +277,21 @@ async function loadTableData() {
 
 loadTableData()
 
-function createProject() {
-  message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
+const projectOptions = ref<SelectProps['options']>([])
+
+//获取项目下拉框的选项
+async function loadProjectOptions() {
+  try {
+    let res = await projectApi.getList({page_size: 0})
+    for (let item of res.data) {
+      projectOptions.value?.push({label: item.name, value: item.id})
+    }
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-//用户展示项目详情的模态框
-const modalForDetail = ref()
-
-function showModalForDetail(id: number) {
-  modalForDetail.value.showModal(id)
-}
-
-//用于修改项目信息的模态框
-const modalForUpdating = ref()
-
-function showModalForUpdating(id: number) {
-  modalForUpdating.value.showModal(id)
-}
-
-//用于删除项目信息的模态框
-const modalForDeleting = ref()
-
-function showModalForDeleting(projectID: number) {
-  modalForDeleting.value.showModal(projectID)
-}
+loadProjectOptions()
 
 </script>
 
@@ -392,4 +349,5 @@ function showModalForDeleting(projectID: number) {
     text-align: center !important;
   }
 }
+
 </style>

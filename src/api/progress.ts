@@ -26,10 +26,12 @@ export interface iProgressDelete {
 }
 
 export interface iProgressGetList {
-    disassembly_id: number
+    project_id?:number
+    disassembly_id?: number
     date_gte?: string
     date_lte?: string
     type?:number
+    type_name?:string
     data_source?:number
 
     page?: number

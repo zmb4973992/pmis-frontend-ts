@@ -22,7 +22,6 @@ interface iOrganizationDelete {
 }
 
 interface iOrganizationGetList {
-    is_showed_by_role?: boolean
     superior_id?: number
     level_name?: string
     name?: string
