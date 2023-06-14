@@ -77,26 +77,6 @@ const routes: customRouteRecord[] = [
                 ],
             },
             {
-                path: '/progress/snapshot',
-                name: '历史快照',
-                meta: {
-                    label: '历史快照',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/progress/historical-snapshot.vue'),
-            },
-            {
-                path: '/progress/warning',
-                name: '进度预警',
-                meta: {
-                    label: '历史快照',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/progress/historical-snapshot.vue'),
-            },
-            {
                 path: '/progress/update_log',
                 name: '更新日志',
                 meta: {
@@ -137,6 +117,15 @@ const routes: customRouteRecord[] = [
                 },
                 component: () => import('@/pages/project/historical-performance.vue'),
             },
+            {
+                path:'/project/detail/:projectID',
+                name:'项目详情',
+                meta:{
+                    label:'项目详情',
+                    hidden:true,
+                },
+                component:()=>import('@/pages/project/detail/project-detail.vue')
+            },
         ],
     },
     {
@@ -157,6 +146,17 @@ const routes: customRouteRecord[] = [
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/contract/table/contract-table.vue')
+            },
+            {
+                path: '/contract/:contractID',
+                name: '合同详情',
+                meta: {
+                    hidden:true,
+                    label: '合同详情',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/contract/detail/contract-detail.vue')
             },
         ],
     },

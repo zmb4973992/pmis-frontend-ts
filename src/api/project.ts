@@ -13,7 +13,7 @@ export interface iProjectCreate {
     amount?: number
     currency?: number
     exchange_rate?: number
-    department_id?: number
+    organization_id?: number
     related_party_id?: number
     status?: number
     signing_date?: string
@@ -33,7 +33,7 @@ export interface iProjectUpdate {
     amount?: number | null
     currency?: number | null
     exchange_rate?: number | null
-    department_id?: number | null
+    organization_id?: number | null
     related_party_id?: number | null
     status?: number | null
     signing_date?: string
@@ -50,8 +50,8 @@ export interface iProjectDelete {
 export interface iProjectGetList {
     is_showed_by_role?: boolean
     name_include?: string
-    department_id_in?: number[]
-    department_name_include?: string
+    organization_id_in?: number[]
+    organization_name_include?: string
     page?: number
     page_size?: number
     order_by?: string
@@ -63,7 +63,7 @@ const projectApi = {
         .then(res => res.data),
     create: (param: iProjectCreate) => request.post('/project', param)
         .then(res => res.data,),
-    update: (param: iProjectUpdate) => request.patch('//project/' + param.id, param)
+    update: (param: iProjectUpdate) => request.patch('/project/' + param.id, param)
         .then(res => res.data),
     delete: (param: iProjectDelete) => request.delete('/project/' + param.id)
         .then(res => res.data,),

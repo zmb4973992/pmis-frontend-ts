@@ -1,5 +1,4 @@
 <template>
-  <div id="layout">
     <!--查询区域-->
     <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
             :body-style="{padding:'0 10px 10px 10px'}">
@@ -44,7 +43,7 @@
     <a-card size="small" :bordered="false">
       <a-row class="table-buttons-row">
         <a-button size="small" type="primary"
-                  @click="createIncome">
+                  @click="showModalForCreatingActualIncome">
           <template #icon>
             <PlusOutlined/>
           </template>
@@ -96,7 +95,10 @@
                     :pageSizeOptions="pageSizeOptions" show-quick-jumper
                     @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
     </a-card>
-  </div>
+
+  <!--添加实际付款的模态框-->
+  <modal-for-creating-actual-income
+      ref="modalForCreatingActualIncome" @loadData=""/>
 
 </template>
 
@@ -108,9 +110,14 @@ import {projectApi} from "@/api/project";
 import {pageSizeOptions} from "@/constants/paging-constant";
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
+import ModalForCreatingActualIncome from "@/pages/finance/income/actual/component/modal-for-creating-actual-income.vue";
+import ModalForCreatingProgress from "@/pages/progress/status/table/component/modal-for-creating-progress.vue";
 
-function createIncome() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动添加', 5)
+const modalForCreatingActualIncome = ref()
+
+//打开用于添加实际付款的模态框
+function showModalForCreatingActualIncome() {
+  modalForCreatingActualIncome.value.showModal()
 }
 
 function updateIncome() {

@@ -63,8 +63,10 @@ import * as echarts from 'echarts';
 import useGlobalStore from "@/store/global";
 import {storeToRefs} from "pinia";
 import {RedoOutlined, SearchOutlined} from "@ant-design/icons-vue";
-import {cumulativeIncomeAndExpenditureApi} from "@/api/cumulative-income-and-expenditure";
+import {cumulativeProjectIncomeAndExpenditureApi} from "@/api/cumulative-project-income-and-expenditure";
 import {progressApi} from "@/api/progress";
+import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
+import {projectCumulativeExpenditureApi} from "@/api/project-cumulative-expenditure";
 
 //项目选择框的过滤器
 const projectFilterOption = (input: string, option: any) =>
@@ -154,33 +156,38 @@ async function loadChartData(projectID: number, dataType: string) {
 
   switch (dataType) {
     case '收款进度':
-      const res = await cumulativeIncomeAndExpenditureApi.getList({project_id: projectID, page_size: 0})
-      const res1 = await progressApi.getList({project_id: projectID, type_name: "实际进度"})
-      if (res?.code === 0) {
-        for (let item of res.data) {
+      const res1 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
+      if (res1?.code === 0) {
+        for (let item of res1.data) {
           chartData.actualIncomeProgress.push({date: item.date, value: item.actual_income_progress})
         }
       }
-      if (res1?.code === 0) {
-        for (let item of res1.data) {
+
+      const res2 = await progressApi.getList({project_id: projectID, type_name: "实际进度"})
+      if (res2?.code === 0) {
+        for (let item of res2.data) {
           chartData.actualWorkProgress.push({date: item.date, value: item.value})
         }
       }
       drawChart(dataType)
       break
+
     case '现金流曲线':
-      const res2 = await cumulativeIncomeAndExpenditureApi.getList({project_id: projectID, page_size: 0})
-      if (res2?.code === 0) {
-        for (let item of res2.data) {
-          if (item.total_actual_income) {
-            chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
-          }
-          if (item.total_actual_expenditure) {
-            chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
-          }
+      const res3 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
+      if (res3?.code === 0) {
+        for (let item of res3.data) {
+          chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
         }
-        drawChart(dataType)
       }
+
+      const res4 = await projectCumulativeExpenditureApi.getList({project_id: projectID, page_size: 0})
+      if (res4?.code === 0) {
+        for (let item of res4.data) {
+          chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
+        }
+      }
+
+      drawChart(dataType)
       break
   }
 }

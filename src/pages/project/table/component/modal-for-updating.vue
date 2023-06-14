@@ -2,17 +2,16 @@
   <a-modal v-model:visible="visible" :after-close="resetForm" title="修改"
            width="600px" @ok="onSubmit" :destroy-on-close="true">
     <a-form ref="form" :model="data" :label-col="{ span:4 }">
-      <a-form-item label="项目全称" name="name"
-                   :rules="{required: true, message: '请填写项目名称'}">
-        <a-input v-model:value="data.name"/>
-      </a-form-item>
-
-      <a-form-item label="所属部门" name="department_id">
-        <a-select v-model:value="data.department_id" :options="departmentOptions"/>
+      <a-form-item label="项目全称" name="name">
+        {{ data.name }}
       </a-form-item>
 
       <a-form-item label="项目编号" name="project_code">
         <a-input v-model:value="data.code"/>
+      </a-form-item>
+
+      <a-form-item label="所属部门" name="organization_id">
+        <a-select v-model:value="data.organization_id" :options="organizationOptions"/>
       </a-form-item>
 
       <a-form-item label="项目类型" name="project_type">
@@ -21,7 +20,8 @@
 
       <a-form-item label="所在国家" name="country"
                    :rules="{required: true, message: '请填写所在国家'}">
-        <a-select v-model:value="data.country" :options="countryOptions"/>
+        <a-select v-model:value="data.country" :options="countryOptions" show-search
+                  :filter-option="countryFilterOption"/>
       </a-form-item>
 
       <a-form-item label="项目金额">
@@ -29,7 +29,7 @@
                         :controls="false" :precision="2">
           <template #addonAfter>
             <a-select id="project_currency" v-model:value="data.currency"
-                      :options="currencyOptions"/>
+                      :options="currencyOptions" style="width:90px"/>
           </template>
         </a-input-number>
       </a-form-item>
@@ -76,41 +76,40 @@
         </a-textarea>
       </a-form-item>
 
-      <a-form-item label="附件">
-        <a-upload
-            v-model:file-list="fileList"
-            name="file" :multiple="true"
-            action="http://localhost:8000/api/file/upload/single"
-            :before-upload="beforeUpload"
-            @change="handleChange"
+      <!--      <a-form-item label="附件">-->
+      <!--        <a-upload-->
+      <!--            v-model:file-list="fileList"-->
+      <!--            name="file" :multiple="true"-->
+      <!--            action="http://localhost:8000/api/file/upload/single"-->
+      <!--            :before-upload="beforeUpload"-->
+      <!--            @change="handleChange"-->
 
-            :headers="headers">
-          <a-row>
-            <a-button>
-              <upload-outlined></upload-outlined>
-              上传
-            </a-button>
-            <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">
-              支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>
-            </div>
-          </a-row>
-        </a-upload>
-      </a-form-item>
+      <!--            :headers="headers">-->
+      <!--          <a-row>-->
+      <!--            <a-button>-->
+      <!--              <upload-outlined></upload-outlined>-->
+      <!--              上传-->
+      <!--            </a-button>-->
+      <!--            <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">-->
+      <!--              支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>-->
+      <!--            </div>-->
+      <!--          </a-row>-->
+      <!--        </a-upload>-->
+      <!--      </a-form-item>-->
 
     </a-form>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
-import {FormInstance, message, Upload, UploadChangeParam, UploadProps} from "ant-design-vue";
+import {reactive, ref} from "vue";
+import {FormInstance, message, Upload, UploadChangeParam} from "ant-design-vue";
 import {iProjectUpdate, projectApi,} from "@/api/project";
 import {dictionaryItemApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import useUserStore from "@/store/user";
 import {organizationApi} from "@/api/organization";
 import {relatedPartyApi} from "@/api/related-party";
-import {UploadOutlined} from "@ant-design/icons-vue";
 
 const userStore = useUserStore()
 
@@ -132,10 +131,13 @@ function toBeCompleted() {
 const countryOptions = ref<{ value: string, label: string }[]>([])
 const projectTypeOptions = ref<{ value: string, label: string }[]>([])
 const currencyOptions = ref<{ value: string, label: string }[]>()
-const departmentOptions = ref<{ value: string, label: string }[]>()
+const organizationOptions = ref<{ value: string, label: string }[]>()
 const statusOptions = ref<{ value: string, label: string }[]>()
 const relatedPartyOptions = ref<{ value: string, label: string }[]>()
 const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
+
+const countryFilterOption = (input: string, option: any) =>
+    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 const data = reactive<iProjectUpdate>({id: 0})
 
@@ -172,15 +174,15 @@ function showModal(projectID: number) {
         data.status = res.data?.status?.id || undefined
         data.our_signatory = res.data?.our_signatory?.id || undefined
         data.construction_period = res.data?.construction_period || undefined
-        data.department_id = res.data?.department?.id || undefined
-        data.related_party_id = res.data?.related_party_id || undefined
+        data.organization_id = res.data?.organization?.id || undefined
+        data.related_party_id = res.data?.related_party?.id || undefined
         signingDate.value = res.data?.signing_date ? dayjs(res.data.signing_date) : undefined
         effectiveDate.value = res.data?.effective_date ? dayjs(res.data.effective_date) : undefined
         data.content = res.data?.content
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "国家"}).then(
+  dictionaryItemApi.getList({dictionary_type_name: "国家", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -192,7 +194,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "项目类型"}).then(
+  dictionaryItemApi.getList({dictionary_type_name: "项目类型", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -204,7 +206,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "币种"}).then(
+  dictionaryItemApi.getList({dictionary_type_name: "币种", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -216,7 +218,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "项目状态"}).then(
+  dictionaryItemApi.getList({dictionary_type_name: "项目状态", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -228,19 +230,19 @@ function showModal(projectID: number) {
       }
   )
 
-  organizationApi.getList({page_size: 100, level_name: "部门",}).then(
+  organizationApi.getList({level_name: "部门", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
           for (let item of res.data) {
             result.push({value: item.id, label: item.name})
           }
-          departmentOptions.value = result
+          organizationOptions.value = result
         }
       }
   )
 
-  relatedPartyApi.getList({page_size: 100,}).then(
+  relatedPartyApi.getList({page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -252,7 +254,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "我方签约主体"}).then(
+  dictionaryItemApi.getList({dictionary_type_name: "我方签约主体", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -279,9 +281,9 @@ function onSubmit() {
           currency: data.currency === null ? -1 : data.currency,
           exchange_rate: data.exchange_rate === null ? -1 : data.exchange_rate,
           status: data.status === null ? -1 : data.status,
-          our_signatory: data.our_signatory === null ? -1 : data.status,
+          our_signatory: data.our_signatory === null ? -1 : data.our_signatory,
           construction_period: data.construction_period === null ? -1 : data.construction_period,
-          department_id: data.department_id === null ? -1 : data.department_id,
+          organization_id: data.organization_id === null ? -1 : data.organization_id,
           related_party_id: data.related_party_id === null ? -1 : data.related_party_id,
           content: data.content,
           signing_date: signingDate.value?.format("YYYY-MM-DD") || "",

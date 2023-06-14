@@ -26,6 +26,7 @@ async function showModal(projectID: number) {
 
 
 async function onSubmit() {
+  message.warn()
   let res = await projectApi.delete({id: data.id})
   message.success("删除成功")
   visible.value = false

@@ -1,121 +1,122 @@
 <template>
-  <div id="layout">
-    <!--查询区域-->
-    <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
-            :body-style="{padding:'0 10px 10px 10px'}">
-      <a-form :model="queryCondition" ref="formRef">
-        <a-row :gutter="10">
-          <a-col>
-            <a-form-item class="query-item" label="部门" name="departmentIDIn">
-              <a-select show-search allow-clear mode="multiple" :filter-option="departmentFilterOption"
-                        :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
-                        v-model:value="queryCondition.departmentIDIn" :options="organizationOptions"
-                        style="width:170px">
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col>
-            <a-form-item class="query-item" label="项目全称" name="nameInclude">
-              <a-input v-model:value="queryCondition.nameInclude"
-                       placeholder="支持模糊搜索" style="width: 180px"/>
-            </a-form-item>
-          </a-col>
-          <a-col>
-            <a-form-item class="query-item">
-              <a-button-group>
-                <a-button class="button" type="primary" @click="query">
-                  <template #icon>
-                    <SearchOutlined/>
-                  </template>
-                  查询
-                </a-button>
-                <a-button class="button" @click="resetQueryCondition">
-                  <template #icon>
-                    <RedoOutlined/>
-                  </template>
-                  重置
-                </a-button>
-              </a-button-group>
-            </a-form-item>
-          </a-col>
-        </a-row>
-      </a-form>
-    </a-card>
-
-    <a-card size="small" :bordered="false">
-      <a-row class="table-buttons-row">
-        <a-button size="small" type="primary" @click="createProject">
-          <template #icon>
-            <PlusOutlined/>
-          </template>
-          添加项目
-        </a-button>
-        <div class="buttons-for-table-setting">
-          <a-tooltip title="设置列" size="small">
-            <a-button type="text" @click="toBeCompleted" size="small">
-              <template #icon>
-                <setting-outlined style="font-size: 16px"/>
-              </template>
-            </a-button>
-          </a-tooltip>
-        </div>
+  <!--查询区域-->
+  <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
+          :body-style="{padding:'0 10px 10px 10px'}">
+    <a-form :model="queryCondition" ref="formRef">
+      <a-row :gutter="10">
+        <a-col>
+          <a-form-item class="query-item" label="部门" name="departmentIDIn">
+            <a-select show-search allow-clear mode="multiple" :filter-option="departmentFilterOption"
+                      :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
+                      v-model:value="queryCondition.departmentIDIn" :options="organizationOptions"
+                      style="width:170px">
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col>
+          <a-form-item class="query-item" label="项目全称" name="nameInclude">
+            <a-input v-model:value="queryCondition.nameInclude"
+                     placeholder="支持模糊搜索" style="width: 180px"/>
+          </a-form-item>
+        </a-col>
+        <a-col>
+          <a-form-item class="query-item">
+            <a-button-group>
+              <a-button class="button" type="primary" @click="query">
+                <template #icon>
+                  <SearchOutlined/>
+                </template>
+                查询
+              </a-button>
+              <a-button class="button" @click="resetQueryCondition">
+                <template #icon>
+                  <RedoOutlined/>
+                </template>
+                重置
+              </a-button>
+            </a-button-group>
+          </a-form-item>
+        </a-col>
       </a-row>
+    </a-form>
+  </a-card>
 
-      <a-table :data-source="tableData.list" :columns="columns"
-               size="small" :pagination="false" :scroll="{x:1200}"
-               @change="tableChange" :loading="loading">
-        <template #bodyCell="{column,record,index}">
-          <template v-if="column.dataIndex === 'line_number'">
-            {{ index + 1 }}
-          </template>
-          <template v-else-if="column.dataIndex === 'action'">
-            <a-button type="link" style="padding: 0" @click="showModalForDetail(record.id)">
-              查看
-            </a-button>
-            <a-divider type="vertical"/>
-            <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
-              修改
-            </a-button>
-            <a-divider type="vertical"/>
-            <a-button type="link" style="padding: 0" danger
+  <a-card size="small" :bordered="false">
+    <a-row class="table-buttons-row">
+      <a-button size="small" type="primary" @click="createProject">
+        <template #icon>
+          <PlusOutlined/>
+        </template>
+        添加项目
+      </a-button>
+      <div class="buttons-for-table-setting">
+        <a-tooltip title="设置列" size="small">
+          <a-button type="text" @click="toBeCompleted" size="small">
+            <template #icon>
+              <setting-outlined style="font-size: 16px"/>
+            </template>
+          </a-button>
+        </a-tooltip>
+      </div>
+    </a-row>
+
+    <a-table :data-source="tableData.list" :columns="columns"
+             size="small" :pagination="false" :scroll="{x:1200}"
+             @change="tableChange" :loading="loading">
+      <template #bodyCell="{column,record,index}">
+        <template v-if="column.dataIndex === 'line_number'">
+          {{ index + 1 }}
+        </template>
+        <template v-if="column.dataIndex === 'name'">
+          <a-button type="link" style="padding: 0"
+                    @click="router.push({name:'项目详情',params:{projectID:record.id}})">
+            {{ record.name }}
+          </a-button>
+        </template>
+        <template v-else-if="column.dataIndex === 'action'">
+          <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
+            修改
+          </a-button>
+          <a-divider type="vertical"/>
+          <a-tooltip placement="topRight">
+            <template #title>如需删除，请联系管理员</template>
+            <a-button type="link" style="padding: 0" danger disabled
                       @click="showModalForDeleting(record.id)">
               删除
             </a-button>
-          </template>
+          </a-tooltip>
+
         </template>
-      </a-table>
+      </template>
+    </a-table>
 
-      <!--分页器-->
-      <a-pagination class="paginator" v-model:current="queryCondition.page"
-                    v-model:pageSize="queryCondition.pageSize" show-less-items
-                    :total="tableData.numberOfRecords" show-size-changer
-                    :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                    @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
-    </a-card>
-  </div>
-
-  <!--展示项目详情的模态框-->
-  <modal-for-detail ref="modalForDetail"/>
+    <!--分页器-->
+    <a-pagination class="paginator" v-model:current="queryCondition.page"
+                  v-model:pageSize="queryCondition.pageSize" show-less-items
+                  :total="tableData.numberOfRecords" show-size-changer
+                  :pageSizeOptions="pageSizeOptions" show-quick-jumper
+                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+  </a-card>
 
   <!--修改项目信息的模态框-->
-  <Modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
+  <modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
 
   <!--删除项目信息的模态框-->
-  <Modal-for- deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
+  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
 
 </template>
 
 <script setup lang="ts">
-import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue";
-import {reactive, ref} from "vue";
-import {FormInstance, message, SelectProps} from "ant-design-vue";
-import {projectApi} from "@/api/project";
-import {organizationApi} from "@/api/organization";
-import ModalForDetail from "@/pages/project/table/component/modal-for-detail.vue";
-import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue";
-import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue";
+import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
+import {reactive, ref} from "vue"
+import {FormInstance, message, SelectProps} from "ant-design-vue"
+import {projectApi} from "@/api/project"
+import {organizationApi} from "@/api/organization"
+import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
+import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
+import router from "@/router";
 
 function toBeCompleted() {
   message.info('待完成')
@@ -178,7 +179,6 @@ async function loadOrganizationOptions() {
     organizationOptions.value = []
     if (res?.code === 0) {
       for (let item of res.data) {
-        console.log(item);
         organizationOptions.value.push({value: item.id, label: item.name})
       }
     } else {
@@ -233,7 +233,7 @@ let columns = ref([
   {
     title: '项目类型',
     dataIndex: ['type', 'name'],
-    width: '300px',
+    width: '200px',
     ellipsis: true,
     align: 'center',
   },
@@ -249,14 +249,14 @@ let columns = ref([
   {
     title: '币种',
     dataIndex: ['currency', 'name'],
-    width: '150px',
+    width: '110px',
     ellipsis: true,
     align: 'center',
   },
   {
     title: '状态',
     dataIndex: ['status', 'name'],
-    width: '100px',
+    width: '110px',
     ellipsis: true,
     align: 'center',
   },
@@ -270,7 +270,7 @@ let columns = ref([
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '110px',
     fixed: 'right',
     ellipsis: true,
     align: 'center',
@@ -283,7 +283,7 @@ async function loadTableData() {
   try {
     loading.value = true
     let res = await projectApi.getList({
-      department_id_in: queryCondition.departmentIDIn,
+      organization_id_in: queryCondition.departmentIDIn,
       name_include: queryCondition.nameInclude,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
@@ -313,13 +313,6 @@ loadTableData()
 
 function createProject() {
   message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
-}
-
-//用户展示项目详情的模态框
-const modalForDetail = ref()
-
-function showModalForDetail(id: number) {
-  modalForDetail.value.showModal(id)
 }
 
 //用于修改项目信息的模态框

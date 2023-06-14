@@ -69,6 +69,21 @@
           <template v-if="column.dataIndex === 'line_number'">
             {{ index + 1 }}
           </template>
+          <template v-else-if="column.dataIndex === 'name'">
+            <a-button type="link" style="padding: 0"
+                      @click="router.push({name:'合同详情',params:{contractID:record.id}})">
+              {{ record.name }}
+            </a-button>
+          </template>
+          <template v-else-if="column.dataIndex[0] === 'fund_direction' && column.dataIndex[1] === 'name'">
+            <template v-if="record.fund_direction.name === '付款'">
+              <span style="color: red">{{ record.fund_direction.name }}</span>
+            </template>
+            <template v-if="record.fund_direction.name === '收款'">
+              <span style="color: #1890ff">{{ record.fund_direction.name }}</span>
+            </template>
+          </template>
+
           <template v-else-if="column.dataIndex === 'operation'">
             <a-button type="link" style="padding: 0" @click="toBeCompleted">
               查看
@@ -79,7 +94,7 @@
             </a-button>
             <a-divider type="vertical"/>
             <a-tooltip>
-              <template #title>禁止删除</template>
+              <template #title>无权限删除</template>
               <a-button type="link" style="padding: 0" danger disabled
                         @click="deleteContract">
                 删除
@@ -109,6 +124,7 @@ import {contractApi} from "@/api/contract";
 import {projectApi} from "@/api/project";
 import {pageSizeOptions} from "@/constants/paging-constant";
 import {pagingFormat} from "@/interfaces/paging-interface";
+import router from "@/router";
 
 function createContract() {
   message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动添加', 5)
@@ -151,23 +167,24 @@ const columns = ref([
     align: 'center',
   },
   {
-    title: '项目名称',
-    dataIndex: ['project', 'name'],
-    width: '260px',
+    title: '合同名称',
+    dataIndex: 'name',
+    width: '250px',
     ellipsis: true,
     align: 'center',
   },
   {
-    title: '合同名称',
-    dataIndex: 'name',
-    width: '260px',
+    title: '项目名称',
+    dataIndex: ['project', 'name'],
+    width: '250px',
     ellipsis: true,
     align: 'center',
   },
+
   {
     title: '相关方',
     dataIndex: ['related_party', 'name'],
-    width: '200px',
+    width: '220px',
     ellipsis: true,
     align: 'center',
   },
