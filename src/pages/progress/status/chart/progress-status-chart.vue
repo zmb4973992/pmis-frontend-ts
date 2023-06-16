@@ -46,7 +46,7 @@ import {onMounted, reactive, ref, watch} from "vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {progressApi} from "@/api/progress";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import * as echarts from 'echarts';
 import useGlobalStore from "@/store/global";
@@ -270,7 +270,7 @@ async function loadChartData() {
 
 //获取进度类型的选项
 const progressTypeOptions = ref<{ value: number; label: string }[]>([])
-dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度类型'}).then(
+dictionaryDetailApi.getList({page_size: 0, dictionary_type_name: '进度类型'}).then(
     res => {
         for (let item of res.data) {
             progressTypeOptions.value.push({value: item.id, label: item.name})
@@ -280,7 +280,7 @@ dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度类型'}).
 
 //获取数据来源的选项
 const dataSourceOptions = ref<{ value: number; label: string }[]>([])
-dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度的数据来源'}).then(
+dictionaryDetailApi.getList({page_size: 0, dictionary_type_name: '进度的数据来源'}).then(
     res => {
         for (let item of res.data) {
             dataSourceOptions.value.push({value: item.id, label: item.name})

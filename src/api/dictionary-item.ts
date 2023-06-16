@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-export interface iDictionaryItemGetList {
+export interface iDictionaryDetailGetList {
     page?: number
     page_size?: number
     order_by?: string
@@ -9,9 +9,9 @@ export interface iDictionaryItemGetList {
     dictionary_type_name?:string
 }
 
-const dictionaryItemApi = {
-    getList: (param?: iDictionaryItemGetList) => request.post(
+const dictionaryDetailApi = {
+    getList: (param?: iDictionaryDetailGetList) => request.post(
         '/dictionary-detail/list', param).then(res=>res.data)
 }
 
-export {dictionaryItemApi}
+export {dictionaryDetailApi}

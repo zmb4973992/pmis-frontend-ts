@@ -192,7 +192,7 @@ import {PlusOutlined, SearchOutlined, RedoOutlined} from "@ant-design/icons-vue"
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {progressApi} from "@/api/progress";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {projectIDForDisassembly, projectIDForProgress} from "@/constants/disassembly-constant";
 import {pageSizeOptions} from "@/constants/paging-constant";
@@ -290,7 +290,7 @@ const progressTypeOptions = ref<SelectProps['options']>([])
 //加载进度类型的选项
 async function loadProgressTypeOptions() {
   try {
-    let res = await dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度类型'})
+    let res = await dictionaryDetailApi.getList({page_size: 0, dictionary_type_name: '进度类型'})
     for (let item of res.data) {
       progressTypeOptions.value?.push({value: item.id, label: item.name})
     }
@@ -305,7 +305,7 @@ const dataSourceOptions = ref<SelectProps['options']>([])
 //加载数据来源的选项
 async function loadDataSourceOptions() {
   try {
-    let res = await dictionaryItemApi.getList({page_size: 0, dictionary_type_name: '进度的数据来源'})
+    let res = await dictionaryDetailApi.getList({page_size: 0, dictionary_type_name: '进度的数据来源'})
     for (let item of res.data) {
       dataSourceOptions.value?.push({value: item.id, label: item.name})
     }

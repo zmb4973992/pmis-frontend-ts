@@ -105,7 +105,7 @@
 import {reactive, ref} from "vue";
 import {FormInstance, message, Upload, UploadChangeParam} from "ant-design-vue";
 import {iProjectUpdate, projectApi,} from "@/api/project";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import useUserStore from "@/store/user";
 import {organizationApi} from "@/api/organization";
@@ -182,7 +182,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "国家", page_size: 0}).then(
+  dictionaryDetailApi.getList({dictionary_type_name: "国家", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -194,7 +194,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "项目类型", page_size: 0}).then(
+  dictionaryDetailApi.getList({dictionary_type_name: "项目类型", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -206,7 +206,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "币种", page_size: 0}).then(
+  dictionaryDetailApi.getList({dictionary_type_name: "币种", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -218,7 +218,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "项目状态", page_size: 0}).then(
+  dictionaryDetailApi.getList({dictionary_type_name: "项目状态", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []
@@ -254,7 +254,7 @@ function showModal(projectID: number) {
       }
   )
 
-  dictionaryItemApi.getList({dictionary_type_name: "我方签约主体", page_size: 0}).then(
+  dictionaryDetailApi.getList({dictionary_type_name: "我方签约主体", page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []

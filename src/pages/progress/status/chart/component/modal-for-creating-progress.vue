@@ -43,7 +43,7 @@ import {disassemblyApi} from "@/api/disassembly";
 import {Rule} from "ant-design-vue/es/form";
 import {Dayjs} from "dayjs";
 import {progressApi} from "@/api/progress";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 
 //树形图相关的数据
 interface treeDataFormat {
@@ -110,7 +110,7 @@ let checkValue = async (_rule: Rule, value: number) => {
 const options = reactive<{ type: SelectProps['options'], }>({
   type: [],
 })
-dictionaryItemApi.getList({dictionary_type_name: "进度类型"}).then(
+dictionaryDetailApi.getList({dictionary_type_name: "进度类型"}).then(
     res => {
       if (res.data) {
         for (let item of res.data) {

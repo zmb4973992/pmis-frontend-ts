@@ -10,7 +10,7 @@
       </a-form-item>
 
       <a-form-item name="date" label="日期">
-        <a-date-picker v-model:value="formData.date" />
+        <a-date-picker v-model:value="formData.date"/>
       </a-form-item>
 
       <a-form-item name="type" label="类型">
@@ -20,7 +20,8 @@
       <a-form-item name="value" label="进度值">
         <a-input-number v-model:value="formData.value" :controls="false"
                         addon-after="%" :min="0" :max="100" :precision="1"
-                        style="width: 120px"/>
+                        style="width: 120px">
+        </a-input-number>
       </a-form-item>
 
       <a-form-item name="remarks" label="备注">
@@ -41,7 +42,7 @@ import {disassemblyApi} from "@/api/disassembly";
 import {Rule} from "ant-design-vue/es/form";
 import {Dayjs} from "dayjs";
 import {progressApi} from "@/api/progress";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 
 //树形图相关的数据
 interface treeDataFormat {
@@ -108,7 +109,7 @@ let checkValue = async (_rule: Rule, value: number) => {
 const options = reactive<{ type: SelectProps['options'], }>({
   type: [],
 })
-dictionaryItemApi.getList({dictionary_type_name: "进度类型"}).then(
+dictionaryDetailApi.getList({dictionary_type_name: "进度类型"}).then(
     res => {
       if (res.data) {
         for (let item of res.data) {

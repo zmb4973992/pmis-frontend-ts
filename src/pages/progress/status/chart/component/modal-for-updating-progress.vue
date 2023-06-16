@@ -37,7 +37,7 @@ import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {Rule} from "ant-design-vue/es/form";
 import dayjs, {Dayjs} from "dayjs";
 import {progressApi} from "@/api/progress";
-import {dictionaryItemApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-item";
 
 interface formDataFormat {
   progressID?: number
@@ -89,7 +89,7 @@ async function showModal(progressID: number) {
 const options = reactive<{ type: SelectProps['options'], }>({
   type: [],
 })
-dictionaryItemApi.getList({dictionary_type_name: "进度类型"}).then(
+dictionaryDetailApi.getList({dictionary_type_name: "进度类型"}).then(
     res => {
       if (res.data) {
         for (let item of res.data) {
