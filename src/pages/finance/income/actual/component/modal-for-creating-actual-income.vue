@@ -41,15 +41,16 @@
             <a-form-item name="currency"
                          style="margin-bottom: -2px;margin-top: -2px;width: 80px">
               <a-select placeholder="币种" v-model:value="formData.currency"
-                        label-in-value
                         :options="currencyOptions" style="width: 103px"/>
             </a-form-item>
           </template>
         </a-input-number>
       </a-form-item>
 
-      <a-form-item v-if="exchange_rate_visible" name="exchange_rate" label="汇率">
-        456
+      <a-form-item v-if="exchange_rate_visible" name="exchangeRate" label="汇率">
+        <a-input-number v-model:value="formData.exchangeRate" :controls="false"
+                        :min="0" :precision="4" style="width: 120px">
+        </a-input-number>
       </a-form-item>
 
       <a-form-item name="remarks" label="备注">
@@ -213,7 +214,13 @@ onMounted(() => {
     updateContractOptions()
   })
   watch(() => formData.currency, (newValue) => {
-    exchange_rate_visible.value = Number(newValue) != Number(id_of_CNY.value);
+    if (newValue === id_of_CNY.value) {
+      exchange_rate_visible.value = false
+      formData.exchangeRate = 1
+    } else {
+      exchange_rate_visible.value = true
+      formData.exchangeRate = undefined
+    }
   })
 
 })
@@ -243,28 +250,30 @@ interface formDataFormat {
 const formData = reactive<formDataFormat>({})
 
 //进度值的校验规则
-let checkValue = async (_rule: Rule, value: number) => {
-  if (!value && value !== 0) {
-    return Promise.reject('请输入权重的值');
-  } else if (value < 0 || value > 100) {
-    return Promise.reject('权重的值应该≥0、≤100');
-  } else {
-    return Promise.resolve();
-  }
-};
+// let checkValue = async (_rule: Rule, value: number) => {
+//   if (!value && value !== 0) {
+//     return Promise.reject('请输入权重的值');
+//   } else if (value < 0 || value > 100) {
+//     return Promise.reject('权重的值应该≥0、≤100');
+//   } else {
+//     return Promise.resolve();
+//   }
+// };
 
 //表单校验规则
 const rules: Record<string, Rule[]> = {
-  // project_id: [{required: true, trigger: 'change',}],
-  // date: [{required: true, trigger: 'change',}],
-  // type: [{required: true, trigger: 'change',}],
-  // term: [{required: true, trigger: 'change',}],
-  // value: [{required: true, trigger: 'change', validator: checkValue,}],
+  projectID: [{required: true, trigger: 'change',}],
+  date: [{required: true, trigger: 'change',}],
+  type: [{required: true, trigger: 'change',}],
+  term: [{required: true, trigger: 'change',}],
+  amount: [{required: true, trigger: 'change',}],
+  currency: [{required: true, trigger: 'change',}],
+  exchangeRate: [{required: true, trigger: 'change',}],
 };
 
 const visible = ref(false)
 
-const emit = defineEmits(['loadData'])
+const emits = defineEmits(['loadData'])
 
 async function showModal() {
   form.value?.resetFields()
@@ -275,19 +284,29 @@ async function showModal() {
 function onSubmit() {
   form.value?.validateFields().then(
       async () => {
-        console.log(formData);
-
         try {
           let res = await incomeAndExpenditureApi.create({
+            kind: "实际",
+            fund_direction: "收款",
             project_id: formData.projectID,
             contract_id: formData.contractID,
             date: formData.date?.format("YYYY-MM-DD"),
-            fund_direction: "收款",
-
+            type: formData.type,
+            term: formData.term,
+            amount: formData.amount,
+            currency: formData.currency,
+            exchange_rate: formData.exchangeRate,
+            remarks: formData.remarks,
           })
           console.log(res)
-        } catch (e) {
+          if (res.code === 0) {
+            message.success("添加成功")
+            emits("loadData")
+            visible.value = false
+          }
+        } catch (e: any) {
           console.log(e);
+          message.warn(e)
         }
       }
   )

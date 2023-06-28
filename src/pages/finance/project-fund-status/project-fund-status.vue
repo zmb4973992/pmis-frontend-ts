@@ -381,7 +381,7 @@ function drawChart(dataType: string) {
             axisPointer: { //坐标轴指示器
               type: 'line',
             },
-            valueFormatter: (value: any) => (value * 100).toFixed(1) + '%',
+            // valueFormatter: (value: any) => (value * 100).toFixed(1) + '%',
           },
           toolbox: {  //图表的工具栏
             show: true,
@@ -413,9 +413,9 @@ function drawChart(dataType: string) {
           },
           yAxis: {  //y轴
             type: 'value',
-            axisLabel: {
-              formatter: (value: any) => (value * 100).toFixed(0) + '%',
-            },
+            // axisLabel: {
+            //   formatter: (value: any) => (value * 100).toFixed(0) + '%',
+            // },
           },
           series: [
             {

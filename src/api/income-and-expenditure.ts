@@ -9,14 +9,13 @@ interface incomeAndExpenditureCreate {
     contract_id?: number
     fund_direction?: string
     currency?: number
-    kind?: number //款项种类（计划、实际、预测）
+    kind?: string //款项种类（计划、实际、预测）
     date?: string
     amount?: number
     exchange_rate?: number
     type?: string //款项类型（预付款、尾款等）
-    condition?: string //条件
     term?: string //条款、方式
-    remarks?: string //工作内容
+    remarks?: string //工作内容、备注
     attachment?: string
 }
 
@@ -26,12 +25,11 @@ interface incomeAndExpenditureUpdate {
     contract_id?: number
     fund_direction?: string
     currency?: number
-    kind?: number //款项种类（计划、实际、预测）
+    kind?: string //款项种类（计划、实际、预测）
     date?: string
     amount?: number
     exchange_rate?: number
     type?: string //款项类型（预付款、尾款等）
-    condition?: string //条件
     term?: string //条款、方式
     remarks?: string //工作内容
     attachment?: string

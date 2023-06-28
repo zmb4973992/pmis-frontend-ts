@@ -98,7 +98,7 @@
 
   <!--添加实际付款的模态框-->
   <modal-for-creating-actual-income
-      ref="modalForCreatingActualIncome" @loadData=""/>
+      ref="modalForCreatingActualIncome" @loadData="loadTableData"/>
 
 </template>
 
@@ -173,7 +173,7 @@ const columns = ref([
   },
   {
     title: '类型',
-    dataIndex: 'type',
+    dataIndex: ['type','name'],
     width: '200px',
     ellipsis: true,
     align: 'center',
