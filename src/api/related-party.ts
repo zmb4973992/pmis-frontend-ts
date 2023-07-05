@@ -5,7 +5,7 @@ export interface iRelatedPartyGet {
 }
 
 export interface iRelatedPartyCreate {
-    chinese_name?: string
+    name?: string
     english_name?: string
     address?: string
     uniform_social_credit_code?: string
@@ -14,7 +14,7 @@ export interface iRelatedPartyCreate {
 
 export interface iRelatedPartyUpdate {
     id: number
-    chinese_name?: string
+    name?: string
     english_name?: string
     address?: string
     uniform_social_credit_code?: string
@@ -26,7 +26,7 @@ export interface iRelatedPartyDelete {
 }
 
 export interface iRelatedPartyGetList {
-    chinese_name_include?: string
+    name_include?: string
     english_name_include?: string
     page?: number
     page_size?: number

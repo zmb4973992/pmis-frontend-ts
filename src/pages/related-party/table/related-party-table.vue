@@ -161,7 +161,7 @@ const confirm = (id: number, params: any) => {
   message.success('修改成功', 2)
   relatedPartyApi.update({
     id:id,
-    chinese_name: relatedParty.chineseName,
+    name: relatedParty.chineseName,
     english_name: relatedParty.englishName,
     address: relatedParty.address,
     uniform_social_credit_code: relatedParty.uniformSocialCreditCode,
