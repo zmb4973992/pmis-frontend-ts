@@ -12,11 +12,7 @@
                                 addon-after="%" :min="0" :max="100" :precision="1"
                                 style="width: 120px"/>
             </a-form-item>
-
-            {{ formData }}
-
         </a-form>
-
     </a-modal>
 </template>
 

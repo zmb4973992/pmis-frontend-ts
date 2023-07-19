@@ -75,26 +75,31 @@
               {{ record.name }}
             </a-button>
           </template>
+
           <template v-else-if="column.dataIndex[0] === 'fund_direction' && column.dataIndex[1] === 'name'">
-            <template v-if="record.fund_direction.name === '付款'">
-              <span style="color: red">{{ record.fund_direction.name }}</span>
+            <template v-if="record.fund_direction?.name === '付款合同'">
+              <span style="color: red">付款</span>
             </template>
-            <template v-if="record.fund_direction.name === '收款'">
-              <span style="color: #1890ff">{{ record.fund_direction.name }}</span>
+            <template v-if="record.fund_direction?.name === '收款合同'">
+              <span style="color: #1890ff">收款</span>
             </template>
           </template>
 
+          <template v-else-if="column.dataIndex === 'amount'">
+            {{ record.amount.toLocaleString() }}
+          </template>
+
           <template v-else-if="column.dataIndex === 'operation'">
-            <a-button type="link" style="padding: 0" @click="toBeCompleted">
-              查看
-            </a-button>
-            <a-divider type="vertical"/>
+            <!--            <a-button type="link" style="padding: 0" @click="toBeCompleted">-->
+            <!--              查看-->
+            <!--            </a-button>-->
+            <!--            <a-divider type="vertical"/>-->
             <a-button type="link" style="padding: 0" @click="updateContract">
               修改
             </a-button>
             <a-divider type="vertical"/>
-            <a-tooltip>
-              <template #title>无权限删除</template>
+            <a-tooltip placement="topLeft">
+              <template #title >如需删除，请联系管理员</template>
               <a-button type="link" style="padding: 0" danger disabled
                         @click="deleteContract">
                 删除
@@ -171,7 +176,7 @@ const columns = ref([
     dataIndex: 'name',
     width: '250px',
     ellipsis: true,
-    align: 'center',
+    align: 'left',
   },
   {
     title: '项目名称',
@@ -221,7 +226,7 @@ const columns = ref([
   {
     title: '操作',
     dataIndex: 'operation',
-    width: '150px',
+    width: '110px',
     fixed: 'right',
     ellipsis: true,
     align: 'center',

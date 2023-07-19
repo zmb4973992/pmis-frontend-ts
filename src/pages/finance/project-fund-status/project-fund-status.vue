@@ -63,7 +63,6 @@ import * as echarts from 'echarts';
 import useGlobalStore from "@/store/global";
 import {storeToRefs} from "pinia";
 import {RedoOutlined, SearchOutlined} from "@ant-design/icons-vue";
-import {cumulativeProjectIncomeAndExpenditureApi} from "@/api/cumulative-project-income-and-expenditure";
 import {progressApi} from "@/api/progress";
 import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
 import {projectCumulativeExpenditureApi} from "@/api/project-cumulative-expenditure";
@@ -209,6 +208,7 @@ function query() {
   }
   console.log(queryCondition.projectID)
   loadChartData(queryCondition.projectID, queryCondition.dataType)
+  console.log(chartData.totalActualExpenditure);
 }
 
 //重置查询条件
@@ -329,7 +329,7 @@ function drawChart(dataType: string) {
               type: 'line',
               itemStyle: {color: '#1890FF'},
               lineStyle: {color: '#1890FF', type: 'dashed'},
-              connectNull: true,
+              connectNulls: true,
               smooth: true,
               datasetIndex: 0,  //通过datasetIndex来指定dataset
               dimension: ['date', 'value']
@@ -339,7 +339,7 @@ function drawChart(dataType: string) {
               type: 'line',
               itemStyle: {color: 'red'},
               lineStyle: {color: 'red'},
-              connectNull: true,
+              connectNulls: true,
               smooth: true,
               datasetIndex: 1,
               dimension: ['date', 'value']
@@ -423,7 +423,7 @@ function drawChart(dataType: string) {
               type: 'line',
               itemStyle: {color: '#1890FF'},
               lineStyle: {color: '#1890FF', type: 'dashed'},
-              connectNull: true,
+              connectNulls: true,
               smooth: true,
               datasetIndex: 0,  //通过datasetIndex来指定dataset
               dimension: ['date', 'value']
@@ -433,7 +433,7 @@ function drawChart(dataType: string) {
               type: 'line',
               itemStyle: {color: 'red'},
               lineStyle: {color: 'red'},
-              connectNull: true,
+              connectNulls: true,
               smooth: true,
               datasetIndex: 1,
               dimension: ['date', 'value']

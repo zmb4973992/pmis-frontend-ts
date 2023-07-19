@@ -6,7 +6,7 @@
 import * as echarts from "echarts";
 import {onMounted, reactive} from "vue";
 import dayjs from "dayjs";
-import {cumulativeContractIncomeAndExpenditureApi} from "@/api/cumulative-contract-income-and-expenditure";
+import {contractCumulativeExpenditureApi} from "@/api/contract-cumulative-expenditure";
 
 const props = defineProps<{ contractId: number }>()
 
@@ -38,38 +38,22 @@ async function drawChart() {
     return
   }
 
-  const res = await cumulativeContractIncomeAndExpenditureApi.getList({
+  const res = await contractCumulativeExpenditureApi.getList({
     contract_id: props.contractId,
     page_size: 0
   })
   if (res && res.data) {
+    // console.log(res.data);
     for (let item of res.data) {
-      if (item.planned_expenditure_progress) {
         chartData.plannedExpenditureProgressList.push({date:item.date,value:item.planned_expenditure_progress})
-      }
-      if (item.actual_expenditure_progress) {
         chartData.actualExpenditureProgressList.push({date:item.date,value:item.actual_expenditure_progress})
-      }
-      if (item.forecasted_expenditure_progress) {
         chartData.forecastedExpenditureProgressList.push({date:item.date,value:item.forecasted_expenditure_progress})
-      }
     }
   }
 
   let myChart = echarts.init(htmlElement)
   if (myChart) {
     myChart.setOption({
-      // title: {  //标题
-      //   show: true,
-      //   text: '暂时没有数据，\n\n请先在左侧选择一个项目',
-      //   left: 'center',
-      //   top: 'center',
-      //   textStyle: {
-      //     color: '#adadad',
-      //     fontSize: 26,
-      //     fontWeight: 'normal',
-      //   },
-      // },
       legend: {},  //图例
       grid: {  //网格
         left: '40', //网格组件离容器左侧的距离
@@ -123,7 +107,7 @@ async function drawChart() {
           type: 'line',
           itemStyle: {color: '#1890FF'},
           lineStyle: {color: '#1890FF', type: 'dashed'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 0,  //通过datasetIndex来指定dataset
           dimension: ['date', 'value']
@@ -133,7 +117,7 @@ async function drawChart() {
           type: 'line',
           itemStyle: {color: 'red'},
           lineStyle: {color: 'red'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
@@ -143,7 +127,7 @@ async function drawChart() {
           type: 'line',
           itemStyle: {color: 'orange'},
           lineStyle: {color: 'orange', type: 'dashed'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 2,
           dimension: ['date', 'value']

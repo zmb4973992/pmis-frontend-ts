@@ -8,7 +8,7 @@
             <span>项目名称：</span>
             <a-select class="project-selector" show-search placeholder="支持模糊搜索" allow-clear
                       :filter-option="projectIDFilterOption" v-model:value="queryCondition.projectID"
-                      :options="projectIDOptions">
+                      :options="projectIDOptions" style="width: 0">
             </a-select>
           </div>
 

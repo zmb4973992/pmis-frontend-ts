@@ -4,6 +4,7 @@
     <a-page-header :title="contractDetail.name">
       <a-descriptions size="small" :column="3">
         <a-descriptions-item label="合同编号">{{ contractDetail.code }}</a-descriptions-item>
+        <a-descriptions-item label="资金方向">{{contractDetail.fund_direction.name}}</a-descriptions-item>
         <a-descriptions-item label="签约对方">{{ contractDetail.related_party.chinese_name }}</a-descriptions-item>
         <a-descriptions-item label="我方签约主体">{{ contractDetail.our_signatory.name }}</a-descriptions-item>
         <a-descriptions-item label="合同类型">{{ contractDetail.type.name }}</a-descriptions-item>
@@ -21,12 +22,15 @@
   <a-card size="small" :bordered="false" style="margin-bottom: 10px"
           :body-style="{padding:'0 10px 10px 10px'}">
     <a-tabs>
-      <a-tab-pane v-if="contractDetail.fund_direction.name === '付款'"
-                  key="expenditure-progress" tab="付款进度曲线">
+      <a-tab-pane key="expenditure-progress" tab="付款进度曲线">
         <expenditure-progress :contract-id="contractID"/>
+      </a-tab-pane>
+      <a-tab-pane key="income-progress" tab="收款进度曲线">
+        <income-progress :contract-id="contractID"/>
       </a-tab-pane>
     </a-tabs>
   </a-card>
+
 </template>
 
 <script setup lang="ts">
@@ -39,6 +43,7 @@ import Income from "@/pages/project/detail/component/income.vue";
 import Expenditure from "@/pages/project/detail/component/expenditure.vue";
 import {contractApi} from "@/api/contract";
 import ExpenditureProgress from "@/pages/contract/detail/component/expenditure-progress.vue";
+import IncomeProgress from "@/pages/contract/detail/component/income-progress.vue";
 
 
 interface contractDetailFormat {

@@ -61,7 +61,6 @@ interface contractGetList {
     project_id?: number
     fund_direction?: number
     name_include?: string
-    is_showed_by_role?: boolean
     page?: number
     page_size?: number
     order_by?: string

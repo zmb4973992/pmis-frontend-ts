@@ -68,11 +68,14 @@
           <template v-if="column.dataIndex === 'line_number'">
             {{ index + 1 }}
           </template>
+          <template v-else-if="column.dataIndex === 'amount'">
+            {{ record.amount.toLocaleString() }}
+          </template>
           <template v-else-if="column.dataIndex === 'operation'">
-            <a-button type="link" style="padding: 0" @click="toBeCompleted">
-              查看
-            </a-button>
-            <a-divider type="vertical"/>
+<!--            <a-button type="link" style="padding: 0" @click="toBeCompleted">-->
+<!--              查看-->
+<!--            </a-button>-->
+<!--            <a-divider type="vertical"/>-->
             <a-button type="link" style="padding: 0" @click="updateIncome">
               修改
             </a-button>
@@ -197,7 +200,7 @@ const columns = ref([
   {
     title: '操作',
     dataIndex: 'operation',
-    width: '150px',
+    width: '110px',
     fixed: 'right',
     ellipsis: true,
     align: 'center',

@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="visible" :after-close="resetForm" title="修改"
+  <a-modal v-model:visible="visible" :after-close="resetForm" title="修改项目信息"
            width="600px" @ok="onSubmit" :destroy-on-close="true">
     <a-form ref="form" :model="data" :label-col="{ span:4 }">
       <a-form-item label="项目全称" name="name">
@@ -7,7 +7,7 @@
       </a-form-item>
 
       <a-form-item label="项目编号" name="project_code">
-        <a-input v-model:value="data.code"/>
+        {{ data.code }}
       </a-form-item>
 
       <a-form-item label="所属部门" name="organization_id">
@@ -44,7 +44,8 @@
       </a-form-item>
 
       <a-form-item label="对方名称" name="related_party_id">
-        <a-select v-model:value="data.related_party_id" :options="relatedPartyOptions"/>
+        <a-select v-model:value="data.related_party_id" :options="relatedPartyOptions"
+                  show-search :filter-option="relatedPartyFilterOption"/>
       </a-form-item>
 
       <a-form-item label="我方主体" name="our_signatory">
@@ -133,13 +134,19 @@ const projectTypeOptions = ref<{ value: string, label: string }[]>([])
 const currencyOptions = ref<{ value: string, label: string }[]>()
 const organizationOptions = ref<{ value: string, label: string }[]>()
 const statusOptions = ref<{ value: string, label: string }[]>()
+
 const relatedPartyOptions = ref<{ value: string, label: string }[]>()
+const relatedPartyFilterOption = (input: string, option: any) =>
+    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
 const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
 
 const countryFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-const data = reactive<iProjectUpdate>({id: 0})
+const data = reactive<iProjectUpdate>({
+  id: 0
+})
 
 // 签约日期
 let signingDate = ref<Dayjs>()
@@ -151,10 +158,10 @@ const visible = ref(false)
 const form = ref<FormInstance>()
 
 function resetForm() {
+  //记得还要修改不在reactive里的数据
   Object.keys(data).map(key => {
     delete data[key as keyof typeof data]
   })
-  //记得还要修改不在reactive里的数据
 }
 
 const emit = defineEmits(['loadTableData'])
@@ -247,7 +254,7 @@ function showModal(projectID: number) {
         if (res.data) {
           let result: { value: string, label: string }[] = []
           for (let item of res.data) {
-            result.push({value: item.id, label: item.chinese_name})
+            result.push({value: item.id, label: item.name})
           }
           relatedPartyOptions.value = result
         }

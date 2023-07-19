@@ -2,7 +2,7 @@
   <!--查询区域-->
   <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
           :body-style="{padding:'0 10px 10px 10px'}">
-    <a-form :model="queryCondition" ref="formRef">
+    <a-form ref="formRef" :model="queryCondition">
       <a-row :gutter="10">
         <a-col>
           <a-form-item class="query-item" label="部门" name="departmentIDIn">
@@ -41,15 +41,20 @@
     </a-form>
   </a-card>
 
+  <!--表格主体-->
   <a-card size="small" :bordered="false">
-    <a-row class="table-buttons-row">
-      <a-button size="small" type="primary" @click="createProject">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加项目
-      </a-button>
-      <div class="buttons-for-table-setting">
+
+    <a-row class="table-buttons">
+      <a-row class="table-left-buttons">
+        <a-button size="small" type="primary" @click="createProject">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加项目
+        </a-button>
+      </a-row>
+
+      <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
           <a-button type="text" @click="toBeCompleted" size="small">
             <template #icon>
@@ -57,12 +62,12 @@
             </template>
           </a-button>
         </a-tooltip>
-      </div>
+      </a-row>
     </a-row>
 
     <a-table :data-source="tableData.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1200}"
-             @change="tableChange" :loading="loading">
+             @change="tableChange" :loading="tableLoading">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
           {{ index + 1 }}
@@ -85,7 +90,9 @@
               删除
             </a-button>
           </a-tooltip>
-
+        </template>
+        <template v-else-if="column.dataIndex === 'amount'">
+          {{ record.amount.toLocaleString() }}
         </template>
       </template>
     </a-table>
@@ -107,13 +114,13 @@
 </template>
 
 <script setup lang="ts">
+import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
+import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
 import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
 import {reactive, ref} from "vue"
 import {FormInstance, message, SelectProps} from "ant-design-vue"
 import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
-import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
-import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
 import router from "@/router";
@@ -197,9 +204,13 @@ const departmentFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //分页器选项
+let tableData = reactive({
+  list: [],
+  // numberOfPages: 1,
+  numberOfRecords: 0,
+})
 
-let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
-
+//表格栏目
 let columns = ref([
   {
     title: '行号',
@@ -214,7 +225,7 @@ let columns = ref([
     dataIndex: 'name',
     width: '260px',
     ellipsis: true,
-    align: 'center',
+    align: 'left',
   },
   {
     title: '项目号',
@@ -241,7 +252,7 @@ let columns = ref([
     title: '金额',
     className: 'amount',
     dataIndex: 'amount',
-    width: '100px',
+    width: '120px',
     ellipsis: true,
     align: 'right',
     sorter: true,
@@ -277,11 +288,11 @@ let columns = ref([
   },
 ])
 
-const loading = ref(false)
+const tableLoading = ref(false)
 
 async function loadTableData() {
   try {
-    loading.value = true
+    tableLoading.value = true
     let res = await projectApi.getList({
       organization_id_in: queryCondition.departmentIDIn,
       name_include: queryCondition.nameInclude,
@@ -292,20 +303,20 @@ async function loadTableData() {
     })
     if (res?.code === 0) {
       tableData.list = res?.data
-      tableData.numberOfPages = res?.paging?.number_of_pages
+      // tableData.numberOfPages = res?.paging?.number_of_pages
       tableData.numberOfRecords = res?.paging?.number_of_records
     } else {
       tableData.list = []
-      tableData.numberOfPages = 1
+      // tableData.numberOfPages = 1
       tableData.numberOfRecords = 0
     }
   } catch (err) {
     tableData.list = []
-    tableData.numberOfPages = 1
+    // tableData.numberOfPages = 1
     tableData.numberOfRecords = 0
     console.log(err);
   } finally {
-    loading.value = false
+    tableLoading.value = false
   }
 }
 
@@ -341,7 +352,7 @@ function showModalForDeleting(projectID: number) {
 }
 
 //表格上方按钮行的样式
-.table-buttons-row {
+.table-buttons {
   display: flex;
   justify-content: space-between;
   align-items: center;

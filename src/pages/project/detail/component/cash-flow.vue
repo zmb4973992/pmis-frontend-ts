@@ -6,7 +6,6 @@
 import * as echarts from "echarts";
 import {onMounted, reactive} from "vue";
 import dayjs from "dayjs";
-import {cumulativeProjectIncomeAndExpenditureApi} from "@/api/cumulative-project-income-and-expenditure";
 import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
 import {projectCumulativeExpenditureApi} from "@/api/project-cumulative-expenditure";
 
@@ -67,7 +66,7 @@ if (myChart) {
   myChart.setOption({
     legend: {},  //图例
     grid: {  //网格
-      left: '40', //网格组件离容器左侧的距离
+      left: '80', //网格组件离容器左侧的距离
       right: '20',//网格组件离容器右侧的距离
       bottom: '53',//网格组件离容器底部的距离
     },

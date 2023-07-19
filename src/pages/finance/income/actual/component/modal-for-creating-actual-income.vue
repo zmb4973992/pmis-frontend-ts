@@ -273,7 +273,7 @@ const rules: Record<string, Rule[]> = {
 
 const visible = ref(false)
 
-const emits = defineEmits(['loadData'])
+const emits = defineEmits(['loadTableData'])
 
 async function showModal() {
   form.value?.resetFields()
@@ -298,10 +298,9 @@ function onSubmit() {
             exchange_rate: formData.exchangeRate,
             remarks: formData.remarks,
           })
-          console.log(res)
           if (res.code === 0) {
             message.success("添加成功")
-            emits("loadData")
+            emits("loadTableData")
             visible.value = false
           }
         } catch (e: any) {

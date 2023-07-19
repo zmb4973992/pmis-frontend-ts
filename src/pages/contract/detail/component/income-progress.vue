@@ -1,14 +1,14 @@
 <template>
-  <div id="chart3" style="width:100%; height: calc(100vh - 179px)"/>
+  <div id="chart2" style="width:100%; height: calc(100vh - 179px)"/>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
 import {onMounted, reactive} from "vue";
 import dayjs from "dayjs";
-import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
+import {contractCumulativeIncomeApi} from "@/api/contract-cumulative-income";
 
-const props = defineProps<{ projectId: number }>()
+const props = defineProps<{ contractId: number }>()
 
 interface valueList {
   date: string
@@ -16,15 +16,15 @@ interface valueList {
 }
 
 interface chartDataFormat {
-  totalPlannedIncome: valueList[],//计划收款总额
-  totalActualIncome: valueList[], //实际收款总额
-  totalForecastedIncome: valueList[],//预测收款总额
+  plannedIncomeProgressList: valueList[],
+  actualIncomeProgressList: valueList[],
+  forecastedIncomeProgressList: valueList[],
 }
 
 const chartData = reactive<chartDataFormat>({
-  totalPlannedIncome: [],
-  totalActualIncome: [],
-  totalForecastedIncome: [],
+  plannedIncomeProgressList: [],
+  actualIncomeProgressList: [],
+  forecastedIncomeProgressList: [],
 })
 
 onMounted(() => {
@@ -33,26 +33,21 @@ onMounted(() => {
 
 
 async function drawChart() {
-  let htmlElement = document.getElementById('chart3')
+  let htmlElement = document.getElementById('chart2')
   if (!htmlElement) {
     return
   }
 
-  const res = await projectCumulativeIncomeApi.getList({
-    project_id: props.projectId,
+  const res = await contractCumulativeIncomeApi.getList({
+    contract_id: props.contractId,
     page_size: 0
   })
   if (res && res.data) {
     for (let item of res.data) {
-      if (item.total_planned_income) {
-        chartData.totalPlannedIncome.push({date: item.date, value: item.total_planned_income})
-      }
-      if (item.total_actual_income) {
-        chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
-      }
-      if (item.total_forecasted_income) {
-        chartData.totalForecastedIncome.push({date: item.date, value: item.total_forecasted_income})
-      }
+      chartData.plannedIncomeProgressList.push({date: item.date, value: item.planned_income_progress})
+      chartData.actualIncomeProgressList.push({date: item.date, value: item.actual_income_progress})
+      chartData.forecastedIncomeProgressList.push({date: item.date, value: item.forecasted_income_progress})
+
     }
   }
 
@@ -61,7 +56,7 @@ async function drawChart() {
     myChart.setOption({
       legend: {},  //图例
       grid: {  //网格
-        left: '80', //网格组件离容器左侧的距离
+        left: '40', //网格组件离容器左侧的距离
         right: '20',//网格组件离容器右侧的距离
         bottom: '53',//网格组件离容器底部的距离
       },
@@ -70,6 +65,7 @@ async function drawChart() {
         axisPointer: { //坐标轴指示器
           type: 'line',
         },
+        valueFormatter: (value: any) => (value * 100).toFixed(1) + '%',
       },
       toolbox: {  //图表的工具栏
         show: true,
@@ -101,43 +97,46 @@ async function drawChart() {
       },
       yAxis: {  //y轴
         type: 'value',
+        axisLabel: {
+          formatter: (value: any) => (value * 100).toFixed(0) + '%',
+        },
       },
       series: [
         {
-          name: '计划收款总额(CNY)',
+          name: '初始计划收款进度',
           type: 'line',
           itemStyle: {color: '#1890FF'},
           lineStyle: {color: '#1890FF', type: 'dashed'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 0,  //通过datasetIndex来指定dataset
           dimension: ['date', 'value']
         },
         {
-          name: '实际收款总额(CNY)',
+          name: '实际收款进度',
           type: 'line',
           itemStyle: {color: 'red'},
           lineStyle: {color: 'red'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测收款总额(CNY)',
+          name: '预测收款进度',
           type: 'line',
           itemStyle: {color: 'orange'},
           lineStyle: {color: 'orange', type: 'dashed'},
-          connectNull: true,
+          connectNulls: true,
           smooth: true,
           datasetIndex: 2,
           dimension: ['date', 'value']
         },
       ],
       dataset: [
-        {source: chartData.totalPlannedIncome},
-        {source: chartData.totalActualIncome},
-        {source: chartData.totalForecastedIncome},
+        {source: chartData.plannedIncomeProgressList},
+        {source: chartData.actualIncomeProgressList},
+        {source: chartData.forecastedIncomeProgressList},
       ],
       dataZoom: [
         {

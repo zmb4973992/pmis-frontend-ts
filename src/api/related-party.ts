@@ -10,6 +10,7 @@ export interface iRelatedPartyCreate {
     address?: string
     uniform_social_credit_code?: string
     telephone?: string
+    remarks?:string
 }
 
 export interface iRelatedPartyUpdate {
@@ -19,6 +20,7 @@ export interface iRelatedPartyUpdate {
     address?: string
     uniform_social_credit_code?: string
     telephone?: string
+    remarks?:string
 }
 
 export interface iRelatedPartyDelete {
