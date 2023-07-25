@@ -68,9 +68,33 @@
           <template v-if="column.dataIndex === 'line_number'">
             {{ index + 1 }}
           </template>
+
+          <template v-else-if="column.dataIndex[0] === 'project' && column.dataIndex[1] === 'name'">
+            <a-tooltip v-if="record.project && record.project.id">
+              <template #title>
+                {{ record.project.name }}
+              </template>
+              <router-link target="_blank" :to="{name:'项目详情',params:{projectID: record.project.id}}">
+                {{ record.project.name }}
+              </router-link>
+            </a-tooltip>
+          </template>
+
+          <template v-else-if="column.dataIndex[0] === 'contract' && column.dataIndex[1] === 'name'">
+            <a-tooltip v-if="record.contract && record.contract.id">
+              <template #title>
+                {{ record.contract.name }}
+              </template>
+              <router-link target="_blank" :to="{name:'合同详情',params:{contractID: record.contract.id}}">
+                {{ record.contract.name }}
+              </router-link>
+            </a-tooltip>
+          </template>
+
           <template v-else-if="column.dataIndex === 'amount'">
             {{ record.amount.toLocaleString() }}
           </template>
+
           <template v-else-if="column.dataIndex === 'operation'">
 <!--            <a-button type="link" style="padding: 0" @click="toBeCompleted">-->
 <!--              查看-->
@@ -134,6 +158,8 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
+  orderBy: "date",
+  desc: true,
 })
 
 //部门选项的过滤器（下拉框搜索）
@@ -154,34 +180,6 @@ const columns = ref([
     align: 'center',
   },
   {
-    title: '项目名称',
-    dataIndex: ['project', 'name'],
-    width: '260px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '合同名称',
-    dataIndex: 'name',
-    width: '260px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '类型',
-    dataIndex: 'type',
-    width: '200px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '日期',
-    dataIndex: 'date',
-    width: '120px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
     title: '金额',
     dataIndex: 'amount',
     className: 'amount',
@@ -194,6 +192,35 @@ const columns = ref([
     title: '币种',
     dataIndex: ['currency', 'name'],
     width: '120px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '日期',
+    dataIndex: 'date',
+    width: '120px',
+    ellipsis: true,
+    align: 'center',
+    sorter: true,
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+    width: '200px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '合同名称',
+    dataIndex: 'name',
+    width: '260px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '项目名称',
+    dataIndex: ['project', 'name'],
+    width: '260px',
     ellipsis: true,
     align: 'center',
   },
@@ -228,6 +255,8 @@ function resetQueryCondition() {
   formRef.value?.resetFields()
   queryCondition.page = 1
   queryCondition.pageSize = 12
+  queryCondition.orderBy = undefined
+  queryCondition.desc = undefined
   loadTableData()
 }
 

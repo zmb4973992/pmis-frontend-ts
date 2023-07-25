@@ -7,15 +7,15 @@
           <div class="label-and-selector">
             <span>项目名称：</span>
             <a-select class="project-selector" show-search placeholder="支持模糊搜索" allow-clear
-                      :filter-option="projectIDFilterOption" v-model:value="queryCondition.projectID"
-                      :options="projectIDOptions" style="width: 0">
+                      :filter-option="projectFilterOption" v-model:value="queryCondition.projectID"
+                      :options="projectOptions" style="width: 0">
             </a-select>
           </div>
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
           <a-tree v-if="treeData?.length" :tree-data="treeData"
-                  v-model:selectedKeys="disassemblyIDs" default-expand-all/>
+                  v-model:selectedKeys="selectedDisassemblyIDs" default-expand-all/>
         </a-card>
 
       </a-col>
@@ -31,9 +31,9 @@
           <a-form :model="queryCondition" ref="formRef">
             <a-row :gutter="10">
               <a-col>
-                <a-form-item class="query-item" label="进度类型" name="progressType">
+                <a-form-item class="query-item" label="进度类型" name="type">
                   <a-select placeholder="进度类型"
-                            v-model:value="queryCondition.progressType" :options="progressTypeOptions"
+                            v-model:value="queryCondition.type" :options="progressTypeOptions"
                             style="width:110px"/>
                 </a-form-item>
               </a-col>
@@ -75,14 +75,55 @@
             <a-space>
               <template v-if="queryCondition.projectID">
                 <a-button size="small" type="primary"
-                          @click="showModalForCreatingProgress(queryCondition.disassemblyID)">
+                          @click="showModalForCreatingPlannedProgress(queryCondition.disassemblyID)">
                   <template #icon>
                     <PlusOutlined/>
                   </template>
-                  添加进度
+                  添加计划进度
                 </a-button>
+
+                <a-button size="small" type="primary"
+                          @click="showModalForCreatingForecastedProgress(queryCondition.disassemblyID)">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  添加预测进度
+                </a-button>
+
+                <a-button size="small" type="primary"
+                          @click="showModalForCreatingActualProgress(queryCondition.disassemblyID)">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  添加实际进度
+                </a-button>
+
               </template>
               <template v-else>
+                <a-tooltip>
+                  <template #title>
+                    先在左侧选择项目后，才能添加进度
+                  </template>
+                  <a-button size="small" disabled>
+                    <template #icon>
+                      <PlusOutlined/>
+                    </template>
+                    添加计划进度
+                  </a-button>
+                </a-tooltip>
+
+                <a-tooltip>
+                  <template #title>
+                    先在左侧选择项目后，才能添加进度
+                  </template>
+                  <a-button size="small" disabled>
+                    <template #icon>
+                      <PlusOutlined/>
+                    </template>
+                    添加实际进度
+                  </a-button>
+                </a-tooltip>
+
                 <a-tooltip>
                   <template #title>
                     先在左侧选择项目后，才能添加进度
@@ -91,7 +132,7 @@
                     <template #icon>
                       <PlusOutlined/>
                     </template>
-                    添加进度
+                    添加预测进度
                   </a-button>
                 </a-tooltip>
               </template>
@@ -171,9 +212,21 @@
     </a-row>
   </div>
 
-  <!--添加进度的模态框-->
+  <!--添加计划进度的模态框-->
   <modal-for-creating-progress
-      ref="modalForCreatingProgress" @loadData="loadData" :projectID="queryCondition.projectID"/>
+      ref="modalForCreatingPlannedProgress" @loadData="loadData"
+      :projectID="queryCondition.projectID" :progressType="progressTypes.planned"/>
+
+  <!--添加实际进度的模态框-->
+  <modal-for-creating-progress
+      ref="modalForCreatingActualProgress" @loadData="loadData"
+      :projectID="queryCondition.projectID" :progress-type="progressTypes.actual"/>
+
+  <!--添加预测进度的模态框-->
+  <modal-for-creating-progress
+      ref="modalForCreatingForecastedProgress" @loadData="loadData"
+      :projectID="queryCondition.projectID" :progress-type="progressTypes.forecasted"/>
+
   <!--修改进度的模态框-->
   <modal-for-updating-progress
       ref="modalForUpdatingProgress" @loadData="loadData"/>
@@ -194,31 +247,30 @@ import {projectApi} from "@/api/project";
 import {progressApi} from "@/api/progress";
 import {dictionaryDetailApi} from "@/api/dictionary-item";
 import {pagingFormat} from "@/interfaces/paging-interface";
-import {projectIDForDisassembly, projectIDForProgress} from "@/constants/disassembly-constant";
 import {pageSizeOptions} from "@/constants/paging-constant";
 
-//项目id的选项
-const projectIDOptions = ref<SelectProps['options']>([])
+//项目的选项
+const projectOptions = ref<SelectProps['options']>([])
 
 //项目id下拉框的过滤器
-const projectIDFilterOption = (input: string, option: any) =>
+const projectFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //加载项目下拉框的选项
-async function loadProjectIDOptions() {
+async function loadProjectOptions() {
   try {
     let res = await projectApi.getList({page_size: 0})
     for (let item of res.data) {
-      projectIDOptions.value?.push({label: item.name, value: item.id})
+      projectOptions.value?.push({label: item.name, value: item.id})
     }
-  } catch (err) {
-    console.log(err)
+  } catch (e: any) {
+    console.log(e)
   }
 }
 
 //加载本地存储的数据
 function loadLocalStorage() {
-  const tempProjectID = Number(localStorage.getItem(projectIDForProgress))
+  const tempProjectID = Number(localStorage.getItem("project_id"))
   if (tempProjectID > 0) {
     queryCondition.projectID = tempProjectID
   }
@@ -249,8 +301,10 @@ async function loadTreeData() {
     treeData.value = []
     if (queryCondition.projectID) {
       let res = await disassemblyApi.getTree({project_id: queryCondition.projectID})
-      for (let index in res.data) {
-        treeData.value.push(switchToTreeData(res.data[index]))
+      if (res.data) {
+        for (let index in res.data) {
+          treeData.value.push(switchToTreeData(res.data[index]))
+        }
       }
     }
   } catch (err) {
@@ -277,21 +331,33 @@ function switchToTreeData(obj: rawTreeDataFormat): treeDataFormat {
 }
 
 //用于树形图的disassemblyIDs
-const disassemblyIDs = ref<number[]>([])
+const selectedDisassemblyIDs = ref<number[]>([])
 
 //监测disassemblyIDs，将值传给查询条件
-watch(disassemblyIDs, () => {
-  queryCondition.disassemblyID = disassemblyIDs.value[0]
+watch(selectedDisassemblyIDs, () => {
+  queryCondition.disassemblyID = selectedDisassemblyIDs.value[0]
 })
 
 //进度类型的选项
 const progressTypeOptions = ref<SelectProps['options']>([])
+let progressTypes = reactive({
+  planned: 0,
+  actual: 0,
+  forecasted: 0,
+})
 
 //加载进度类型的选项
 async function loadProgressTypeOptions() {
   try {
     let res = await dictionaryDetailApi.getList({page_size: 0, dictionary_type_name: '进度类型'})
     for (let item of res.data) {
+      if (item.name === "计划进度") {
+        progressTypes.planned = item.id
+      } else if (item.name === "实际进度") {
+        progressTypes.actual = item.id
+      } else if (item.name === "预测进度") {
+        progressTypes.forecasted = item.id
+      }
       progressTypeOptions.value?.push({value: item.id, label: item.name})
     }
   } catch (err) {
@@ -316,7 +382,9 @@ async function loadDataSourceOptions() {
 
 //加载所有的选项
 function loadOptions() {
-  loadProjectIDOptions().then(loadLocalStorage).then(tipsForSelectingProjectID)
+  loadProjectOptions()
+      .then(loadLocalStorage)
+      .then(tipsForSelectingProjectID)
   loadProgressTypeOptions()
   loadDataSourceOptions()
 }
@@ -327,7 +395,7 @@ loadOptions()
 interface queryConditionFormat extends pagingFormat {
   projectID?: number
   disassemblyID?: number
-  progressType?: number
+  type?: number
   dataSource?: number
   dateRange?: [string, string]
 }
@@ -342,11 +410,11 @@ const queryCondition = reactive<queryConditionFormat>({
 
 //监测查询条件中projectID的变化
 watch(() => queryCondition.projectID, () => {
-  localStorage.setItem(projectIDForProgress, String(queryCondition.projectID))
+  localStorage.setItem("project_id", String(queryCondition.projectID))
   tipsForSelectingProjectID()
   loadTreeData().then(() => {
-    disassemblyIDs.value = []
-    disassemblyIDs.value.push(treeData.value[0]?.key)
+    selectedDisassemblyIDs.value = []
+    selectedDisassemblyIDs.value.push(treeData.value[0]?.key)
   })
 })
 
@@ -464,7 +532,7 @@ async function loadTableData() {
       loading.value = true
       let res = await progressApi.getList({
         disassembly_id: queryCondition.disassemblyID,
-        type: queryCondition.progressType,
+        type: queryCondition.type,
         date_gte: queryCondition.dateRange ? queryCondition.dateRange[0] : undefined,
         date_lte: queryCondition.dateRange ? queryCondition.dateRange[1] : undefined,
         data_source: queryCondition.dataSource,
@@ -505,12 +573,28 @@ function loadData() {
   loadTreeData().then(loadTableData)
 }
 
-//用于创建进度的模态框
-const modalForCreatingProgress = ref()
+//用于创建计划进度的模态框
+const modalForCreatingPlannedProgress = ref()
 
-//打开用于创建进度的模态框
-function showModalForCreatingProgress(disassemblyID?: number) {
-  modalForCreatingProgress.value.showModal(disassemblyID)
+//打开用于创建计划进度的模态框
+function showModalForCreatingPlannedProgress(disassemblyID?: number) {
+  modalForCreatingPlannedProgress.value.showModal(disassemblyID)
+}
+
+//用于创建实际进度的模态框
+const modalForCreatingActualProgress = ref()
+
+//打开用于创建实际进度的模态框
+function showModalForCreatingActualProgress(disassemblyID?: number) {
+  modalForCreatingActualProgress.value.showModal(disassemblyID)
+}
+
+//用于创建预测进度的模态框
+const modalForCreatingForecastedProgress = ref()
+
+//打开用于创建预测进度的模态框
+function showModalForCreatingForecastedProgress(disassemblyID?: number) {
+  modalForCreatingForecastedProgress.value.showModal(disassemblyID)
 }
 
 //用于修改进度的模态框

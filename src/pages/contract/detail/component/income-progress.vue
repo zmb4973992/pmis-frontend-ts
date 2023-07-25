@@ -44,10 +44,15 @@ async function drawChart() {
   })
   if (res && res.data) {
     for (let item of res.data) {
-      chartData.plannedIncomeProgressList.push({date: item.date, value: item.planned_income_progress})
-      chartData.actualIncomeProgressList.push({date: item.date, value: item.actual_income_progress})
-      chartData.forecastedIncomeProgressList.push({date: item.date, value: item.forecasted_income_progress})
-
+      if (item.planned_income_progress) {
+        chartData.plannedIncomeProgressList.push({date: item.date, value: item.planned_income_progress})
+      }
+      if (item.actual_income_progress) {
+        chartData.actualIncomeProgressList.push({date: item.date, value: item.actual_income_progress})
+      }
+      if (item.forecasted_income_progress) {
+        chartData.forecastedIncomeProgressList.push({date: item.date, value: item.forecasted_income_progress})
+      }
     }
   }
 

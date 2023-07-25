@@ -51,7 +51,7 @@ const routes: customRouteRecord[] = [
                 path: '',
                 name: routeName.progressStatus,
                 meta: {
-                    label: '当前情况',
+                    label: '进度情况',
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
@@ -60,7 +60,7 @@ const routes: customRouteRecord[] = [
                         path: '/progress/status/table',
                         name: routeName.progressStatusTable,
                         meta: {
-                            label: '表格',
+                            label: '详情',
                             requireAuth: true,
                             permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                         },
@@ -148,7 +148,7 @@ const routes: customRouteRecord[] = [
                 component: () => import('@/pages/contract/table/contract-table.vue')
             },
             {
-                path: '/contract/:contractID',
+                path: '/contract/detail/:contractID',
                 name: '合同详情',
                 meta: {
                     hidden:true,
@@ -236,6 +236,17 @@ const routes: customRouteRecord[] = [
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/related-party/table/related-party-table.vue')
+            },
+            {
+                path: '/related-party/detail/:relatedPartyID',
+                name: '相关方详情',
+                meta: {
+                    hidden:true,
+                    label: '相关方详情',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/related-party/detail/related-party-detail.vue')
             },
         ],
 

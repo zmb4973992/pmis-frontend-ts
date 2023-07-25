@@ -73,10 +73,14 @@
           {{ index + 1 }}
         </template>
         <template v-if="column.dataIndex === 'name'">
-          <a-button type="link" style="padding: 0"
-                    @click="router.push({name:'项目详情',params:{projectID:record.id}})">
-            {{ record.name }}
-          </a-button>
+          <router-link target="_blank" :to="{
+            name:'项目详情',params:{projectID: record.id}
+          }">
+            <a-tooltip>
+              <template #title>{{ record.name }}</template>
+              {{ record.name }}
+            </a-tooltip>
+          </router-link>
         </template>
         <template v-else-if="column.dataIndex === 'action'">
           <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
@@ -170,7 +174,7 @@ interface queryConditionFormat extends pagingFormat {
 }
 
 const queryCondition = reactive<queryConditionFormat>({
-  nameInclude: "",
+  // nameInclude: "",
   page: 1,
   pageSize: 12,
 })
@@ -203,10 +207,9 @@ loadOrganizationOptions()
 const departmentFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-//分页器选项
+//表格数据
 let tableData = reactive({
   list: [],
-  // numberOfPages: 1,
   numberOfRecords: 0,
 })
 
@@ -225,7 +228,7 @@ let columns = ref([
     dataIndex: 'name',
     width: '260px',
     ellipsis: true,
-    align: 'left',
+    align: 'center',
   },
   {
     title: '项目号',
@@ -376,6 +379,11 @@ function showModalForDeleting(projectID: number) {
   ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
+  }
+
+  //调整表格行高
+  .ant-table-tbody > tr > td {
+    padding: 4px;
   }
 }
 

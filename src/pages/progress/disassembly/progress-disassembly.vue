@@ -14,6 +14,10 @@
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
+          <!--          <a-button @click="test.value.scrollTo">-->
+          <!--            滚动-->
+          <!--          </a-button>-->
+
           <a-tree v-if="treeData?.length" :tree-data="treeData"
                   v-model:selectedKeys="disassemblyIDs" default-expand-all>
             <template #title="{title,key,level}">
@@ -128,13 +132,14 @@ import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/mod
 import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-inferiors.vue";
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message, SelectProps} from "ant-design-vue";
-import {reactive, ref, watch} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {pagingFormat} from "@/interfaces/paging-interface";
-import {projectIDForDisassembly} from "@/constants/disassembly-constant";
 import {pageSizeOptions} from "@/constants/paging-constant";
+
+
 
 //项目id的选项
 const projectIDOptions = ref<SelectProps['options']>([])
@@ -160,7 +165,7 @@ async function loadProjectIDOptions() {
 
 //加载本地存储的数据
 function loadLocalStorage() {
-  const tempProjectID = Number(localStorage.getItem(projectIDForDisassembly))
+  const tempProjectID = Number(localStorage.getItem("project_id"))
   if (tempProjectID > 0) {
     queryCondition.projectID = tempProjectID
   }
@@ -224,6 +229,7 @@ const disassemblyIDs = ref<number[]>([])
 //监测disassemblyIDs，将值传给查询条件
 watch(disassemblyIDs, () => {
   queryCondition.disassemblyID = disassemblyIDs.value[0]
+
 })
 
 //加载所有的选项
@@ -247,7 +253,7 @@ const queryCondition = reactive<queryConditionFormat>({
 
 //监测查询条件中projectID的变化
 watch(() => queryCondition.projectID, () => {
-  localStorage.setItem(projectIDForDisassembly, String(queryCondition.projectID))
+  localStorage.setItem("project_id", String(queryCondition.projectID))
   tipsForSelectingProjectID()
   loadTreeData().then(() => {
     disassemblyIDs.value = []

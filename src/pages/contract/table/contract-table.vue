@@ -64,16 +64,22 @@
 
       <a-table :data-source="tableData.list" :columns="columns"
                size="small" :pagination="false" :scroll="{x:1000}"
-               @change="tableChange" :loading="loading">
+               @change="tableChange" :loading="tableLoading">
         <template #bodyCell="{column,record,index}">
           <template v-if="column.dataIndex === 'line_number'">
             {{ index + 1 }}
           </template>
           <template v-else-if="column.dataIndex === 'name'">
-            <a-button type="link" style="padding: 0"
-                      @click="router.push({name:'合同详情',params:{contractID:record.id}})">
-              {{ record.name }}
-            </a-button>
+            <a-tooltip>
+              <template #title>
+                {{ record.name }}
+              </template>
+              <router-link target="_blank" :to="{
+            name:'合同详情',params:{contractID: record.id}
+          }">
+                {{ record.name }}
+              </router-link>
+            </a-tooltip>
           </template>
 
           <template v-else-if="column.dataIndex[0] === 'fund_direction' && column.dataIndex[1] === 'name'">
@@ -81,12 +87,34 @@
               <span style="color: red">付款</span>
             </template>
             <template v-if="record.fund_direction?.name === '收款合同'">
-              <span style="color: #1890ff">收款</span>
+              <span style="color: green">收款</span>
             </template>
           </template>
 
           <template v-else-if="column.dataIndex === 'amount'">
             {{ record.amount.toLocaleString() }}
+          </template>
+
+          <template v-else-if="column.dataIndex[0] === 'project' && column.dataIndex[1] === 'name'">
+            <a-tooltip v-if="record.project && record.project.id">
+              <template #title>
+                {{ record.project.name }}
+              </template>
+              <router-link target="_blank" :to="{name:'项目详情',params:{projectID: record.project.id}}">
+                {{ record.project.name }}
+              </router-link>
+            </a-tooltip>
+          </template>
+
+          <template v-else-if="column.dataIndex[0] === 'related_party' && column.dataIndex[1] === 'name'">
+            <a-tooltip v-if="record.related_party && record.related_party.id">
+              <template #title>
+                {{ record.related_party.name }}
+              </template>
+              <router-link target="_blank" :to="{name:'相关方详情',params:{relatedPartyID: record.related_party.id}}">
+                {{ record.related_party.name }}
+              </router-link>
+            </a-tooltip>
           </template>
 
           <template v-else-if="column.dataIndex === 'operation'">
@@ -99,7 +127,7 @@
             </a-button>
             <a-divider type="vertical"/>
             <a-tooltip placement="topLeft">
-              <template #title >如需删除，请联系管理员</template>
+              <template #title>如需删除，请联系管理员</template>
               <a-button type="link" style="padding: 0" danger disabled
                         @click="deleteContract">
                 删除
@@ -160,7 +188,7 @@ const projectFilterOption = (input: string, option: any) =>
 
 const tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
-const loading = ref(false)
+const tableLoading = ref(false)
 
 const columns = ref([
   {
@@ -176,7 +204,7 @@ const columns = ref([
     dataIndex: 'name',
     width: '250px',
     ellipsis: true,
-    align: 'left',
+    align: 'center',
   },
   {
     title: '项目名称',
@@ -273,7 +301,7 @@ function tableChange(pagination: any, filter: any, sorter: any) {
 
 async function loadTableData() {
   try {
-    loading.value = true
+    tableLoading.value = true
     let res = await contractApi.getList({
       project_id: queryCondition.projectID,
       name_include: queryCondition.nameInclude,
@@ -297,7 +325,7 @@ async function loadTableData() {
     tableData.numberOfRecords = 0
     console.log(err);
   } finally {
-    loading.value = false
+    tableLoading.value = false
   }
 }
 
@@ -355,6 +383,11 @@ loadProjectOptions()
   ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
+  }
+
+  //调整表格行高
+  .ant-table-tbody > tr > td {
+    padding: 4px;
   }
 }
 

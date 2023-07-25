@@ -9,12 +9,12 @@
                        dropdownClassName="tree2"/>
       </a-form-item>
 
-      <a-form-item name="date" label="日期">
-        <a-date-picker v-model:value="formData.date"/>
-      </a-form-item>
-
       <a-form-item name="type" label="类型">
         <a-select v-model:value="formData.type" :options="options.type"/>
+      </a-form-item>
+
+      <a-form-item name="date" label="日期">
+        <a-date-picker v-model:value="formData.date"/>
       </a-form-item>
 
       <a-form-item name="value" label="进度值">
@@ -83,6 +83,7 @@ const form = ref<FormInstance>()
 
 const props = defineProps<{
   projectID?: number
+  progressType?: number
 }>()
 
 interface formDataFormat {
@@ -135,6 +136,8 @@ async function showModal(disassemblyID?: number) {
   form.value?.resetFields()
   if (disassemblyID) {
     formData.disassemblyID = disassemblyID
+    formData.type = props.progressType
+    console.log(props.progressType);
     let res = await disassemblyApi.get({id: disassemblyID})
     if (res && res?.data) {
       visible.value = true

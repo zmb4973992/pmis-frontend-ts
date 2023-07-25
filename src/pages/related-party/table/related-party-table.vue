@@ -5,7 +5,7 @@
     <a-form ref="formRef" :model="queryCondition">
       <a-row :gutter="10">
         <a-col>
-          <a-form-item class="query-item" label="名称" name="name">
+          <a-form-item class="query-item" label="名称" name="nameInclude">
             <a-input id="name" v-model:value="queryCondition.nameInclude" placeholder="相关方名称"/>
           </a-form-item>
         </a-col>
@@ -56,58 +56,64 @@
 
     <a-table :data-source="tableData.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1200}"
-    :loading="tableLoading">
+             :loading="tableLoading">
       <template #bodyCell="{ column, record,index }">
         <template v-if="column.dataIndex === 'line_number'">
           {{ index + 1 }}
         </template>
         <template v-else-if="column.dataIndex === 'name'">
-          <a-button type="link" style="padding: 0"
-                    @click="router.push({name:'相关方详情',params:{relatedPartyID:record.id}})">
-            {{ record.name }}
-          </a-button>
-        </template>
-        <template v-if="column.dataIndex === 'action'">
-          <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
-            修改
-          </a-button>
-          <a-divider type="vertical"/>
-          <a-tooltip placement="topRight">
-            <template #title>如需删除，请联系管理员</template>
-            <a-button type="link" style="padding: 0" danger disabled>
-              删除
-            </a-button>
+          <a-tooltip>
+            <template #title>
+              {{ record.name }}
+            </template>
+            <router-link target="_blank" :to="{
+            name:'相关方详情',params:{relatedPartyID: record.id}
+          }">
+              {{ record.name }}
+            </router-link>
           </a-tooltip>
-          <!--          <a-popconfirm class="pop-confirm"-->
-          <!--                        title="确认要删除吗？"-->
-          <!--                        ok-text="确认"-->
-          <!--                        cancel-text="取消"-->
-          <!--                        placement="topRight"-->
-          <!--                        @confirm="deleteRecord(record.id)"-->
-          <!--          >-->
-          <!--            <a>删除</a>-->
-          <!--          </a-popconfirm>-->
-        </template>
       </template>
-      >
-    </a-table>
+      <template v-if="column.dataIndex === 'action'">
+        <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
+          修改
+        </a-button>
+        <a-divider type="vertical"/>
+        <a-tooltip placement="topRight">
+          <template #title>如需删除，请联系管理员</template>
+          <a-button type="link" style="padding: 0" danger disabled>
+            删除
+          </a-button>
+        </a-tooltip>
+        <!--          <a-popconfirm class="pop-confirm"-->
+        <!--                        title="确认要删除吗？"-->
+        <!--                        ok-text="确认"-->
+        <!--                        cancel-text="取消"-->
+        <!--                        placement="topRight"-->
+        <!--                        @confirm="deleteRecord(record.id)"-->
+        <!--          >-->
+        <!--            <a>删除</a>-->
+        <!--          </a-popconfirm>-->
+      </template>
+</template>
+>
+</a-table>
 
-    <!--分页器-->
-    <a-pagination class="paginator" v-model:current="queryCondition.page"
-                  v-model:pageSize="queryCondition.pageSize" show-less-items
-                  :total="tableData.numberOfRecords" showSizeChanger
-                  :pageSizeOptions="pageSizeOptions" showQuickJumper
-                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
-  </a-card>
+<!--分页器-->
+<a-pagination class="paginator" v-model:current="queryCondition.page"
+              v-model:pageSize="queryCondition.pageSize" show-less-items
+              :total="tableData.numberOfRecords" showSizeChanger
+              :pageSizeOptions="pageSizeOptions" showQuickJumper
+              @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+</a-card>
 
-  <!--新增相关方信息的模态框-->
-  <modal-for-creating ref="modalForCreating" @loadTableData="loadTableData"/>
+<!--新增相关方信息的模态框-->
+<modal-for-creating ref="modalForCreating" @loadTableData="loadTableData"/>
 
-  <!--修改相关方信息的模态框-->
-  <modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
+<!--修改相关方信息的模态框-->
+<modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
 
-  <!--删除相关方信息的模态框-->
-  <!--  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>-->
+<!--删除相关方信息的模态框-->
+<!--  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>-->
 
 </template>
 
@@ -120,6 +126,11 @@ import {pagingFormat} from "@/interfaces/paging-interface";
 import router from "@/router";
 import ModalForUpdating from "@/pages/related-party/table/component/modal-for-updating.vue";
 import ModalForCreating from "@/pages/related-party/table/component/modal-for-creating.vue";
+import {useRouter} from "vue-router";
+
+onMounted(() => {
+})
+// console.log(myRouter.resolve({name: '相关方详情', params: {id: 'kd'}}));
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
@@ -174,7 +185,8 @@ let columns = ref([
     title: '名称',
     dataIndex: 'name',
     width: '350px',
-    align: 'center'
+    ellipsis: true,
+    align: 'center',
   },
   {
     title: '统一社会信用代码',
@@ -277,6 +289,13 @@ function deleteRecord(id: number) {
       }
   )
 }
+
+function showDetail(relatedPartyID: number) {
+  const myRouter = useRouter()
+  console.log(myRouter);
+  console.log(myRouter.resolve({name: '相关方详情', params: {relatedPartyID: 333}}));
+
+}
 </script>
 
 <style scoped lang="scss">
@@ -313,6 +332,11 @@ function deleteRecord(id: number) {
   ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
+  }
+
+  //调整表格行高
+  .ant-table-tbody > tr > td {
+    padding: 4px;
   }
 }
 

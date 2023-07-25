@@ -45,9 +45,15 @@ async function drawChart() {
   if (res && res.data) {
     // console.log(res.data);
     for (let item of res.data) {
-        chartData.plannedExpenditureProgressList.push({date:item.date,value:item.planned_expenditure_progress})
-        chartData.actualExpenditureProgressList.push({date:item.date,value:item.actual_expenditure_progress})
-        chartData.forecastedExpenditureProgressList.push({date:item.date,value:item.forecasted_expenditure_progress})
+        if (item.planned_expenditure_progress) {
+          chartData.plannedExpenditureProgressList.push({date:item.date,value:item.planned_expenditure_progress})
+        }
+        if (item.actual_expenditure_progress) {
+          chartData.actualExpenditureProgressList.push({date:item.date,value:item.actual_expenditure_progress})
+        }
+        if (item.forecasted_expenditure_progress) {
+          chartData.forecastedExpenditureProgressList.push({date:item.date,value:item.forecasted_expenditure_progress})
+        }
     }
   }
 

@@ -28,10 +28,6 @@ export interface iDisassemblyDelete {
     id: number
 }
 
-export interface iDisassemblyDeleteWithInferiors {
-    id: number
-}
-
 export interface iDisassemblyGetList {
     project_id?: number
     level?: number
@@ -57,9 +53,6 @@ const disassemblyApi = {
         '/disassembly/' + param.id, param).then(res => res.data,),
     delete: (param: iDisassemblyDelete) => request.delete(
         '/disassembly/' + param.id,).then(res => res.data,),
-    deleteWithInferiors: (param: iDisassemblyDeleteWithInferiors) =>
-        request.delete('/disassembly/with-inferiors/' + param.id,)
-            .then(res => res.data,),
     getList: (param?: iDisassemblyGetList) => request.post(
         '/disassembly/list', param).then(res => res.data,),
 }

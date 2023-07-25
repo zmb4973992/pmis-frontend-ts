@@ -59,6 +59,7 @@ interface contractDelete {
 
 interface contractGetList {
     project_id?: number
+    related_party_id?:number
     fund_direction?: number
     name_include?: string
     page?: number

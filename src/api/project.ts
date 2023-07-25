@@ -52,6 +52,7 @@ export interface iProjectGetList {
     name_include?: string
     organization_id_in?: number[]
     organization_name_include?: string
+    related_party_id?:number
     page?: number
     page_size?: number
     order_by?: string

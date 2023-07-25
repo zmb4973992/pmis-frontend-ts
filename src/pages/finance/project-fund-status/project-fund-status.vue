@@ -158,7 +158,9 @@ async function loadChartData(projectID: number, dataType: string) {
       const res1 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
       if (res1?.code === 0) {
         for (let item of res1.data) {
-          chartData.actualIncomeProgress.push({date: item.date, value: item.actual_income_progress})
+          if (item.actual_income_progress) {
+            chartData.actualIncomeProgress.push({date: item.date, value: item.actual_income_progress})
+          }
         }
       }
 
@@ -175,14 +177,18 @@ async function loadChartData(projectID: number, dataType: string) {
       const res3 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
       if (res3?.code === 0) {
         for (let item of res3.data) {
-          chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
+          if (item.total_actual_income) {
+            chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
+          }
         }
       }
 
       const res4 = await projectCumulativeExpenditureApi.getList({project_id: projectID, page_size: 0})
       if (res4?.code === 0) {
         for (let item of res4.data) {
-          chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
+          if (item.total_actual_expenditure) {
+            chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
+          }
         }
       }
 
