@@ -49,6 +49,8 @@ async function drawChart() {
       } else if (item?.type?.name === "实际进度") {
         chartData.actualProgressList.push({date: item.date, value: item.value})
       } else if (item?.type?.name === "预测进度") {
+        console.log(item);
+
         chartData.forecastedProgressList.push({date: item.date, value: item.value})
       }
     }
@@ -150,6 +152,7 @@ async function drawChart() {
       dataset: [
         {source: chartData.plannedProgressList},
         {source: chartData.actualProgressList},
+        {source: chartData.forecastedProgressList},
       ],
       dataZoom: [
         {

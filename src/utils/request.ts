@@ -4,7 +4,7 @@ import router from "@/router"
 
 const request = axios.create({
     baseURL: 'http://127.0.0.1:8000',
-    timeout: 5000,  //毫秒
+    timeout: 15000,  //毫秒
 })
 
 //对发送的请求进行封装

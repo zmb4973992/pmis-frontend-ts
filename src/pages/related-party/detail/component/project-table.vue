@@ -11,15 +11,29 @@
         </template>
 
         <template v-if="column.dataIndex === 'name'">
-          <router-link target="_blank" :to="{
+          <template v-if="record?.authorized === true">
+            <router-link target="_blank" :to="{
             name:'项目详情',params:{projectID: record.id}
           }">
-            {{ record.name }}
-          </router-link>
+              {{ record.name }}
+            </router-link>
+          </template>
+
+          <template v-else>
+            <router-link to="" :disabled="true">
+              <a-tooltip>
+                <template #title>
+                  您没有权限查看该项目的详情
+                </template>
+                {{ record.name }}
+              </a-tooltip>
+
+            </router-link>
+          </template>
         </template>
 
         <template v-else-if="column.dataIndex === 'amount'">
-          {{ record.amount.toLocaleString()  }}
+          {{ record.amount.toLocaleString() }}
         </template>
       </template>
     </a-table>
@@ -147,6 +161,7 @@ async function loadTableData() {
     tableLoading.value = true
     let res = await projectApi.getList({
       related_party_id: queryCondition.relatedPartyID,
+      ignore_data_scope: true,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,

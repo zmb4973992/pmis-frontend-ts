@@ -66,7 +66,7 @@ if (myChart) {
   myChart.setOption({
     legend: {},  //图例
     grid: {  //网格
-      left: '80', //网格组件离容器左侧的距离
+      left: '85', //网格组件离容器左侧的距离
       right: '20',//网格组件离容器右侧的距离
       bottom: '53',//网格组件离容器底部的距离
     },

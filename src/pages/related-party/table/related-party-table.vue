@@ -6,7 +6,7 @@
       <a-row :gutter="10">
         <a-col>
           <a-form-item class="query-item" label="名称" name="nameInclude">
-            <a-input id="name" v-model:value="queryCondition.nameInclude" placeholder="相关方名称"/>
+            <a-input id="name" v-model:value="queryCondition.nameInclude" placeholder="支持模糊搜索"/>
           </a-form-item>
         </a-col>
         <a-col>
@@ -72,48 +72,48 @@
               {{ record.name }}
             </router-link>
           </a-tooltip>
-      </template>
-      <template v-if="column.dataIndex === 'action'">
-        <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
-          修改
-        </a-button>
-        <a-divider type="vertical"/>
-        <a-tooltip placement="topRight">
-          <template #title>如需删除，请联系管理员</template>
-          <a-button type="link" style="padding: 0" danger disabled>
-            删除
+        </template>
+        <template v-if="column.dataIndex === 'action'">
+          <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
+            修改
           </a-button>
-        </a-tooltip>
-        <!--          <a-popconfirm class="pop-confirm"-->
-        <!--                        title="确认要删除吗？"-->
-        <!--                        ok-text="确认"-->
-        <!--                        cancel-text="取消"-->
-        <!--                        placement="topRight"-->
-        <!--                        @confirm="deleteRecord(record.id)"-->
-        <!--          >-->
-        <!--            <a>删除</a>-->
-        <!--          </a-popconfirm>-->
+          <a-divider type="vertical"/>
+          <a-tooltip placement="topRight">
+            <template #title>如需删除，请联系管理员</template>
+            <a-button type="link" style="padding: 0" danger disabled>
+              删除
+            </a-button>
+          </a-tooltip>
+          <!--          <a-popconfirm class="pop-confirm"-->
+          <!--                        title="确认要删除吗？"-->
+          <!--                        ok-text="确认"-->
+          <!--                        cancel-text="取消"-->
+          <!--                        placement="topRight"-->
+          <!--                        @confirm="deleteRecord(record.id)"-->
+          <!--          >-->
+          <!--            <a>删除</a>-->
+          <!--          </a-popconfirm>-->
+        </template>
       </template>
-</template>
->
-</a-table>
 
-<!--分页器-->
-<a-pagination class="paginator" v-model:current="queryCondition.page"
-              v-model:pageSize="queryCondition.pageSize" show-less-items
-              :total="tableData.numberOfRecords" showSizeChanger
-              :pageSizeOptions="pageSizeOptions" showQuickJumper
-              @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
-</a-card>
+    </a-table>
 
-<!--新增相关方信息的模态框-->
-<modal-for-creating ref="modalForCreating" @loadTableData="loadTableData"/>
+    <!--分页器-->
+    <a-pagination class="paginator" v-model:current="queryCondition.page"
+                  v-model:pageSize="queryCondition.pageSize" show-less-items
+                  :total="tableData.numberOfRecords" showSizeChanger
+                  :pageSizeOptions="pageSizeOptions" showQuickJumper
+                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+  </a-card>
 
-<!--修改相关方信息的模态框-->
-<modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
+  <!--新增相关方信息的模态框-->
+  <modal-for-creating ref="modalForCreating" @loadTableData="loadTableData"/>
 
-<!--删除相关方信息的模态框-->
-<!--  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>-->
+  <!--修改相关方信息的模态框-->
+  <modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
+
+  <!--删除相关方信息的模态框-->
+  <!--  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>-->
 
 </template>
 
@@ -123,14 +123,9 @@ import {relatedPartyApi} from "@/api/related-party";
 import {onMounted, reactive, ref} from "vue";
 import {FormInstance, message} from "ant-design-vue";
 import {pagingFormat} from "@/interfaces/paging-interface";
-import router from "@/router";
 import ModalForUpdating from "@/pages/related-party/table/component/modal-for-updating.vue";
 import ModalForCreating from "@/pages/related-party/table/component/modal-for-creating.vue";
 import {useRouter} from "vue-router";
-
-onMounted(() => {
-})
-// console.log(myRouter.resolve({name: '相关方详情', params: {id: 'kd'}}));
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
@@ -164,6 +159,8 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
+  orderBy:"updated_at",
+  desc:true,
 })
 
 let tableData = reactive({
@@ -191,7 +188,9 @@ let columns = ref([
   {
     title: '统一社会信用代码',
     align: 'center',
-    dataIndex: 'uniform_social_credit_code'
+    dataIndex: 'uniform_social_credit_code',
+    width: '300px',
+    ellipsis: true,
   },
   {
     title: '操作',
@@ -210,22 +209,16 @@ const tableLoading = ref(false)
 const pageSizeOptions = ['12', '20', '25', '30']
 
 //加载完组件后，开始查询数据，用于显示
-onMounted(() => search())
+// onMounted(() => search())
 //查询数据集，赋值给上面的data
-const search = () => {
-  relatedPartyApi.getList(queryCondition).then(
-      (res) => {
-        tableData.list = res.data
-        tableData.numberOfRecords = res.paging.number_of_records
-      },
-  )
-}
-//当页码或单页数据条数发生变化时，更新查询条件，重新查询
-const paginationChange = (page: number, pageSize: number) => {
-  queryCondition.page = page
-  queryCondition.pageSize = pageSize
-  search()
-}
+// const search = () => {
+//   relatedPartyApi.getList(queryCondition).then(
+//       (res) => {
+//         tableData.list = res.data
+//         tableData.numberOfRecords = res.paging.number_of_records
+//       },
+//   )
+// }
 
 //查看单条记录的详情
 function detail(id: number) {
@@ -248,11 +241,12 @@ async function loadTableData() {
     } else {
       tableData.list = []
       tableData.numberOfRecords = 0
+      message.error(res.message)
     }
-  } catch (err) {
+  } catch (err:any) {
     tableData.list = []
     tableData.numberOfRecords = 0
-    console.log(err);
+    message.error(err)
   } finally {
     tableLoading.value = false
   }

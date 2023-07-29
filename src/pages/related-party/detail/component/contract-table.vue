@@ -11,33 +11,49 @@
         </template>
 
         <template v-if="column.dataIndex === 'name'">
-          <a-tooltip>
-          <template #title>
-            {{ record.name }}
+          <template v-if="record?.authorized === true">
+            <router-link target="_blank" :to="{
+            name:'合同详情',params:{contractID: record.id}
+          }">
+              {{ record.name }}
+            </router-link>
           </template>
-          <router-link target="_blank" :to="{name:'合同详情',params:{contractID: record.id}}">
-            {{ record.name }}
-          </router-link>
-          </a-tooltip>
+
+          <template v-else>
+            <router-link to="" :disabled="true">
+              <a-tooltip>
+                <template #title>您没有权限查看该合同的详情</template>
+                {{ record.name }}
+              </a-tooltip>
+
+            </router-link>
+          </template>
         </template>
 
         <template v-else-if="column.dataIndex[0] === 'project' && column.dataIndex[1] === 'name'">
-          <a-tooltip v-if="record.project && record.project.id">
-            <template #title>
-              {{ record.project.name }}
-            </template>
+          <template v-if="record?.authorized === true">
             <router-link target="_blank" :to="{name:'项目详情',params:{projectID: record.project.id}}">
               {{ record.project.name }}
             </router-link>
-          </a-tooltip>
+          </template>
+
+          <template v-else>
+            <router-link to="" :disabled="true">
+              <a-tooltip>
+                <template #title>您没有权限查看该项目的详情</template>
+                {{ record.project.name }}
+              </a-tooltip>
+            </router-link>
+          </template>
+
         </template>
 
         <template v-else-if="column.dataIndex[0] === 'fund_direction' && column.dataIndex[1] === 'name'">
           <template v-if="record.fund_direction?.name === '付款合同'">
-            <span style="color: red">付款</span>
+            <span style="color: green">付款</span>
           </template>
           <template v-if="record.fund_direction?.name === '收款合同'">
-            <span style="color: green">收款</span>
+            <span style="color: red">收款</span>
           </template>
         </template>
 
@@ -157,6 +173,7 @@ async function loadTableData() {
     tableLoading.value = true
     let res = await contractApi.getList({
       related_party_id: queryCondition.relatedPartyID,
+      ignore_data_scope:true,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,

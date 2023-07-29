@@ -132,14 +132,13 @@ import ModalForCreatingSubitems from "@/pages/progress/disassembly/component/mod
 import ModalForUpdatingSubitem from "@/pages/progress/disassembly/component/modal-for-updating-inferiors.vue";
 import ModalForDeletingItem from "@/pages/progress/disassembly/component/modal-for-deleting-item.vue";
 import {message, SelectProps} from "ant-design-vue";
-import {onMounted, reactive, ref, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import {PlusOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons-vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
-
-
+import {useRoute} from "vue-router";
 
 //项目id的选项
 const projectIDOptions = ref<SelectProps['options']>([])
@@ -300,7 +299,7 @@ let columns = ref([
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '110px',
     ellipsis: true,
     align: 'center',
   },
@@ -484,10 +483,16 @@ function toBeCompleted() {
   }
 }
 
-//表格的表头样式
-:deep(.ant-table-thead) {
-  > tr > th {
+
+:deep(.ant-table) {
+  //表格的表头样式
+  .ant-table-thead > tr > th {
     text-align: center !important;
+  }
+
+  //表格行高
+  .ant-table-tbody > tr > td {
+    padding: 4px;
   }
 }
 

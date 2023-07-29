@@ -48,11 +48,11 @@ export interface iProjectDelete {
 }
 
 export interface iProjectGetList {
-    is_showed_by_role?: boolean
     name_include?: string
     organization_id_in?: number[]
     organization_name_include?: string
     related_party_id?:number
+    ignore_data_scope?:boolean
     page?: number
     page_size?: number
     order_by?: string

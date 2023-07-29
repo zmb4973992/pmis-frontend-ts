@@ -1,7 +1,6 @@
 //这里的变量名之所以为routes，是为了下面的router能直接使用这个名称，这是es6简写原则
 import {RouteRecordRaw} from "vue-router";
 import {routeName} from "@/utils/routeName";
-import useMenuStore from "@/store/menu";
 
 //把route的meta限定的更细致一些，便于引用和类型判定
 export type customRouteRecord = RouteRecordRaw & {
@@ -17,16 +16,56 @@ const privateRoutes: customRouteRecord[] = []
 
 
 const routes: customRouteRecord[] = [
+    // {
+    //     path: '/home',
+    //     name: routeName.homePage,
+    //     meta: {
+    //         label: '首页',
+    //         icon: 'HomeOutlined',
+    //         requireAuth: true,
+    //         permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+    //     },
+    //     component: () => import('@/pages/layout.vue'),
+    // },
     {
-        path: '/home',
-        name: routeName.homePage,
-        meta: {
-            label: '首页',
-            icon: 'HomeOutlined',
-            requireAuth: true,
-            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-        },
+        path: '/project',
+        name: routeName.project,
         component: () => import('@/pages/layout.vue'),
+        meta: {
+            label: '项目',
+            icon: 'ProfileOutlined',
+        },
+        children: [
+            {
+                path: '/project/table',
+                name: '项目列表',
+                meta: {
+                    label: '项目列表',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/project/table/project-table.vue'),
+            },
+            {
+                path: '/project/performance',
+                name: '历史业绩',
+                meta: {
+                    label: '历史业绩',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/project/historical-performance.vue'),
+            },
+            {
+                path:'/project/detail/:projectID',
+                name:'项目详情',
+                meta:{
+                    label:'项目详情',
+                    hidden:true,
+                },
+                component:()=>import('@/pages/project/detail/project-detail.vue')
+            },
+        ],
     },
     {
         path: '/progress',
@@ -85,46 +124,6 @@ const routes: customRouteRecord[] = [
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
                 component: () => import('@/pages/progress/update-log.vue'),
-            },
-        ],
-    },
-    {
-        path: '/project',
-        name: routeName.project,
-        component: () => import('@/pages/layout.vue'),
-        meta: {
-            label: '项目',
-            icon: 'ProfileOutlined',
-        },
-        children: [
-            {
-                path: '/project/table',
-                name: '项目列表',
-                meta: {
-                    label: '项目列表',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/project/table/project-table.vue'),
-            },
-            {
-                path: '/project/performance',
-                name: '历史业绩',
-                meta: {
-                    label: '历史业绩',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/project/historical-performance.vue'),
-            },
-            {
-                path:'/project/detail/:projectID',
-                name:'项目详情',
-                meta:{
-                    label:'项目详情',
-                    hidden:true,
-                },
-                component:()=>import('@/pages/project/detail/project-detail.vue')
             },
         ],
     },
@@ -193,7 +192,7 @@ const routes: customRouteRecord[] = [
     // },
     //以下为消息中心
     {
-        path: '/',
+        path: '/message',
         name: '消息中心',
         meta: {
             label: '消息中心',
@@ -217,7 +216,7 @@ const routes: customRouteRecord[] = [
 
     },
     {
-        path: '/',
+        path: '/related-party',
         name: '相关方',
         meta: {
             label: '相关方',
@@ -311,12 +310,12 @@ const routes: customRouteRecord[] = [
                     },
                 ]
             },
-            {
-                path: '/finance/project-fund-status',
-                name: '项目资金情况',
-                meta: {label: '项目资金情况'},
-                component: () => import('@/pages/finance/project-fund-status/project-fund-status.vue')
-            },
+            // {
+            //     path: '/finance/project-fund-status',
+            //     name: '项目资金情况',
+            //     meta: {label: '项目资金情况'},
+            //     component: () => import('@/pages/finance/project-fund-status/project-fund-status.vue')
+            // },
         ],
     },
     {

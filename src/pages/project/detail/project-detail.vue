@@ -3,13 +3,13 @@
           :body-style="{padding:'0 10px 10px 10px'}">
     <a-page-header :title="projectDetail.name">
       <a-descriptions size="small" :column="3">
+        <a-descriptions-item label="项目金额">
+          {{ projectDetail.amount.toLocaleString() }} {{ projectDetail.currency.name }}
+        </a-descriptions-item>
         <a-descriptions-item label="项目编号">{{ projectDetail.code }}</a-descriptions-item>
         <a-descriptions-item label="签约对方">{{ projectDetail.related_party.chinese_name }}</a-descriptions-item>
         <a-descriptions-item label="我方签约主体">{{ projectDetail.our_signatory.name }}</a-descriptions-item>
         <a-descriptions-item label="项目类型">{{ projectDetail.type.name }}</a-descriptions-item>
-        <a-descriptions-item label="项目金额">
-          {{ projectDetail.amount }}&nbsp;{{ projectDetail.currency.name }}
-        </a-descriptions-item>
         <a-descriptions-item label="签约日期">{{ projectDetail.signing_date }}</a-descriptions-item>
         <a-descriptions-item label="生效日期">{{ projectDetail.effective_date }}</a-descriptions-item>
       </a-descriptions>
@@ -37,13 +37,12 @@
 
 <script setup lang="ts">
 import {reactive, ref} from "vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {projectApi} from "@/api/project";
 import WorkingProgress from "@/pages/project/detail/component/working-progress.vue";
 import CashFlow from "@/pages/project/detail/component/cash-flow.vue";
 import Income from "@/pages/project/detail/component/income.vue";
 import Expenditure from "@/pages/project/detail/component/expenditure.vue";
-
 
 interface projectDetailFormat {
   name: string
@@ -85,6 +84,7 @@ if (projectID) {
   getProjectDetail(projectID.value)
 }
 
+const router = useRouter()
 
 async function getProjectDetail(projectID: number) {
   const res = await projectApi.get({id: projectID})
@@ -99,6 +99,10 @@ async function getProjectDetail(projectID: number) {
     projectDetail.organization.name = res.data.organization?.name
     projectDetail.signing_date = res.data.signing_date
     projectDetail.effective_date = res.data.effective_date
+  } else if (res?.code === 403) {
+    await router.push({name:'403'})
+  } else if (res?.code === 404) {
+    await router.push({name:'404'})
   }
 }
 

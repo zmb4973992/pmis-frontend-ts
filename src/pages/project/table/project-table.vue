@@ -5,10 +5,10 @@
     <a-form ref="formRef" :model="queryCondition">
       <a-row :gutter="10">
         <a-col>
-          <a-form-item class="query-item" label="部门" name="departmentIDIn">
-            <a-select show-search allow-clear mode="multiple" :filter-option="departmentFilterOption"
+          <a-form-item class="query-item" label="部门" name="organizationIDIn">
+            <a-select show-search allow-clear mode="multiple" :filter-option="organizationFilterOption"
                       :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
-                      v-model:value="queryCondition.departmentIDIn" :options="organizationOptions"
+                      v-model:value="queryCondition.organizationIDIn" :options="organizationOptions"
                       style="width:170px">
             </a-select>
           </a-form-item>
@@ -115,6 +115,8 @@
   <!--删除项目信息的模态框-->
   <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
 
+  {{queryCondition.organizationIDIn}}
+
 </template>
 
 <script setup lang="ts">
@@ -127,7 +129,6 @@ import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
-import router from "@/router";
 
 function toBeCompleted() {
   message.info('待完成')
@@ -148,6 +149,8 @@ function resetQueryCondition() {
   //使用resetFields时，要确保相关的a-form-item都添加了name属性
   //同时name的值要等于reactive数据的字段名，这样form的函数才能找到相关字段
   formRef.value?.resetFields()
+  //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置
+  queryCondition.organizationIDIn = []
   queryCondition.page = 1
   queryCondition.pageSize = 12
   loadTableData()
@@ -169,12 +172,11 @@ function tableChange(pagination: any, filter: any, sorter: any) {
 
 //查询条件
 interface queryConditionFormat extends pagingFormat {
-  departmentIDIn?: number[]
+  organizationIDIn?: number[]
   nameInclude?: string
 }
 
 const queryCondition = reactive<queryConditionFormat>({
-  // nameInclude: "",
   page: 1,
   pageSize: 12,
 })
@@ -185,6 +187,7 @@ let organizationOptions = ref<SelectProps['options']>()
 async function loadOrganizationOptions() {
   try {
     let res = await organizationApi.getList({
+      is_valid:true,
       page_size: 0,
     })
     organizationOptions.value = []
@@ -204,7 +207,7 @@ async function loadOrganizationOptions() {
 loadOrganizationOptions()
 
 //部门选项的过滤器（下拉框搜索）
-const departmentFilterOption = (input: string, option: any) =>
+const organizationFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //表格数据
@@ -297,7 +300,7 @@ async function loadTableData() {
   try {
     tableLoading.value = true
     let res = await projectApi.getList({
-      organization_id_in: queryCondition.departmentIDIn,
+      organization_id_in: queryCondition.organizationIDIn,
       name_include: queryCondition.nameInclude,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
@@ -306,16 +309,14 @@ async function loadTableData() {
     })
     if (res?.code === 0) {
       tableData.list = res?.data
-      // tableData.numberOfPages = res?.paging?.number_of_pages
       tableData.numberOfRecords = res?.paging?.number_of_records
     } else {
       tableData.list = []
-      // tableData.numberOfPages = 1
       tableData.numberOfRecords = 0
+      console.log(res.message)
     }
   } catch (err) {
     tableData.list = []
-    // tableData.numberOfPages = 1
     tableData.numberOfRecords = 0
     console.log(err);
   } finally {

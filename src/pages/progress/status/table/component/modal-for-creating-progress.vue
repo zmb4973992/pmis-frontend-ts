@@ -137,7 +137,6 @@ async function showModal(disassemblyID?: number) {
   if (disassemblyID) {
     formData.disassemblyID = disassemblyID
     formData.type = props.progressType
-    console.log(props.progressType);
     let res = await disassemblyApi.get({id: disassemblyID})
     if (res && res?.data) {
       visible.value = true

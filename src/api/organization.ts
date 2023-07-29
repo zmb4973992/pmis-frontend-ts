@@ -23,8 +23,8 @@ interface iOrganizationDelete {
 
 interface iOrganizationGetList {
     superior_id?: number
-    level_name?: string
     name?: string
+    is_valid?:boolean
     name_include?: string
     page?: number
     page_size?: number

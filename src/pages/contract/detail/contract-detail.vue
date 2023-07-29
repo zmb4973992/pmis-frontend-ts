@@ -3,14 +3,15 @@
           :body-style="{padding:'0 10px 10px 10px'}">
     <a-page-header :title="contractDetail.name">
       <a-descriptions size="small" :column="3">
+        <a-descriptions-item label="合同金额">
+          {{ contractDetail.amount.toLocaleString() }}&nbsp;{{ contractDetail.currency.name }}
+        </a-descriptions-item>
         <a-descriptions-item label="合同编号">{{ contractDetail.code }}</a-descriptions-item>
         <a-descriptions-item label="资金方向">{{contractDetail.fund_direction.name}}</a-descriptions-item>
         <a-descriptions-item label="签约对方">{{ contractDetail.related_party.chinese_name }}</a-descriptions-item>
         <a-descriptions-item label="我方签约主体">{{ contractDetail.our_signatory.name }}</a-descriptions-item>
         <a-descriptions-item label="合同类型">{{ contractDetail.type.name }}</a-descriptions-item>
-        <a-descriptions-item label="合同金额">
-          {{ contractDetail.amount }}&nbsp;{{ contractDetail.currency.name }}
-        </a-descriptions-item>
+
         <a-descriptions-item label="签约日期">{{ contractDetail.signing_date }}</a-descriptions-item>
         <a-descriptions-item label="生效日期">{{ contractDetail.effective_date }}</a-descriptions-item>
         <a-descriptions-item label="操作人">{{ contractDetail.operator }}</a-descriptions-item>

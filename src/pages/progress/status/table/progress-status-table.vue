@@ -731,6 +731,11 @@ function toBeCompleted() {
     width: 8px;
   }
 
+  //调整表格行高
+  .ant-table-tbody > tr > td {
+    padding: 4px;
+  }
+
   //滚动条里的滑块
   ::-webkit-scrollbar-thumb {
     border-radius: 5px;

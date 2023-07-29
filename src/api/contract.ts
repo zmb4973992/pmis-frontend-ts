@@ -62,6 +62,7 @@ interface contractGetList {
     related_party_id?:number
     fund_direction?: number
     name_include?: string
+    ignore_data_scope?:boolean,
     page?: number
     page_size?: number
     order_by?: string

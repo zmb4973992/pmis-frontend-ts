@@ -10,7 +10,7 @@
         <a-descriptions-item label="地址">{{ relatedPartyDetail.address }}</a-descriptions-item>
         <a-descriptions-item label="英文名称">{{ relatedPartyDetail.englishName }}</a-descriptions-item>
         <a-descriptions-item label="电话">{{ relatedPartyDetail.telephone }}</a-descriptions-item>
-        <a-descriptions-item label="项目金额">{{ relatedPartyDetail.remarks }}</a-descriptions-item>
+        <a-descriptions-item label="备注">{{ relatedPartyDetail.remarks }}</a-descriptions-item>
       </a-descriptions>
     </a-page-header>
   </a-card>
