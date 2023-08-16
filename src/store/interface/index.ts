@@ -2,6 +2,7 @@
 
 export interface userState {
     accessToken: string,
+    userID:number,
     username: string,
     fullName: string,
     roles: string[],

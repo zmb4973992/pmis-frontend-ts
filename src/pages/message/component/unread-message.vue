@@ -3,62 +3,31 @@
           :body-style="{padding:0}">
 
     <a-table :data-source="tableData.list" :columns="columns"
-             size="small" :pagination="false" :scroll="{x:1200}"
+             size="small" :pagination="false"
              @change="tableChange" :loading="tableLoading">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
           {{ index + 1 }}
         </template>
 
-        <template v-if="column.dataIndex === 'name'">
-          <template v-if="record?.authorized === true">
-            <router-link target="_blank" :to="{
-            name:'合同详情',params:{contractID: record.id}
-          }">
-              {{ record.name }}
-            </router-link>
-          </template>
-
-          <template v-else>
-            <router-link to="" :disabled="true">
-              <a-tooltip>
-                <template #title>您没有权限查看该合同的详情</template>
-                {{ record.name }}
-              </a-tooltip>
-
-            </router-link>
-          </template>
+        <template v-if="column.dataIndex === 'title'">
+          <a-button type="link" style="padding: 0" @click="showModalForDetail(record.id)">
+            {{ record.title }}
+          </a-button>
         </template>
 
-        <template v-else-if="column.dataIndex[0] === 'project' && column.dataIndex[1] === 'name'">
-          <template v-if="record?.authorized === true">
-            <router-link target="_blank" :to="{name:'项目详情',params:{projectID: record.project.id}}">
-              {{ record.project.name }}
-            </router-link>
-          </template>
-
-          <template v-else>
-            <router-link to="" :disabled="true">
-              <a-tooltip>
-                <template #title>您没有权限查看该项目的详情</template>
-                {{ record.project.name }}
-              </a-tooltip>
-            </router-link>
-          </template>
-
+        <template v-else-if="column.dataIndex === 'datetime'">
+          {{ record.datetime }}
         </template>
 
-        <template v-else-if="column.dataIndex[0] === 'fund_direction' && column.dataIndex[1] === 'name'">
-          <template v-if="record.fund_direction?.name === '付款合同'">
-            <span style="color: green">付款</span>
-          </template>
-          <template v-if="record.fund_direction?.name === '收款合同'">
-            <span style="color: red">收款</span>
-          </template>
-        </template>
-
-        <template v-else-if="column.dataIndex === 'amount'">
-          {{ record.amount.toLocaleString() }}
+        <template v-else-if="column.dataIndex === 'action'">
+          <a-button type="link" style="padding: 0" @click="markAsRead(record.id)">
+            标为已读
+          </a-button>
+          <a-divider type="vertical"/>
+          <a-button type="link" style="padding: 0" @click="deleteMessage(record.id)">
+            删除
+          </a-button>
         </template>
       </template>
     </a-table>
@@ -70,15 +39,22 @@
                   :pageSizeOptions="pageSizeOptions" show-quick-jumper
                   @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
   </a-card>
+
+  <!--用于展示消息详情的模态框-->
+  <message-detail ref="modalForDetail"/>
+
 </template>
 
 <script setup lang="ts">
 import {pageSizeOptions} from "@/constants/paging-constant";
 import {reactive, ref} from "vue";
 import {pagingFormat} from "@/interfaces/paging-interface";
-import {contractApi} from "@/api/contract";
+import {messageApi} from "@/api/message";
+import MessageDetail from "@/pages/message/component/message-detail.vue";
+import {message, Modal} from "ant-design-vue";
 
-const props = defineProps<{ relatedPartyId: number }>()
+const props = defineProps<{ userId: number }>()
+const emit = defineEmits(["loadReadMessages"])
 
 let tableData = reactive({
   list: [],
@@ -96,49 +72,26 @@ const columns = ref([
     align: 'center',
   },
   {
-    title: '合同名称',
-    dataIndex: 'name',
-    width: '250px',
-    ellipsis: true,
-    align: 'center',
+    title: '标题',
+    dataIndex: 'title',
+    width: '350px',
+    align: 'left',
   },
   {
-    title: '项目名称',
-    dataIndex: ['project', 'name'],
-    width: '250px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '类型',
-    dataIndex: ['type', 'name'],
-    width: '120px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '资金方向',
-    dataIndex: ['fund_direction', 'name'],
-    width: '120px',
-    ellipsis: true,
-    align: 'center',
-  },
-  {
-    title: '金额',
-    dataIndex: 'amount',
-    className: 'amount',
+    title: '时间',
+    dataIndex: 'datetime',
     width: '160px',
     ellipsis: true,
-    align: 'right',
-    sorter: true,
+    align: 'center',
   },
   {
-    title: '币种',
-    dataIndex: ['currency', 'name'],
-    width: '120px',
+    title: '操作',
+    dataIndex: 'action',
+    width: '110px',
     ellipsis: true,
     align: 'center',
   },
+
 ])
 
 //表格需要排序时的回调函数
@@ -157,11 +110,10 @@ function tableChange(pagination: any, filter: any, sorter: any) {
 
 //查询条件
 interface queryConditionFormat extends pagingFormat {
-  relatedPartyID: number
+  isRead?: boolean
 }
 
 const queryCondition = reactive<queryConditionFormat>({
-  relatedPartyID: props.relatedPartyId,
   page: 1,
   pageSize: 12,
 })
@@ -171,9 +123,8 @@ const tableLoading = ref(false)
 async function loadTableData() {
   try {
     tableLoading.value = true
-    let res = await contractApi.getList({
-      related_party_id: queryCondition.relatedPartyID,
-      ignore_data_authority:true,
+    let res = await messageApi.getList({
+      is_read:false,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -196,6 +147,51 @@ async function loadTableData() {
 }
 
 loadTableData()
+
+//用于展示消息详情的模态框
+const modalForDetail = ref()
+
+function showModalForDetail(messageID: number) {
+  modalForDetail.value.showModal(messageID)
+}
+
+//标为已读
+async function markAsRead(messageID: number) {
+  try {
+    const res = await messageApi.update({id: messageID})
+    if (res.code === 0) {
+      message.success("标记成功")
+      await loadTableData()
+      emit("loadReadMessages")
+    } else {
+      console.log(res.message);
+    }
+  } catch (e: any) {
+    message.error(e)
+  }
+}
+
+//删除消息
+async function deleteMessage(messageID:number) {
+  try {
+    Modal.confirm({
+      title: "确定要删除这条消息吗？",
+      async onOk() {
+        const res = await messageApi.delete({id: messageID})
+        if (res.code === 0) {
+          message.success("删除成功")
+          await loadTableData()
+        } else {
+          console.log(res.message);
+        }
+      },
+      onCancel() {
+      },
+    })
+  } catch (e:any) {
+    message.error(e)
+  }
+}
 
 </script>
 

@@ -1,12 +1,24 @@
 <template>
-  <div class="left-header">
-    <div class="collapse-button" @click="globalState.changeCollapseStatus()">
+  <a-row :gutter="20" style="margin-left: 0">
+    <a-col @click="globalState.changeCollapseStatus()" style="font-size: 21px;color: #1890ff">
       <!--如果折叠状态为否，就展示向内折叠的图标-->
-      <MenuFoldOutlined v-if="!isCollapsed"/>
+      <template v-if="!isCollapsed">
+        <a-tooltip>
+          <template #title>收起左侧目录</template>
+          <MenuFoldOutlined />
+        </a-tooltip>
+      </template>
+
       <!--如果折叠状态为是，就展示向外展开的图标-->
-      <MenuUnfoldOutlined v-else/>
-    </div>
-  </div>
+      <template v-else>
+        <a-tooltip>
+          <template #title>展开左侧目录</template>
+          <MenuUnfoldOutlined/>
+        </a-tooltip>
+      </template>
+    </a-col>
+
+  </a-row>
 </template>
 
 <script setup lang="ts">
@@ -22,12 +34,4 @@ const {isCollapsed} = storeToRefs(globalState)
 <style scoped lang="scss">
 @import "@/assets/styles/variables.scss";
 
-.left-header {
-  margin-left: 10px;
-  font-size: 21px;
-
-  .collapse-button {
-    color: #1890ff;
-  }
-}
 </style>

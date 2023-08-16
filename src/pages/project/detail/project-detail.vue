@@ -1,4 +1,5 @@
 <template>
+  <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
   <a-card size="small" :bordered="false" style="margin-bottom: 10px;"
           :body-style="{padding:'0 10px 10px 10px'}">
     <a-page-header :title="projectDetail.name">
@@ -16,9 +17,9 @@
     </a-page-header>
   </a-card>
 
-  <a-card size="small" :bordered="false" style="margin-bottom: 10px"
+  <a-card size="small" :bordered="false"
           :body-style="{padding:'0 10px 10px 10px'}">
-    <a-tabs>
+    <a-tabs >
       <a-tab-pane key="working-progress" tab="工作进度">
         <working-progress :project-id="projectID"/>
       </a-tab-pane>
@@ -33,6 +34,7 @@
       </a-tab-pane>
     </a-tabs>
   </a-card>
+  </a-spin>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +45,8 @@ import WorkingProgress from "@/pages/project/detail/component/working-progress.v
 import CashFlow from "@/pages/project/detail/component/cash-flow.vue";
 import Income from "@/pages/project/detail/component/income.vue";
 import Expenditure from "@/pages/project/detail/component/expenditure.vue";
+
+const loading = ref(true)
 
 interface projectDetailFormat {
   name: string
@@ -87,22 +91,28 @@ if (projectID) {
 const router = useRouter()
 
 async function getProjectDetail(projectID: number) {
-  const res = await projectApi.get({id: projectID})
-  if (res?.code === 0) {
-    projectDetail.name = res.data.name
-    projectDetail.code = res.data.code
-    projectDetail.related_party.chinese_name = res.data.related_party?.chinese_name
-    projectDetail.type.name = res.data.type?.name
-    projectDetail.country = res.data.country
-    projectDetail.amount = res.data.amount
-    projectDetail.currency.name = res.data.currency?.name
-    projectDetail.organization.name = res.data.organization?.name
-    projectDetail.signing_date = res.data.signing_date
-    projectDetail.effective_date = res.data.effective_date
-  } else if (res?.code === 403) {
-    await router.push({name:'403'})
-  } else if (res?.code === 404) {
-    await router.push({name:'404'})
+  try {
+    const res = await projectApi.get({id: projectID})
+    if (res?.code === 0) {
+      projectDetail.name = res.data.name
+      projectDetail.code = res.data.code
+      projectDetail.related_party.chinese_name = res.data.related_party?.chinese_name
+      projectDetail.type.name = res.data.type?.name
+      projectDetail.country = res.data.country
+      projectDetail.amount = res.data.amount
+      projectDetail.currency.name = res.data.currency?.name
+      projectDetail.organization.name = res.data.organization?.name
+      projectDetail.signing_date = res.data.signing_date
+      projectDetail.effective_date = res.data.effective_date
+    } else if (res?.code === 403) {
+      await router.push({name:'403'})
+    } else if (res?.code === 404) {
+      await router.push({name:'404'})
+    }
+  } catch (e) {
+    console.log(e);
+  } finally {
+    loading.value = false
   }
 }
 

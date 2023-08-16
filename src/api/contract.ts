@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 interface contractGet {
     id: number
@@ -57,16 +58,12 @@ interface contractDelete {
     id: number
 }
 
-interface contractGetList {
+interface contractGetList extends list {
     project_id?: number
-    related_party_id?:number
+    related_party_id?: number
     fund_direction?: number
     name_include?: string
-    ignore_data_scope?:boolean,
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
+    ignore_data_authority?: boolean,
 }
 
 const contractApi = {

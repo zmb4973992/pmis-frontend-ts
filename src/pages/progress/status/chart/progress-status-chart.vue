@@ -251,20 +251,20 @@ interface progressList {
 
 interface chartDataFormat {
   plannedProgressList: progressList[],
-  actualProgressList: progressList[],
   predictedProgressList: progressList[],
+  actualProgressList: progressList[],
 }
 
 let chartData = reactive<chartDataFormat>({
   plannedProgressList: [],
-  actualProgressList: [],
   predictedProgressList: [],
+  actualProgressList: [],
 })
 
 async function loadChartData() {
   chartData.plannedProgressList = []
-  chartData.actualProgressList = []
   chartData.predictedProgressList = []
+  chartData.actualProgressList = []
   let myChart = echarts.getInstanceByDom(document.getElementById('chart') as HTMLElement)
   //如果选择了拆解id
   if (queryCondition.disassemblyID) {
@@ -281,24 +281,26 @@ async function loadChartData() {
       for (let item of res.data) {
         if (item?.type?.name === "计划进度") {
           chartData.plannedProgressList.push({date: item.date, value: item.value})
-        } else if (item?.type?.name === "实际进度") {
-          chartData.actualProgressList.push({date: item.date, value: item.value})
         } else if (item?.type?.name === "预测进度") {
           chartData.predictedProgressList.push({date: item.date, value: item.value})
+        } else if (item?.type?.name === "实际进度") {
+          chartData.actualProgressList.push({date: item.date, value: item.value})
         }
       }
     }
   }
   myChart?.setOption({
-    dataset: [{source: chartData.plannedProgressList},
+    dataset: [
+      {source: chartData.plannedProgressList},
+      {source: chartData.predictedProgressList},
       {source: chartData.actualProgressList},
-      {source: chartData.predictedProgressList}]
+    ]
   })
 
   //如果没有图表的数据
   if (chartData.plannedProgressList.length == 0 &&
-      chartData.actualProgressList.length == 0 &&
-      chartData.predictedProgressList.length == 0) {
+      chartData.predictedProgressList.length == 0 &&
+      chartData.actualProgressList.length == 0) {
     myChart?.setOption({
       title: {
         show: true,
@@ -309,7 +311,6 @@ async function loadChartData() {
     myChart?.setOption({
       title: {
         show: false,
-        // text:'暂时没有数据，\n\n请看看其他的吧~',
       },
     })
   }
@@ -397,20 +398,20 @@ function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际进度',
+          name: '预测进度',
           type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
+          itemStyle: {color: 'orange'},
+          lineStyle: {color: 'orange', type: 'dashed'},
           connectNull: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测进度',
+          name: '实际进度',
           type: 'line',
-          itemStyle: {color: 'orange'},
-          lineStyle: {color: 'orange', type: 'dashed'},
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
           connectNull: true,
           smooth: true,
           datasetIndex: 2,
@@ -429,7 +430,6 @@ function drawChart() {
           minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
           labelFormatter: (value: any) => dayjs(value).format("YYYY/M/D"),
           bottom: '5',
-          // left:0,
           label: {
             show: true
           },

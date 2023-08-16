@@ -1,14 +1,25 @@
 <template>
-  <div id="chart4" style="width:100%; height: calc(100vh - 179px)"/>
+  <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
+    <div v-if="loading" style="width:100%; height: calc(100vh - 323px)"></div>
+    <div v-else-if="dataExisted" id="chart4" style="width:100%; height: calc(100vh - 179px)"/>
+    <a-empty v-else>
+      <template #description>
+        暂无付款情况的数据，看看别的吧~
+      </template>
+    </a-empty>
+  </a-spin>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted, reactive} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import dayjs from "dayjs";
-import {projectCumulativeExpenditureApi} from "@/api/project-cumulative-expenditure";
+import {projectDailyAndCumulativeExpenditureApi} from "@/api/project-daily-and-cumulative-expenditure";
 
 const props = defineProps<{ projectId: number }>()
+
+const loading = ref(true)
+const dataExisted = ref(false)
 
 interface valueList {
   date: string
@@ -17,43 +28,48 @@ interface valueList {
 
 interface chartDataFormat {
   totalPlannedExpenditure: valueList[],//计划收款总额
-  totalActualExpenditure: valueList[], //实际收款总额
   totalForecastedExpenditure: valueList[],//预测收款总额
+  totalActualExpenditure: valueList[], //实际收款总额
 }
 
 const chartData = reactive<chartDataFormat>({
   totalPlannedExpenditure: [],
-  totalActualExpenditure: [],
   totalForecastedExpenditure: [],
+  totalActualExpenditure: [],
 })
 
-onMounted(() => {
-  drawChart()
-})
+async function loadData() {
+  try {
+    const res = await projectDailyAndCumulativeExpenditureApi.getList({
+      project_id: props.projectId,
+      page_size: 0
+    })
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        if (item.total_planned_expenditure) {
+          chartData.totalPlannedExpenditure.push({date: item.date, value: item.total_planned_expenditure})
+        }
+        if (item.total_forecasted_expenditure) {
+          chartData.totalForecastedExpenditure.push({date: item.date, value: item.total_forecasted_expenditure})
+        }
+        if (item.total_actual_expenditure) {
+          chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
+        }
+      }
 
+      dataExisted.value = true
+    }
+  } catch (e: any) {
+    console.log(e);
+  } finally {
+    loading.value = false
+  }
+}
 
-async function drawChart() {
+function drawChart() {
   let htmlElement = document.getElementById('chart4')
   if (!htmlElement) {
     return
-  }
-
-  const res = await projectCumulativeExpenditureApi.getList({
-    project_id: props.projectId,
-    page_size: 0
-  })
-  if (res && res.data) {
-    for (let item of res.data) {
-      if (item.total_planned_expenditure) {
-        chartData.totalPlannedExpenditure.push({date: item.date, value: item.total_planned_expenditure})
-      }
-      if (item.total_actual_expenditure) {
-        chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
-      }
-      if (item.total_forecasted_expenditure) {
-        chartData.totalForecastedExpenditure.push({date: item.date, value: item.total_forecasted_expenditure})
-      }
-    }
   }
 
   let myChart = echarts.init(htmlElement)
@@ -114,20 +130,20 @@ async function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际付款总额(CNY)',
+          name: '预测付款总额(CNY)',
           type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
+          itemStyle: {color: 'orange'},
+          lineStyle: {color: 'orange', type: 'dashed'},
           connectNull: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测付款总额(CNY)',
+          name: '实际付款总额(CNY)',
           type: 'line',
-          itemStyle: {color: 'orange'},
-          lineStyle: {color: 'orange', type: 'dashed'},
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
           connectNull: true,
           smooth: true,
           datasetIndex: 2,
@@ -136,8 +152,8 @@ async function drawChart() {
       ],
       dataset: [
         {source: chartData.totalPlannedExpenditure},
-        {source: chartData.totalActualExpenditure},
         {source: chartData.totalForecastedExpenditure},
+        {source: chartData.totalActualExpenditure},
       ],
       dataZoom: [
         {
@@ -151,11 +167,17 @@ async function drawChart() {
             show: true
           },
         },
+        {
+          type: 'inside',
+          minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
+        },
       ],
     })
     window.addEventListener('resize', () => myChart.resize())
   }
 }
+
+loadData().then(drawChart)
 
 </script>
 

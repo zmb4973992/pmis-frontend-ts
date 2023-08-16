@@ -1,48 +1,45 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
-interface iOrganizationGet {
+interface organizationGet {
     id: number
 }
 
-interface iOrganizationCreate {
+interface organizationCreate {
     name: string
     level_name: string
     superior_id: number
 }
 
-interface iOrganizationUpdate {
+interface organizationUpdate {
     id: number,
     name?: string
     level_name?: string
     superior_id?: number
 }
 
-interface iOrganizationDelete {
+interface organizationDelete {
     id: number
 }
 
-interface iOrganizationGetList {
+interface organizationGetList extends list{
     superior_id?: number
     name?: string
     is_valid?:boolean
     name_include?: string
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 
 const organizationApi = {
-    get: (param: iOrganizationGet) => request.get('/organization/' + param.id)
+    get: (param: organizationGet) => request.get('/organization/' + param.id)
         .then(res => res.data,),
-    update: (param: iOrganizationUpdate) => request.patch('/organization/' + param.id, param)
+    update: (param: organizationUpdate) => request.patch('/organization/' + param.id, param)
         .then(res => res.data,),
-    create: (param: iOrganizationCreate) => request.post('/organization', param)
+    create: (param: organizationCreate) => request.post('/organization', param)
         .then(res => res.data,),
-    delete: (param: iOrganizationDelete) => request.delete('/organization' + param.id)
+    delete: (param: organizationDelete) => request.delete('/organization' + param.id)
         .then(res => res.data),
-    getList: (param?: iOrganizationGetList) => request.post('/organization/list', param)
+    getList: (param?: organizationGetList) => request.post('/organization/list', param)
         .then(res => res.data),
 }
 

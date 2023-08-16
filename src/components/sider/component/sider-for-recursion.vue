@@ -14,7 +14,7 @@
         <template #icon v-if="menu.meta?.icon">
           <component :is="menu.meta.icon"/>
         </template>
-        <router-link :to="{name:menu.name}">
+        <router-link :to="{name: menu.name}">
           <span>{{ menu.meta?.label }}</span>
         </router-link>
       </a-menu-item>

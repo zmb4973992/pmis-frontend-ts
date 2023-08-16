@@ -54,7 +54,7 @@ const routes: customRouteRecord[] = [
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/project/historical-performance.vue'),
+                component: () => import('@/pages/project/historical-performance/historical-performance.vue'),
             },
             {
                 path:'/project/detail/:projectID',
@@ -87,7 +87,7 @@ const routes: customRouteRecord[] = [
                 component: () => import('@/pages/progress/disassembly/progress-disassembly.vue')
             },
             {
-                path: '',
+                path: '、progress/status',
                 name: routeName.progressStatus,
                 meta: {
                     label: '进度情况',
@@ -115,16 +115,16 @@ const routes: customRouteRecord[] = [
                     },
                 ],
             },
-            {
-                path: '/progress/update_log',
-                name: '更新日志',
-                meta: {
-                    label: '更新日志',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/progress/update-log.vue'),
-            },
+            // {
+            //     path: '/progress/update_log',
+            //     name: '更新日志',
+            //     meta: {
+            //         label: '更新日志',
+            //         requireAuth: true,
+            //         permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+            //     },
+            //     component: () => import('@/pages/progress/update-log.vue'),
+            // },
         ],
     },
     {
@@ -190,31 +190,6 @@ const routes: customRouteRecord[] = [
     //         },
     //     ],
     // },
-    //以下为消息中心
-    {
-        path: '/message',
-        name: '消息中心',
-        meta: {
-            label: '消息中心',
-            icon: 'MessageOutlined',
-            requireAuth: true,
-            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-        },
-        component: () => import('@/pages/layout.vue'),
-        children: [
-            {
-                path: '/message',
-                name: '消息',
-                meta: {
-                    label: '消息',
-                    requireAuth: true,
-                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-                },
-                component: () => import('@/pages/message/index.vue'),
-            }
-        ],
-
-    },
     {
         path: '/related-party',
         name: '相关方',
@@ -318,6 +293,31 @@ const routes: customRouteRecord[] = [
             // },
         ],
     },
+    //以下为消息中心
+    {
+        path: '/asd',
+        name: '消息',
+        meta: {
+            label: '消息',
+            icon: 'MessageOutlined',
+            requireAuth: true,
+            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+        },
+        component: () => import('@/pages/layout.vue'),
+        children: [
+            {
+                path: '/message',
+                name: '消息中心',
+                meta: {
+                    label: '消息中心',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/message/message-table.vue'),
+            }
+        ],
+
+    },
     {
         path: '/login',
         name: '登录',
@@ -378,6 +378,14 @@ const routes: customRouteRecord[] = [
             icon: 'AntCloudOutlined',
         },
         component: () => import('@/pages/test.vue')
+    },
+    {
+        path:'/dl/:fileID',
+        name:'下载',
+        meta:{
+          hidden: true,
+        },
+        component: ()=> import('@/pages/download.vue')
     },
 ]
 

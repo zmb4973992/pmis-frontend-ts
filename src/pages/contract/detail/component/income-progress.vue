@@ -17,14 +17,14 @@ interface valueList {
 
 interface chartDataFormat {
   plannedIncomeProgressList: valueList[],
-  actualIncomeProgressList: valueList[],
   forecastedIncomeProgressList: valueList[],
+  actualIncomeProgressList: valueList[],
 }
 
 const chartData = reactive<chartDataFormat>({
   plannedIncomeProgressList: [],
-  actualIncomeProgressList: [],
   forecastedIncomeProgressList: [],
+  actualIncomeProgressList: [],
 })
 
 onMounted(() => {
@@ -47,11 +47,11 @@ async function drawChart() {
       if (item.planned_income_progress) {
         chartData.plannedIncomeProgressList.push({date: item.date, value: item.planned_income_progress})
       }
-      if (item.actual_income_progress) {
-        chartData.actualIncomeProgressList.push({date: item.date, value: item.actual_income_progress})
-      }
       if (item.forecasted_income_progress) {
         chartData.forecastedIncomeProgressList.push({date: item.date, value: item.forecasted_income_progress})
+      }
+      if (item.actual_income_progress) {
+        chartData.actualIncomeProgressList.push({date: item.date, value: item.actual_income_progress})
       }
     }
   }
@@ -118,20 +118,20 @@ async function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际收款进度',
+          name: '预测收款进度',
           type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
+          itemStyle: {color: 'orange'},
+          lineStyle: {color: 'orange', type: 'dashed'},
           connectNulls: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测收款进度',
+          name: '实际收款进度',
           type: 'line',
-          itemStyle: {color: 'orange'},
-          lineStyle: {color: 'orange', type: 'dashed'},
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
           connectNulls: true,
           smooth: true,
           datasetIndex: 2,
@@ -140,8 +140,8 @@ async function drawChart() {
       ],
       dataset: [
         {source: chartData.plannedIncomeProgressList},
-        {source: chartData.actualIncomeProgressList},
         {source: chartData.forecastedIncomeProgressList},
+        {source: chartData.actualIncomeProgressList},
       ],
       dataZoom: [
         {
@@ -154,6 +154,10 @@ async function drawChart() {
           label: {
             show: true
           },
+        },
+        {
+          type: 'inside',
+          minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
         },
       ],
     })

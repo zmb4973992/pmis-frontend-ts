@@ -105,7 +105,7 @@
 <script setup lang="ts">
 import {reactive, ref} from "vue";
 import {FormInstance, message, Upload, UploadChangeParam} from "ant-design-vue";
-import {iProjectUpdate, projectApi,} from "@/api/project";
+import {projectUpdate, projectApi,} from "@/api/project";
 import {dictionaryDetailApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
 import useUserStore from "@/store/user";
@@ -144,7 +144,7 @@ const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
 const countryFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-const data = reactive<iProjectUpdate>({
+const data = reactive<projectUpdate>({
   id: 0
 })
 
@@ -237,7 +237,7 @@ function showModal(projectID: number) {
       }
   )
 
-  organizationApi.getList({level_name: "部门", page_size: 0}).then(
+  organizationApi.getList({is_valid: true, page_size: 0}).then(
       res => {
         if (res.data) {
           let result: { value: string, label: string }[] = []

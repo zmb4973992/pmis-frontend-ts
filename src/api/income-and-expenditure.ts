@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 interface incomeAndExpenditureGet {
     id: number
@@ -39,17 +40,12 @@ interface incomeAndExpenditureDelete {
     id: number
 }
 
-interface incomeAndExpenditureGetList {
+interface incomeAndExpenditureGetList extends list {
     project_id?: number
     kind?: string //款项种类（计划、实际、预测）
     fund_direction?: string
     date_gte?: string
     date_lte?: string
-
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 const incomeAndExpenditureApi = {

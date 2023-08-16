@@ -1,14 +1,25 @@
 <template>
-  <div id="chart1" style="width:100%; height: calc(100vh - 179px)"/>
+  <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
+    <div v-if="loading" style="width:100%; height: calc(100vh - 323px)"></div>
+    <div v-else-if="dataExisted" id="chart1" style="width:100%; height: calc(100vh - 179px)"/>
+    <a-empty v-else>
+      <template #description>
+        暂无工作进度的数据，看看别的吧~
+      </template>
+    </a-empty>
+  </a-spin>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted, reactive} from "vue";
+import {reactive, ref} from "vue";
 import dayjs from "dayjs";
 import {progressApi} from "@/api/progress";
 
 const props = defineProps<{ projectId: number }>()
+
+const loading = ref(true)
+const dataExisted = ref(false)
 
 interface valueList {
   date: string
@@ -17,43 +28,47 @@ interface valueList {
 
 interface chartDataFormat {
   plannedProgressList: valueList[],
-  actualProgressList: valueList[],
   forecastedProgressList: valueList[],
+  actualProgressList: valueList[],
 }
 
 const chartData = reactive<chartDataFormat>({
   plannedProgressList: [],
-  actualProgressList: [],
   forecastedProgressList: [],
+  actualProgressList: [],
 })
 
-onMounted(() => {
-  drawChart()
-})
+async function loadData() {
+  try {
+    const res = await progressApi.getList({
+      project_id: props.projectId,
+      page_size: 0
+    })
 
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        if (item?.type?.name === "计划进度") {
+          chartData.plannedProgressList.push({date: item.date, value: item.value})
+        } else if (item?.type?.name === "预测进度") {
+          chartData.forecastedProgressList.push({date: item.date, value: item.value})
+        } else if (item?.type?.name === "实际进度") {
+          chartData.actualProgressList.push({date: item.date, value: item.value})
+        }
+      }
 
-async function drawChart() {
+      dataExisted.value = true
+    }
+  } catch (e: any) {
+    console.log(e);
+  } finally {
+    loading.value = false
+  }
+}
+
+function drawChart() {
   let htmlElement = document.getElementById('chart1')
   if (!htmlElement) {
     return
-  }
-
-  const res = await progressApi.getList({
-    project_id: props.projectId,
-    page_size: 0
-  })
-  if (res && res.data) {
-    for (let item of res.data) {
-      if (item?.type?.name === "计划进度") {
-        chartData.plannedProgressList.push({date: item.date, value: item.value})
-      } else if (item?.type?.name === "实际进度") {
-        chartData.actualProgressList.push({date: item.date, value: item.value})
-      } else if (item?.type?.name === "预测进度") {
-        console.log(item);
-
-        chartData.forecastedProgressList.push({date: item.date, value: item.value})
-      }
-    }
   }
 
   let myChart = echarts.init(htmlElement)
@@ -129,20 +144,20 @@ async function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际进度',
+          name: '预测进度',
           type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
+          itemStyle: {color: 'orange'},
+          lineStyle: {color: 'orange', type: 'dashed'},
           connectNull: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测进度',
+          name: '实际进度',
           type: 'line',
-          itemStyle: {color: 'orange'},
-          lineStyle: {color: 'orange', type: 'dashed'},
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
           connectNull: true,
           smooth: true,
           datasetIndex: 2,
@@ -151,8 +166,8 @@ async function drawChart() {
       ],
       dataset: [
         {source: chartData.plannedProgressList},
-        {source: chartData.actualProgressList},
         {source: chartData.forecastedProgressList},
+        {source: chartData.actualProgressList},
       ],
       dataZoom: [
         {
@@ -161,16 +176,21 @@ async function drawChart() {
           minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
           labelFormatter: (value: any) => dayjs(value).format("YYYY/M/D"),
           bottom: '5',
-          // left:0,
           label: {
             show: true
           },
+        },
+        {
+          type: 'inside',
+          minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
         },
       ],
     })
     window.addEventListener('resize', () => myChart.resize())
   }
 }
+
+loadData().then(drawChart)
 
 </script>
 

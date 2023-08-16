@@ -1,14 +1,25 @@
 <template>
-  <div id="chart3" style="width:100%; height: calc(100vh - 179px)"/>
+  <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
+    <div v-if="loading" style="width:100%; height: calc(100vh - 323px)"></div>
+    <div v-else-if="dataExisted" id="chart3" style="width:100%; height: calc(100vh - 179px)"/>
+    <a-empty v-else>
+      <template #description>
+        暂无收款情况的数据，看看别的吧~
+      </template>
+    </a-empty>
+  </a-spin>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted, reactive} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import dayjs from "dayjs";
-import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
+import {projectDailyAndCumulativeIncomeApi} from "@/api/project-daily-and-cumulative-income";
 
 const props = defineProps<{ projectId: number }>()
+
+const loading = ref(true)
+const dataExisted = ref(false)
 
 interface valueList {
   date: string
@@ -17,43 +28,49 @@ interface valueList {
 
 interface chartDataFormat {
   totalPlannedIncome: valueList[],//计划收款总额
-  totalActualIncome: valueList[], //实际收款总额
   totalForecastedIncome: valueList[],//预测收款总额
+  totalActualIncome: valueList[], //实际收款总额
 }
 
 const chartData = reactive<chartDataFormat>({
   totalPlannedIncome: [],
-  totalActualIncome: [],
   totalForecastedIncome: [],
+  totalActualIncome: [],
 })
 
-onMounted(() => {
-  drawChart()
-})
+async function loadData() {
+  try {
+    const res = await projectDailyAndCumulativeIncomeApi.getList({
+      project_id: props.projectId,
+      page_size: 0
+    })
 
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        if (item.total_planned_income) {
+          chartData.totalPlannedIncome.push({date: item.date, value: item.total_planned_income})
+        }
+        if (item.total_forecasted_income) {
+          chartData.totalForecastedIncome.push({date: item.date, value: item.total_forecasted_income})
+        }
+        if (item.total_actual_income) {
+          chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
+        }
+      }
 
-async function drawChart() {
+      dataExisted.value = true
+    }
+  } catch (e: any) {
+    console.log(e);
+  } finally {
+    loading.value = false
+  }
+}
+
+function drawChart() {
   let htmlElement = document.getElementById('chart3')
   if (!htmlElement) {
     return
-  }
-
-  const res = await projectCumulativeIncomeApi.getList({
-    project_id: props.projectId,
-    page_size: 0
-  })
-  if (res && res.data) {
-    for (let item of res.data) {
-      if (item.total_planned_income) {
-        chartData.totalPlannedIncome.push({date: item.date, value: item.total_planned_income})
-      }
-      if (item.total_actual_income) {
-        chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
-      }
-      if (item.total_forecasted_income) {
-        chartData.totalForecastedIncome.push({date: item.date, value: item.total_forecasted_income})
-      }
-    }
   }
 
   let myChart = echarts.init(htmlElement)
@@ -114,30 +131,31 @@ async function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际收款总额(CNY)',
-          type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
-          connectNull: true,
-          smooth: true,
-          datasetIndex: 1,
-          dimension: ['date', 'value']
-        },
-        {
           name: '预测收款总额(CNY)',
           type: 'line',
           itemStyle: {color: 'orange'},
           lineStyle: {color: 'orange', type: 'dashed'},
           connectNull: true,
           smooth: true,
+          datasetIndex: 1,
+          dimension: ['date', 'value']
+        },
+        {
+          name: '实际收款总额(CNY)',
+          type: 'line',
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
+          connectNull: true,
+          smooth: true,
           datasetIndex: 2,
           dimension: ['date', 'value']
         },
+
       ],
       dataset: [
         {source: chartData.totalPlannedIncome},
-        {source: chartData.totalActualIncome},
         {source: chartData.totalForecastedIncome},
+        {source: chartData.totalActualIncome},
       ],
       dataZoom: [
         {
@@ -151,11 +169,17 @@ async function drawChart() {
             show: true
           },
         },
+        {
+          type: 'inside',
+          minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
+        },
       ],
     })
     window.addEventListener('resize', () => myChart.resize())
   }
 }
+
+loadData().then(drawChart)
 
 </script>
 

@@ -1,10 +1,7 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
-export interface iDictionaryDetailGetList {
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
+export interface iDictionaryDetailGetList extends list{
     dictionary_type_id?: number
     dictionary_type_name?:string
 }

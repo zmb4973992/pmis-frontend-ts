@@ -46,12 +46,6 @@
 
     <a-row class="table-buttons">
       <a-row class="table-left-buttons">
-        <a-button size="small" type="primary" @click="createProject">
-          <template #icon>
-            <PlusOutlined/>
-          </template>
-          添加项目
-        </a-button>
       </a-row>
 
       <a-row class="table-right-buttons">
@@ -67,18 +61,31 @@
 
     <a-table :data-source="tableData.list" :columns="columns"
              size="small" :pagination="false" :scroll="{x:1200}"
-             @change="tableChange" :loading="tableLoading"
-             @resizeColumn="resizeColumn">
+             @change="tableChange" :loading="tableLoading">
       <template #bodyCell="{column,record,index}">
         <template v-if="column.dataIndex === 'line_number'">
           {{ index + 1 }}
         </template>
         <template v-if="column.dataIndex === 'name'">
-          <router-link target="_blank" :to="{
+          <template v-if="record?.authorized === true">
+            <router-link target="_blank" :to="{
             name:'项目详情',params:{projectID: record.id}
           }">
-            {{ record.name }}
-          </router-link>
+              {{ record.name }}
+            </router-link>
+          </template>
+
+          <template v-else>
+            <router-link to="" :disabled="true">
+              <a-tooltip>
+                <template #title>
+                  您没有权限查看该项目的详情
+                </template>
+                {{ record.name }}
+              </a-tooltip>
+
+            </router-link>
+          </template>
         </template>
         <template v-else-if="column.dataIndex === 'action'">
           <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
@@ -107,12 +114,6 @@
                   @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
   </a-card>
 
-  <!--修改项目信息的模态框-->
-  <modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
-
-  <!--删除项目信息的模态框-->
-  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
-
 </template>
 
 <script setup lang="ts">
@@ -120,7 +121,7 @@ import ModalForUpdating from "@/pages/project/table/component/modal-for-updating
 import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
 import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
 import {reactive, ref} from "vue"
-import {FormInstance, message, SelectProps, TableColumnsType} from "ant-design-vue"
+import {FormInstance, message, SelectProps} from "ant-design-vue"
 import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
 import {pagingFormat} from "@/interfaces/paging-interface";
@@ -183,7 +184,7 @@ let organizationOptions = ref<SelectProps['options']>()
 async function loadOrganizationOptions() {
   try {
     let res = await organizationApi.getList({
-      is_valid: true,
+      is_valid:true,
       page_size: 0,
     })
     organizationOptions.value = []
@@ -213,105 +214,75 @@ let tableData = reactive({
 })
 
 //表格栏目
-let columns = ref<TableColumnsType>([
+let columns = ref([
   {
     title: '行号',
     dataIndex: 'line_number',
-    width: 50,
+    width: '50px',
     fixed: 'left',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    minWidth:30,
-    maxWidth: 100,
   },
   {
     title: '项目名称',
     dataIndex: 'name',
-    width: 260,
+    width: '260px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 400,
   },
   {
     title: '项目号',
     dataIndex: 'code',
-    width: 100,
+    width: '160px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '所在国家',
     dataIndex: ['country', 'name'],
-    width: 100,
+    width: '100px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '项目类型',
     dataIndex: ['type', 'name'],
-    width: 100,
+    width: '200px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '金额',
     className: 'amount',
     dataIndex: 'amount',
-    width: 120,
+    width: '120px',
     ellipsis: true,
     align: 'right',
     sorter: true,
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '币种',
     dataIndex: ['currency', 'name'],
-    width: 90 ,
+    width: '110px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '状态',
     dataIndex: ['status', 'name'],
-    width: 100,
+    width: '110px',
     ellipsis: true,
     align: 'center',
-    resizable: true,
-    maxWidth: 150,
   },
   {
     title: '所属部门',
     dataIndex: ['organization', 'name'],
-    width: 150,
-    ellipsis: true,
-    align: 'center',
-    resizable: true,
-    maxWidth: 250,
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: 110,
-    fixed: 'right',
+    width: '300px',
     ellipsis: true,
     align: 'center',
   },
-])
 
-function resizeColumn(width: number, col: any) {
-  return col.width = width
-}
+])
 
 const tableLoading = ref(false)
 
@@ -319,6 +290,7 @@ async function loadTableData() {
   try {
     tableLoading.value = true
     let res = await projectApi.getList({
+      ignore_data_authority:true,
       organization_id_in: queryCondition.organizationIDIn,
       name_include: queryCondition.nameInclude,
       page: queryCondition.page,
@@ -403,7 +375,7 @@ function showModalForDeleting(projectID: number) {
 
   //调整表格行高
   .ant-table-tbody > tr > td {
-    padding: 4px;
+    padding: 10px;
   }
 }
 

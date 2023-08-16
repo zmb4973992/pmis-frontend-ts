@@ -1,10 +1,11 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
-export interface iProjectGet {
+interface projectGet {
     id: number
 }
 
-export interface iProjectCreate {
+interface projectCreate {
     code?: string
     name?: string
     country?: number
@@ -23,7 +24,7 @@ export interface iProjectCreate {
     content?: string
 }
 
-export interface iProjectUpdate {
+interface projectUpdate {
     id: number
     code?: string
     name?: string
@@ -43,32 +44,34 @@ export interface iProjectUpdate {
     content?: string
 }
 
-export interface iProjectDelete {
+interface projectDelete {
     id: number
 }
 
-export interface iProjectGetList {
+interface projectGetList extends list {
     name_include?: string
     organization_id_in?: number[]
     organization_name_include?: string
-    related_party_id?:number
-    ignore_data_scope?:boolean
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
+    related_party_id?: number
+    ignore_data_authority?: boolean
+}
+
+interface projectGetSimplifiedList {
+    ignore_data_authority?: boolean
 }
 
 const projectApi = {
-    get: (param: iProjectGet) => request.get('/project/' + param.id)
+    get: (param: projectGet) => request.get('/project/' + param.id)
         .then(res => res.data),
-    create: (param: iProjectCreate) => request.post('/project', param)
+    create: (param: projectCreate) => request.post('/project', param)
         .then(res => res.data,),
-    update: (param: iProjectUpdate) => request.patch('/project/' + param.id, param)
+    update: (param: projectUpdate) => request.patch('/project/' + param.id, param)
         .then(res => res.data),
-    delete: (param: iProjectDelete) => request.delete('/project/' + param.id)
+    delete: (param: projectDelete) => request.delete('/project/' + param.id)
         .then(res => res.data,),
-    getList: (param?: iProjectGetList) => request.post('/project/list', param)
+    getList: (param?: projectGetList) => request.post('/project/list', param)
+        .then(res => res.data),
+    getSimplifiedList: (param?: projectGetSimplifiedList) => request.post('/project/simplified-list', param)
         .then(res => res.data),
 }
 

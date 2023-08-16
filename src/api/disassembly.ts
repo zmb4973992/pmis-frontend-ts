@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 export interface iDisassemblyGet {
     id: number
@@ -28,16 +29,12 @@ export interface iDisassemblyDelete {
     id: number
 }
 
-export interface iDisassemblyGetList {
+export interface iDisassemblyGetList extends list{
     project_id?: number
     level?: number
     superior_id?: number
     level_gte?: number
     level_lte?: number
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 const disassemblyApi = {

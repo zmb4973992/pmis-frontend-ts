@@ -17,14 +17,14 @@ interface valueList {
 
 interface chartDataFormat {
   plannedExpenditureProgressList: valueList[],
-  actualExpenditureProgressList: valueList[],
   forecastedExpenditureProgressList: valueList[],
+  actualExpenditureProgressList: valueList[],
 }
 
 const chartData = reactive<chartDataFormat>({
   plannedExpenditureProgressList: [],
-  actualExpenditureProgressList: [],
   forecastedExpenditureProgressList: [],
+  actualExpenditureProgressList: [],
 })
 
 onMounted(() => {
@@ -45,15 +45,16 @@ async function drawChart() {
   if (res && res.data) {
     // console.log(res.data);
     for (let item of res.data) {
-        if (item.planned_expenditure_progress) {
-          chartData.plannedExpenditureProgressList.push({date:item.date,value:item.planned_expenditure_progress})
-        }
-        if (item.actual_expenditure_progress) {
-          chartData.actualExpenditureProgressList.push({date:item.date,value:item.actual_expenditure_progress})
-        }
-        if (item.forecasted_expenditure_progress) {
-          chartData.forecastedExpenditureProgressList.push({date:item.date,value:item.forecasted_expenditure_progress})
-        }
+      if (item.planned_expenditure_progress) {
+        chartData.plannedExpenditureProgressList.push({date: item.date, value: item.planned_expenditure_progress})
+      }
+      if (item.forecasted_expenditure_progress) {
+        chartData.forecastedExpenditureProgressList.push({date: item.date, value: item.forecasted_expenditure_progress})
+      }
+      if (item.actual_expenditure_progress) {
+        chartData.actualExpenditureProgressList.push({date: item.date, value: item.actual_expenditure_progress})
+      }
+
     }
   }
 
@@ -119,20 +120,20 @@ async function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际付款进度',
+          name: '预测付款进度',
           type: 'line',
-          itemStyle: {color: 'red'},
-          lineStyle: {color: 'red'},
+          itemStyle: {color: 'orange'},
+          lineStyle: {color: 'orange', type: 'dashed'},
           connectNulls: true,
           smooth: true,
           datasetIndex: 1,
           dimension: ['date', 'value']
         },
         {
-          name: '预测付款进度',
+          name: '实际付款进度',
           type: 'line',
-          itemStyle: {color: 'orange'},
-          lineStyle: {color: 'orange', type: 'dashed'},
+          itemStyle: {color: 'red'},
+          lineStyle: {color: 'red'},
           connectNulls: true,
           smooth: true,
           datasetIndex: 2,
@@ -141,8 +142,8 @@ async function drawChart() {
       ],
       dataset: [
         {source: chartData.plannedExpenditureProgressList},
-        {source: chartData.actualExpenditureProgressList},
         {source: chartData.forecastedExpenditureProgressList},
+        {source: chartData.actualExpenditureProgressList},
       ],
       dataZoom: [
         {
@@ -155,6 +156,10 @@ async function drawChart() {
           label: {
             show: true
           },
+        },
+        {
+          type: 'inside',
+          minValueSpan: 1000 * 3600 * 24 * 10, // 窗口范围的最小值，10天
         },
       ],
     })

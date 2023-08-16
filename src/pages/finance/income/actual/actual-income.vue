@@ -148,11 +148,11 @@ function showModalForCreatingActualIncome() {
 }
 
 function updateIncome() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动修改', 5)
+  message.warn('为确保数据的一致性，信息会从OA自动同步，无需手动修改', 5)
 }
 
 function deleteIncome() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动删除', 5)
+  message.warn('为确保数据的一致性，信息会从OA自动同步，无需手动删除', 5)
 }
 
 //查询条件

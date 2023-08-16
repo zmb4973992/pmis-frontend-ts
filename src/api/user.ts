@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 interface userGet {
     id: number
@@ -27,14 +28,10 @@ interface userDelete {
     id: number
 }
 
-interface userGetList {
+interface userGetList extends list {
     is_valid?: boolean
     username_include?: string
     role_id?: number
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 interface userAdjustRoles {

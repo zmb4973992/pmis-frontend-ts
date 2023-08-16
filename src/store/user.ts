@@ -9,6 +9,7 @@ const useUserStore = defineStore(
     {
         state: (): userState => ({
             accessToken: '',
+            userID: 0,
             username: '',
             fullName: '',
             roles: [],
@@ -28,32 +29,19 @@ const useUserStore = defineStore(
                 if (token) {
                     this.accessToken = token
                     //获取基本的用户信息
-                    request.get(
-                        '/user'
-                    ).then(
-                        res => {
+                    request.get('/user').then(res => {
                             //如果token有效，就保留到store；
                             //如果token无效，就删掉本地的token
                             if (res.data.code === 0) {
                                 this.username = res.data.data.username
                                 this.fullName = res.data.data.full_name
+                                this.userID = res.data.data.id
                             } else {
                                 localStorage.removeItem('access_token')
                             }
                         },
                     )
-                    //获取用户角色
-                    // GetRoles().then(
-                    //     res => {
-                    //         //如果token有效，就保留到store；
-                    //         //如果token无效，就删掉本地的token
-                    //         if (res.code === 0) {
-                    //             this.roles = res.data.role_names
-                    //         }
-                    //     }
-                    // )
                 }
-
             },
             updateToken(token: string) {
                 this.accessToken = token

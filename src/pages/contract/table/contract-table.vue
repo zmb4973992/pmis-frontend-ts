@@ -11,7 +11,7 @@
                         :filter-option="projectFilterOption"
                         v-model:value="queryCondition.projectID"
                         :options="projectOptions"
-                        style="width:130px"/>
+                        style="width:170px"/>
             </a-form-item>
           </a-col>
           <a-col>

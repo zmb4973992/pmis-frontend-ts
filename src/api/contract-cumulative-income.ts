@@ -1,18 +1,14 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 interface contractCumulativeIncomeUpdate {
     contract_id: number
 }
 
-interface contractCumulativeIncomeGetList {
+interface contractCumulativeIncomeGetList extends list {
     contract_id?: number
     date_gte?: string
     date_lte?: string
-
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 const contractCumulativeIncomeApi = {

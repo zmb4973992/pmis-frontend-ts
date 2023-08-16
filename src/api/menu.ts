@@ -1,76 +1,13 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
-// interface menuGet {
-//     id: number
-// }
-
-// interface contractCreate {
-//     project_id?: number
-//     department_id?: number
-//     related_party_id?: number
-//     fund_direction?: number
-//     our_signatory?: number
-//     currency?: number
-//     type?: number
-//     signing_date?: string
-//     effective_date?: string
-//     commissioning_date?: string
-//     completing_date?: string
-//     amount?: number
-//     exchange_rate?: number
-//     construction_period?: number
-//     name?: string
-//     code?: string
-//     content?: string
-//     deliverable?: string
-//     penalty_rule?: string
-//     attachment?: string
-//     operator?: string
-// }
-
-// interface contractUpdate {
-//     id: number
-//     project_id?: number
-//     department_id?: number
-//     related_party_id?: number
-//     fund_direction?: number
-//     our_signatory?: number
-//     currency?: number
-//     type?: number
-//     signing_date?: string
-//     effective_date?: string
-//     commissioning_date?: string
-//     completing_date?: string
-//     amount?: number
-//     exchange_rate?: number
-//     construction_period?: number
-//     name?: string
-//     code?: string
-//     content?: string
-//     deliverable?: string
-//     penalty_rule?: string
-//     attachment?: string
-//     operator?: string
-// }
-
-// interface contractDelete {
-//     id: number
-// }
-
-interface menuGetList {
+interface menuGetList extends list {
     group?: string
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
+
 }
 
-interface menuGetTree {
+interface menuGetTree extends list {
     group?: string
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 const menuApi = {

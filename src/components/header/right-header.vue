@@ -14,13 +14,13 @@
       </a>
       <template #overlay>
         <a-menu>
-          <a-menu-item>
-            <a href="javascript:">修改信息</a>
-          </a-menu-item>
-          <a-menu-item>
-            <a href="javascript:">修改密码</a>
-          </a-menu-item>
-          <a-menu-divider :style="{margin:'7px'}"/>
+<!--          <a-menu-item>-->
+<!--            <a href="javascript:">修改信息</a>-->
+<!--          </a-menu-item>-->
+<!--          <a-menu-item>-->
+<!--            <a href="javascript:">修改密码</a>-->
+<!--          </a-menu-item>-->
+<!--          <a-menu-divider :style="{margin:'7px'}"/>-->
           <a-menu-item>
             <a href="javascript:" @click="logout">退出登录</a>
           </a-menu-item>
@@ -46,7 +46,7 @@ const logout = () => {
   router.push({name: '登录'})
 }
 const jumpToMessageCenter = () => router.push({name: '消息中心'})
-let numberOfUnreadMessages = ref(811)
+let numberOfUnreadMessages = ref(0)
 let messages = numberOfUnreadMessages.value > 0 ? numberOfUnreadMessages.value + '条未读消息，点击查看' : '消息中心'
 
 </script>

@@ -59,7 +59,7 @@ for (let i = 1; i < 100000; i++) {
 let expandedKeys = ref(numberArray)
 
 const getDepartmentTree = () => {
-  organizationApi.getList({page_size: 100}).then(res => {
+  organizationApi.getList({page_size: 0}).then(res => {
         //第一次遍历
         for (let item1 of res.data) {
           if (item1.level === "公司") {

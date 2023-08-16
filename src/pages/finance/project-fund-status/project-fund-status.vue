@@ -64,8 +64,8 @@ import useGlobalStore from "@/store/global";
 import {storeToRefs} from "pinia";
 import {RedoOutlined, SearchOutlined} from "@ant-design/icons-vue";
 import {progressApi} from "@/api/progress";
-import {projectCumulativeIncomeApi} from "@/api/project-cumulative-income";
-import {projectCumulativeExpenditureApi} from "@/api/project-cumulative-expenditure";
+import {projectDailyAndCumulativeIncomeApi} from "@/api/project-daily-and-cumulative-income";
+import {projectDailyAndCumulativeExpenditureApi} from "@/api/project-daily-and-cumulative-expenditure";
 
 //项目选择框的过滤器
 const projectFilterOption = (input: string, option: any) =>
@@ -155,7 +155,7 @@ async function loadChartData(projectID: number, dataType: string) {
 
   switch (dataType) {
     case '收款进度':
-      const res1 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
+      const res1 = await projectDailyAndCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
       if (res1?.code === 0) {
         for (let item of res1.data) {
           if (item.actual_income_progress) {
@@ -174,7 +174,7 @@ async function loadChartData(projectID: number, dataType: string) {
       break
 
     case '现金流曲线':
-      const res3 = await projectCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
+      const res3 = await projectDailyAndCumulativeIncomeApi.getList({project_id: projectID, page_size: 0})
       if (res3?.code === 0) {
         for (let item of res3.data) {
           if (item.total_actual_income) {
@@ -183,7 +183,7 @@ async function loadChartData(projectID: number, dataType: string) {
         }
       }
 
-      const res4 = await projectCumulativeExpenditureApi.getList({project_id: projectID, page_size: 0})
+      const res4 = await projectDailyAndCumulativeExpenditureApi.getList({project_id: projectID, page_size: 0})
       if (res4?.code === 0) {
         for (let item of res4.data) {
           if (item.total_actual_expenditure) {

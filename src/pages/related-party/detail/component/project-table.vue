@@ -161,7 +161,7 @@ async function loadTableData() {
     tableLoading.value = true
     let res = await projectApi.getList({
       related_party_id: queryCondition.relatedPartyID,
-      ignore_data_scope: true,
+      ignore_data_authority: true,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,

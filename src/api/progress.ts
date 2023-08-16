@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {list} from "@/api/common-interface";
 
 export interface iProgressGet {
     id: number
@@ -25,7 +26,7 @@ export interface iProgressDelete {
     id: number
 }
 
-export interface iProgressGetList {
+export interface iProgressGetList extends list {
     project_id?:number
     disassembly_id?: number
     date_gte?: string
@@ -33,11 +34,6 @@ export interface iProgressGetList {
     type?:number
     type_name?:string
     data_source?:number
-
-    page?: number
-    page_size?: number
-    order_by?: string
-    desc?: boolean
 }
 
 const progressApi = {
