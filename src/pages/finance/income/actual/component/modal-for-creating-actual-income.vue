@@ -51,21 +51,21 @@
         <a-input-number v-model:value="formData.exchangeRate" :controls="false"
                         :min="0" :precision="4" style="width: 120px">
         </a-input-number>
+
+        <a-tooltip>
+          <template #title>
+            <div>这里填写1元外币 = XX 元人民币。</div>
+            <div>比如1美元 = 7元人民币，则填7；</div>
+            <div>比如1日元 = 0.05元人民币，则填0.05</div>
+          </template>
+          <QuestionCircleOutlined style="margin-left:10px;font-size: 18px"/>
+        </a-tooltip>
+
       </a-form-item>
 
       <a-form-item name="remarks" label="备注">
         <a-textarea v-model:value="formData.remarks" placeholder="备注" :rows="2"/>
       </a-form-item>
-
-      <!--      <a-form-item name="type" label="类型">-->
-      <!--        <a-select v-model:value="formData.type" :options="options.type"/>-->
-      <!--      </a-form-item>-->
-
-      <!--      <a-form-item name="value" label="进度值">-->
-      <!--        <a-input-number v-model:value="formData.value" :controls="false"-->
-      <!--                        addon-after="%" :min="0" :max="100" :precision="1"-->
-      <!--                        style="width: 120px"/>-->
-      <!--      </a-form-item>-->
 
     </a-form>
 
@@ -83,6 +83,7 @@ import {dictionaryDetailApi} from "@/api/dictionary-item";
 import {projectApi} from "@/api/project";
 import {contractApi} from "@/api/contract";
 import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
+import {QuestionCircleOutlined} from "@ant-design/icons-vue";
 
 //项目下拉框
 const projectOptions = ref<SelectProps['options']>([])
@@ -248,17 +249,6 @@ interface formDataFormat {
 }
 
 const formData = reactive<formDataFormat>({})
-
-//进度值的校验规则
-// let checkValue = async (_rule: Rule, value: number) => {
-//   if (!value && value !== 0) {
-//     return Promise.reject('请输入权重的值');
-//   } else if (value < 0 || value > 100) {
-//     return Promise.reject('权重的值应该≥0、≤100');
-//   } else {
-//     return Promise.resolve();
-//   }
-// };
 
 //表单校验规则
 const rules: Record<string, Rule[]> = {

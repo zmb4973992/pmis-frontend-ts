@@ -50,11 +50,11 @@
 
       <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
-          <a-button type="text" @click="toBeCompleted" size="small">
-            <template #icon>
-              <setting-outlined style="font-size: 16px"/>
-            </template>
-          </a-button>
+<!--          <a-button type="text" @click="toBeCompleted" size="small">-->
+<!--            <template #icon>-->
+<!--              <setting-outlined style="font-size: 16px"/>-->
+<!--            </template>-->
+<!--          </a-button>-->
         </a-tooltip>
       </a-row>
     </a-row>
@@ -111,7 +111,7 @@
                   v-model:pageSize="queryCondition.pageSize" show-less-items
                   :total="tableData.numberOfRecords" show-size-changer
                   :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                  @change="loadTableData" :show-total="total=>`共${total.toLocaleString()}条记录`"/>
   </a-card>
 
 </template>

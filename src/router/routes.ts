@@ -352,34 +352,6 @@ const routes: customRouteRecord[] = [
         component: () => import('@/pages/404.vue'),
     },
     {
-        path: '/test1',
-        name: '测试1',
-        meta: {
-            label: '测试1',
-            icon: 'AuditOutlined',
-        },
-        component: () => import('@/pages/layout.vue'),
-        children: [
-            {
-                path: '/test2',
-                name: '测试2',
-                meta: {
-                    label: '测试2',
-                },
-                component: () => import('@/pages/test.vue')
-            },
-        ],
-    },
-    {
-        path: '/test3',
-        name: '测试3',
-        meta: {
-            label: '测试3',
-            icon: 'AntCloudOutlined',
-        },
-        component: () => import('@/pages/test.vue')
-    },
-    {
         path:'/dl/:fileID',
         name:'下载',
         meta:{

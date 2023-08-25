@@ -112,7 +112,7 @@ function drawChart() {
           rotate: 15,
         },
         axisTick: {  //坐标轴刻度
-          inside: true, //坐标轴刻度朝内
+          inside: false, //坐标轴刻度朝外
         },
       },
       yAxis: {  //y轴
@@ -127,7 +127,7 @@ function drawChart() {
           connectNull: true,
           smooth: true,
           datasetIndex: 0,  //通过datasetIndex来指定dataset
-          dimension: ['date', 'value']
+          dimension: ['date', 'value'],
         },
         {
           name: '预测付款总额(CNY)',

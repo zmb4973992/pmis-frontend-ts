@@ -15,7 +15,8 @@
           </a-col>
           <a-col>
             <a-form-item class="query-item" label="付款日期" name="dateRange">
-              <a-range-picker v-model:value="queryCondition.dateRange" value-format="YYYY-MM-DD"/>
+              <a-range-picker v-model:value="queryCondition.dateRange"
+                              value-format="YYYY-MM-DD"/>
             </a-form-item>
           </a-col>
           <a-col>
@@ -69,7 +70,7 @@
           </template>
 
           <template v-else-if="column.dataIndex[0] === 'project' && column.dataIndex[1] === 'name'">
-            <a-tooltip v-if="record.project && record.project.id">
+            <a-tooltip v-if="record?.project?.id">
               <template #title>
                 {{ record.project.name }}
               </template>
@@ -80,7 +81,7 @@
           </template>
 
           <template v-else-if="column.dataIndex[0] === 'contract' && column.dataIndex[1] === 'name'">
-            <a-tooltip v-if="record.contract && record.contract.id">
+            <a-tooltip v-if="record?.contract?.id">
               <template #title>
                 {{ record.contract.name }}
               </template>
@@ -120,7 +121,7 @@
                     v-model:pageSize="queryCondition.pageSize" show-less-items
                     :total="tableData.numberOfRecords" show-size-changer
                     :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                    @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                    @change="loadTableData" :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
     </a-card>
 
   <!--添加实际付款的模态框-->
@@ -219,7 +220,7 @@ const columns = ref([
   },
   {
     title: '合同名称',
-    dataIndex: 'name',
+    dataIndex: ['contract', 'name'],
     width: '260px',
     ellipsis: true,
     align: 'center',

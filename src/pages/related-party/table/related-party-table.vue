@@ -45,11 +45,11 @@
 
       <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
-          <a-button type="text" @click="toBeCompleted" size="small">
-            <template #icon>
-              <setting-outlined style="font-size: 16px"/>
-            </template>
-          </a-button>
+          <!--          <a-button type="text" @click="toBeCompleted" size="small">-->
+          <!--            <template #icon>-->
+          <!--              <setting-outlined style="font-size: 16px"/>-->
+          <!--            </template>-->
+          <!--          </a-button>-->
         </a-tooltip>
       </a-row>
     </a-row>
@@ -62,37 +62,23 @@
           {{ index + 1 }}
         </template>
         <template v-else-if="column.dataIndex === 'name'">
-          <a-tooltip>
-            <template #title>
-              {{ record.name }}
-            </template>
-            <router-link target="_blank" :to="{
+          <router-link target="_blank" :to="{
             name:'相关方详情',params:{relatedPartyID: record.id}
           }">
-              {{ record.name }}
-            </router-link>
-          </a-tooltip>
+            {{ record.name }}
+          </router-link>
         </template>
         <template v-if="column.dataIndex === 'action'">
           <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
             修改
           </a-button>
-          <a-divider type="vertical"/>
-          <a-tooltip placement="topRight">
-            <template #title>如需删除，请联系管理员</template>
-            <a-button type="link" style="padding: 0" danger disabled>
-              删除
-            </a-button>
-          </a-tooltip>
-          <!--          <a-popconfirm class="pop-confirm"-->
-          <!--                        title="确认要删除吗？"-->
-          <!--                        ok-text="确认"-->
-          <!--                        cancel-text="取消"-->
-          <!--                        placement="topRight"-->
-          <!--                        @confirm="deleteRecord(record.id)"-->
-          <!--          >-->
-          <!--            <a>删除</a>-->
-          <!--          </a-popconfirm>-->
+          <!--          <a-divider type="vertical"/>-->
+          <!--          <a-tooltip placement="topRight">-->
+          <!--            <template #title>如需删除，请联系管理员</template>-->
+          <!--            <a-button type="link" style="padding: 0" danger disabled>-->
+          <!--              删除-->
+          <!--            </a-button>-->
+          <!--          </a-tooltip>-->
         </template>
       </template>
 
@@ -103,7 +89,8 @@
                   v-model:pageSize="queryCondition.pageSize" show-less-items
                   :total="tableData.numberOfRecords" showSizeChanger
                   :pageSizeOptions="pageSizeOptions" showQuickJumper
-                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                  @change="loadTableData"
+                  :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
   </a-card>
 
   <!--新增相关方信息的模态框-->
@@ -159,8 +146,8 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
-  orderBy:"updated_at",
-  desc:true,
+  orderBy: "updated_at",
+  desc: true,
 })
 
 let tableData = reactive({
@@ -196,7 +183,7 @@ let columns = ref([
     title: '操作',
     align: 'center',
     dataIndex: 'action',
-    width: '110px',
+    width: '50px',
     fixed: 'right',
 
   },
@@ -207,23 +194,6 @@ const tableLoading = ref(false)
 
 //分页条数
 const pageSizeOptions = ['12', '20', '25', '30']
-
-//加载完组件后，开始查询数据，用于显示
-// onMounted(() => search())
-//查询数据集，赋值给上面的data
-// const search = () => {
-//   relatedPartyApi.getList(queryCondition).then(
-//       (res) => {
-//         tableData.list = res.data
-//         tableData.numberOfRecords = res.paging.number_of_records
-//       },
-//   )
-// }
-
-//查看单条记录的详情
-function detail(id: number) {
-  message.success('数据记录id为：' + id + '，等待完善', 2)
-}
 
 async function loadTableData() {
   try {
@@ -243,7 +213,7 @@ async function loadTableData() {
       tableData.numberOfRecords = 0
       message.error(res.message)
     }
-  } catch (err:any) {
+  } catch (err: any) {
     tableData.list = []
     tableData.numberOfRecords = 0
     message.error(err)
@@ -284,12 +254,6 @@ function deleteRecord(id: number) {
   )
 }
 
-function showDetail(relatedPartyID: number) {
-  const myRouter = useRouter()
-  console.log(myRouter);
-  console.log(myRouter.resolve({name: '相关方详情', params: {relatedPartyID: 333}}));
-
-}
 </script>
 
 <style scoped lang="scss">

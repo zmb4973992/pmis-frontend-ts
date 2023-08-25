@@ -1,7 +1,7 @@
 <template>
   <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
-    <div v-if="loading" style="width:100%; height: calc(100vh - 323px)"></div>
-    <div v-else-if="dataExisted" id="chart2" style="width:100%; height: calc(100vh - 179px)"/>
+    <div v-if="loading"></div>
+    <div v-else-if="dataExisted" id="chart1" style="width:100%; height: calc(100vh - 179px)"/>
     <a-empty v-else>
       <template #description>
         暂无现金流的数据，看看别的吧~
@@ -11,13 +11,13 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from "echarts"
-import { reactive, ref} from "vue"
-import dayjs from "dayjs"
-import {projectDailyAndCumulativeIncomeApi} from "@/api/project-daily-and-cumulative-income"
-import {projectDailyAndCumulativeExpenditureApi} from "@/api/project-daily-and-cumulative-expenditure"
+import * as echarts from "echarts";
+import {reactive, ref} from "vue";
+import dayjs from "dayjs";
+import {contractDailyAndCumulativeIncomeApi} from "@/api/contract-daily-and-cumulative-income";
+import {contractDailyAndCumulativeExpenditureApi} from "@/api/contract-daily-and-cumulative-expenditure";
 
-const props = defineProps<{ projectId: number }>()
+const props = defineProps<{ contractId: number }>()
 
 const loading = ref(true)
 const dataExisted = ref(false)
@@ -43,50 +43,63 @@ const chartData = reactive<chartDataFormat>({
 
 async function loadData() {
   try {
-    const res1 = await projectDailyAndCumulativeIncomeApi.getList({
-      project_id: props.projectId,
+    const res1 = await contractDailyAndCumulativeIncomeApi.getList({
+      contract_id: props.contractId,
       page_size: 0
     })
     if (res1?.code === 0) {
       for (let item of res1.data) {
         if (item.total_actual_income) {
-          chartData.totalActualIncome.push({date: item.date, value: item.total_actual_income})
+          chartData.totalActualIncome.push({
+            date: item.date, value: item.total_actual_income
+          })
         }
         if (item.daily_actual_income) {
-          chartData.dailyActualIncome.push({date: item.date, value: item.daily_actual_income})
+          chartData.dailyActualIncome.push({
+            date: item.date, value: item.daily_actual_income
+          })
         }
       }
+    } else {
+      console.log(res1.message)
     }
 
-    const res2 = await projectDailyAndCumulativeExpenditureApi.getList({
-      project_id: props.projectId,
+    const res2 = await contractDailyAndCumulativeExpenditureApi.getList({
+      contract_id: props.contractId,
       page_size: 0
     })
 
     if (res2?.code === 0) {
       for (let item of res2.data) {
         if (item.total_actual_expenditure) {
-          chartData.totalActualExpenditure.push({date: item.date, value: item.total_actual_expenditure})
+          chartData.totalActualExpenditure.push({
+            date: item.date, value: item.total_actual_expenditure
+          })
         }
         if (item.daily_actual_expenditure) {
-          chartData.dailyActualExpenditure.push({date: item.date, value: item.daily_actual_expenditure})
+          chartData.dailyActualExpenditure.push({
+            date: item.date, value: item.daily_actual_expenditure
+          })
         }
       }
+    } else {
+      console.log(res2.message)
     }
 
-    if (res1?.code === 0 || res2?.code === 0) {
+    if (chartData.totalActualIncome.length > 0 ||
+        chartData.totalActualExpenditure.length > 0) {
       dataExisted.value = true
     }
 
   } catch (e: any) {
-    console.log(e)
+    console.log(e);
   } finally {
     loading.value = false
   }
 }
 
 function drawChart() {
-  let htmlElement = document.getElementById('chart2')
+  let htmlElement = document.getElementById('chart1')
   if (!htmlElement) {
     return
   }
@@ -131,7 +144,7 @@ function drawChart() {
           rotate: 15,
         },
         axisTick: {  //坐标轴刻度
-          inside: false, //坐标轴刻度朝外
+          // inside: true, //坐标轴刻度朝内
         },
       },
       yAxis: [ //y轴
@@ -162,7 +175,7 @@ function drawChart() {
           dimension: ['date', 'value'],
           tooltip: {
             valueFormatter: function (value: any) {
-              return value.toLocaleString() + ' 元'
+              return value.toLocaleString() + ' 元';
             }
           },
         },
@@ -174,7 +187,7 @@ function drawChart() {
           datasetIndex: 1,
           tooltip: {
             valueFormatter: function (value: any) {
-              return value.toLocaleString() + ' 元'
+              return value.toLocaleString() + ' 元';
             }
           },
         },
@@ -189,10 +202,11 @@ function drawChart() {
           dimension: ['date', 'value'],
           tooltip: {
             valueFormatter: function (value: any) {
-              return value.toLocaleString() + ' 元'
+              return value.toLocaleString() + ' 元';
             }
           },
         },
+
         {
           name: '当日付款金额(CNY)',
           type: 'bar',
@@ -201,7 +215,7 @@ function drawChart() {
           datasetIndex: 3,
           tooltip: {
             valueFormatter: function (value: any) {
-              return value.toLocaleString() + ' 元'
+              return value.toLocaleString() + ' 元';
             }
           },
         },

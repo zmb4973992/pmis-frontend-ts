@@ -44,20 +44,25 @@
 
     <a-card size="small" :bordered="false">
       <a-row class="table-buttons-row">
-        <a-button size="small" type="primary"
-                  @click="createContract">
-          <template #icon>
-            <PlusOutlined/>
+        <a-tooltip placement="right">
+          <template #title>
+            为确保数据的一致性，新合同会从OA自动同步，无需手动添加
           </template>
-          添加合同
-        </a-button>
+          <a-button size="small" type="primary" disabled>
+            <template #icon>
+              <PlusOutlined/>
+            </template>
+            添加合同
+          </a-button>
+        </a-tooltip>
+
         <div class="buttons-for-table-setting">
           <a-tooltip title="设置列" size="small">
-            <a-button type="text" @click="toBeCompleted" size="small">
-              <template #icon>
-                <setting-outlined style="font-size: 16px"/>
-              </template>
-            </a-button>
+<!--            <a-button type="text" @click="toBeCompleted" size="small">-->
+<!--              <template #icon>-->
+<!--                <setting-outlined style="font-size: 16px"/>-->
+<!--              </template>-->
+<!--            </a-button>-->
           </a-tooltip>
         </div>
       </a-row>
@@ -122,17 +127,17 @@
             <!--              查看-->
             <!--            </a-button>-->
             <!--            <a-divider type="vertical"/>-->
-            <a-button type="link" style="padding: 0" @click="updateContract">
+            <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
               修改
             </a-button>
-            <a-divider type="vertical"/>
-            <a-tooltip placement="topLeft">
-              <template #title>如需删除，请联系管理员</template>
-              <a-button type="link" style="padding: 0" danger disabled
-                        @click="deleteContract">
-                删除
-              </a-button>
-            </a-tooltip>
+<!--            <a-divider type="vertical"/>-->
+<!--            <a-tooltip placement="topLeft">-->
+<!--              <template #title>如需删除，请联系管理员</template>-->
+<!--              <a-button type="link" style="padding: 0" danger disabled-->
+<!--                        @click="deleteContract">-->
+<!--                删除-->
+<!--              </a-button>-->
+<!--            </a-tooltip>-->
           </template>
 
         </template>
@@ -143,9 +148,12 @@
                     v-model:pageSize="queryCondition.pageSize" show-less-items
                     :total="tableData.numberOfRecords" show-size-changer
                     :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                    @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                    @change="loadTableData" :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
     </a-card>
   </div>
+
+  <!--修改合同信息的模态框-->
+  <ModalForUpdating ref="modalForUpdating" @loadTableData="loadTableData"/>
 
 </template>
 
@@ -157,19 +165,7 @@ import {contractApi} from "@/api/contract";
 import {projectApi} from "@/api/project";
 import {pageSizeOptions} from "@/constants/paging-constant";
 import {pagingFormat} from "@/interfaces/paging-interface";
-import router from "@/router";
-
-function createContract() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动添加', 5)
-}
-
-function updateContract() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动修改', 5)
-}
-
-function deleteContract() {
-  message.warn('为确保数据的一致性，合同信息会从OA自动同步，无需手动删除', 5)
-}
+import ModalForUpdating from "@/pages/contract/table/component/modal-for-updating.vue";
 
 //查询条件
 interface queryConditionFormat extends pagingFormat {
@@ -180,6 +176,7 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
+  desc:true,
 })
 
 //部门选项的过滤器（下拉框搜索）
@@ -239,7 +236,7 @@ const columns = ref([
     title: '金额',
     dataIndex: 'amount',
     className: 'amount',
-    width: '160px',
+    width: '110px',
     ellipsis: true,
     align: 'right',
     sorter: true,
@@ -254,7 +251,7 @@ const columns = ref([
   {
     title: '操作',
     dataIndex: 'operation',
-    width: '110px',
+    width: '70px',
     fixed: 'right',
     ellipsis: true,
     align: 'center',
@@ -330,6 +327,13 @@ async function loadTableData() {
 }
 
 loadTableData()
+
+//用于修改合同信息的模态框
+const modalForUpdating = ref()
+
+function showModalForUpdating(contractID: number) {
+  modalForUpdating.value.showModal(contractID)
+}
 
 const projectOptions = ref<SelectProps['options']>([])
 

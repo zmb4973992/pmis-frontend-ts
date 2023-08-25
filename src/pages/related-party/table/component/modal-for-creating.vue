@@ -24,7 +24,7 @@
       </a-form-item>
 
       <a-form-item label="备注" name="remarks">
-        <a-textarea v-model:value="relatedPartyDetail.remarks"/>
+        <a-textarea v-model:value="relatedPartyDetail.remarks" :rows="3"/>
       </a-form-item>
 
       <a-form-item label="附件" name="files">
@@ -42,7 +42,7 @@
 
           <div @click.stop style="display: inline-block;padding-left: 10px;">
             单文件<span style="color: red">≤20MB</span>,
-            最多添加<span style="color: red">3个</span>,
+            最多<span style="color: red">3个</span>,
             限<span style="color: red">jpg/png/pdf</span>格式
           </div>
         </a-upload>

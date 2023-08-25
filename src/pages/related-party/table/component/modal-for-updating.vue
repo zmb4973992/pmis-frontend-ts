@@ -42,7 +42,7 @@
 
           <div @click.stop style="display: inline-block;padding-left: 10px;">
             单文件<span style="color: red">≤20MB</span>,
-            最多添加<span style="color: red">3个</span>,
+            最多<span style="color: red">3个</span>,
             限<span style="color: red">jpg/png/pdf</span>格式
           </div>
         </a-upload>

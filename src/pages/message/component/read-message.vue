@@ -33,7 +33,7 @@
                   v-model:pageSize="queryCondition.pageSize" show-less-items
                   :total="tableData.numberOfRecords" show-size-changer
                   :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                  @change="loadTableData" :show-total="total=>`共${total.toLocaleString()}条记录`"/>
   </a-card>
 
   <!--用于展示消息详情的模态框-->

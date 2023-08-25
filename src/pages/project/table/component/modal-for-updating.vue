@@ -1,346 +1,334 @@
 <template>
-  <a-modal v-model:visible="visible" :after-close="resetForm" title="修改项目信息"
+  <a-modal v-model:visible="modalVisible" :after-close="resetForm" title="修改项目信息"
            width="600px" @ok="onSubmit" :destroy-on-close="true">
-    <a-form ref="form" :model="data" :label-col="{ span:4 }">
-      <a-form-item label="项目全称" name="name">
-        {{ data.name }}
-      </a-form-item>
+    <a-spin :spinning="formLoading">
+      <a-form ref="form" :model="projectDetail" :label-col="{ span:4 }">
+        <a-form-item label="项目名称" name="name">
+          {{ projectDetail.name }}
+        </a-form-item>
 
-      <a-form-item label="项目编号" name="project_code">
-        {{ data.code }}
-      </a-form-item>
+        <a-form-item label="项目编号" name="code">
+          {{ projectDetail.code }}
+        </a-form-item>
 
-      <a-form-item label="所属部门" name="organization_id">
-        <a-select v-model:value="data.organization_id" :options="organizationOptions"/>
-      </a-form-item>
+        <a-form-item label="所属部门" name="organizationID"
+                     :rules="{required: true, message: '请填写所属部门'}">
+          <a-select v-model:value="projectDetail.organizationID" :options="organizationOptions"/>
+        </a-form-item>
 
-      <a-form-item label="项目类型" name="project_type">
-        <a-select v-model:value="data.type" :options="projectTypeOptions"/>
-      </a-form-item>
+        <a-form-item label="项目类型" name="type"
+                     :rules="{required: true, message: '请选择项目类型'}">
+          <a-select v-model:value="projectDetail.type" :options="projectTypeOptions"/>
+        </a-form-item>
 
-      <a-form-item label="所在国家" name="country"
-                   :rules="{required: true, message: '请填写所在国家'}">
-        <a-select v-model:value="data.country" :options="countryOptions" show-search
-                  :filter-option="countryFilterOption"/>
-      </a-form-item>
+        <a-form-item label="所在国家" name="country"
+                     :rules="{required: true, message: '请填写所在国家'}">
+          <a-select v-model:value="projectDetail.country" :options="countryOptions" show-search
+                    :filter-option="countryFilterOption"/>
+        </a-form-item>
 
-      <a-form-item label="项目金额">
-        <a-input-number id="project_amount" v-model:value="data.amount" :min="0"
-                        :controls="false" :precision="2">
-          <template #addonAfter>
-            <a-select id="project_currency" v-model:value="data.currency"
-                      :options="currencyOptions" style="width:90px"/>
-          </template>
-        </a-input-number>
-      </a-form-item>
+        <a-form-item label="项目金额" name="amount"
+                     :rules="{required: true, message: '请填写项目金额'}">
+          <a-input-number id="project_amount" v-model:value="projectDetail.amount" :min="0"
+                          :controls="false" :precision="2" style="width: 260px">
+            <template #addonAfter style="width: 150px">
+              <a-select id="project_currency" v-model:value="projectDetail.currency"
+                        :options="currencyOptions" style="width:120px"/>
+            </template>
+          </a-input-number>
+        </a-form-item>
 
-      <a-form-item label="汇率" name="exchange_rate">
-        <a-input-number v-model:value="data.exchange_rate" :min="0" :controls="false"
-                        :precision="4"/>
-      </a-form-item>
+        <a-form-item v-if="exchangeRateVisible" label="汇率" name="exchangeRate"
+                     :rules="{required: true, message: '请填写汇率'}">
+          <a-input-number v-model:value="projectDetail.exchangeRate" :min="0" :controls="false"
+                          :precision="4"/>
 
-      <a-form-item label="项目状态" name="project_status">
-        <a-select v-model:value="data.status" :options="statusOptions"/>
-      </a-form-item>
+          <a-tooltip>
+            <template #title>
+              <div>这里填写1元外币 = XX 元人民币。</div>
+              <div>比如1美元 = 7元人民币，则填7；</div>
+              <div>比如1日元 = 0.05元人民币，则填0.05</div>
+            </template>
+            <QuestionCircleOutlined style="margin-left:10px;font-size: 18px"/>
+          </a-tooltip>
+        </a-form-item>
 
-      <a-form-item label="对方名称" name="related_party_id">
-        <a-select v-model:value="data.related_party_id" :options="relatedPartyOptions"
-                  show-search :filter-option="relatedPartyFilterOption"/>
-      </a-form-item>
+        <a-form-item label="项目状态" name="status"
+                     :rules="{required: true, message: '请选择项目状态'}">
+          <a-select v-model:value="projectDetail.status" :options="statusOptions"/>
+        </a-form-item>
 
-      <a-form-item label="我方主体" name="our_signatory">
-        <a-select v-model:value="data.our_signatory" :options="ourSignatoryOptions"/>
-      </a-form-item>
+        <a-form-item label="业主名称" name="relatedPartyID">
+          <a-select v-model:value="projectDetail.relatedPartyID" :options="relatedPartyOptions"
+                    show-search allow-clear :filter-option="relatedPartyFilterOption"/>
+        </a-form-item>
 
-      <a-form-item label="约定工期" name="duration">
-        <a-input-number v-model:value="data.construction_period" style="width: 120px"
-                        :controls="false">
-          <template #addonAfter>
-            <span>天</span>
-          </template>
-        </a-input-number>
-      </a-form-item>
+        <a-form-item label="我方主体" name="ourSignatory">
+          <a-select v-model:value="projectDetail.ourSignatory" allow-clear
+                    :options="ourSignatoryOptions"/>
+        </a-form-item>
 
-      <a-form-item label="签约日期">
-        <a-date-picker v-model:value="signingDate">
-        </a-date-picker>
-      </a-form-item>
+        <a-form-item label="约定工期" name="constructionPeriod">
+          <a-input-number v-model:value="projectDetail.constructionPeriod" style="width: 120px"
+                          :controls="false">
+            <template #addonAfter>
+              <span>天</span>
+            </template>
+          </a-input-number>
+        </a-form-item>
 
-      <a-form-item label="生效日期">
-        <a-date-picker v-model:value="effectiveDate">
-        </a-date-picker>
-      </a-form-item>
+        <a-form-item label="签约日期" name="signingDate">
+          <a-date-picker v-model:value="projectDetail.signingDate">
+          </a-date-picker>
+        </a-form-item>
 
-      <a-form-item label="工作内容">
-        <a-textarea v-model:value="data.content" placeholder="请输入工作内容"
-                    :rows="3">
-        </a-textarea>
-      </a-form-item>
+        <a-form-item label="生效日期" name="effectiveDate">
+          <a-date-picker v-model:value="projectDetail.effectiveDate">
+          </a-date-picker>
+        </a-form-item>
 
-      <!--      <a-form-item label="附件">-->
-      <!--        <a-upload-->
-      <!--            v-model:file-list="fileList"-->
-      <!--            name="file" :multiple="true"-->
-      <!--            action="http://localhost:8000/api/file/upload/single"-->
-      <!--            :before-upload="beforeUpload"-->
-      <!--            @change="handleChange"-->
+        <a-form-item label="工作内容" name="content">
+          <a-textarea v-model:value="projectDetail.content" placeholder="请输入工作内容"
+                      :rows="5">
+          </a-textarea>
+        </a-form-item>
 
-      <!--            :headers="headers">-->
-      <!--          <a-row>-->
-      <!--            <a-button>-->
-      <!--              <upload-outlined></upload-outlined>-->
-      <!--              上传-->
-      <!--            </a-button>-->
-      <!--            <div style="margin-top:auto;margin-bottom: auto;margin-left: 10px">-->
-      <!--              支持后缀：<span style="color: red">.jpg/.png</span>，大小≤<span style="color: red">50MB</span>-->
-      <!--            </div>-->
-      <!--          </a-row>-->
-      <!--        </a-upload>-->
-      <!--      </a-form-item>-->
-
-    </a-form>
+      </a-form>
+    </a-spin>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {FormInstance, message, Upload, UploadChangeParam} from "ant-design-vue";
-import {projectUpdate, projectApi,} from "@/api/project";
+import {reactive, ref, watch} from "vue";
+import {FormInstance, message, SelectProps} from "ant-design-vue";
+import {projectApi} from "@/api/project";
 import {dictionaryDetailApi} from "@/api/dictionary-item";
 import dayjs, {Dayjs} from "dayjs";
-import useUserStore from "@/store/user";
 import {organizationApi} from "@/api/organization";
 import {relatedPartyApi} from "@/api/related-party";
+import {QuestionCircleOutlined} from "@ant-design/icons-vue";
 
-const userStore = useUserStore()
-
-const token = userStore.accessToken
-
-const headers = {"access_token": token}
-
-const action = ref('http://localhost:8000/api/file/upload/single')
-
-const fileList = ref([{
-  name: 'xx发生大幅x.png',
-  response: 'Server Error 500', // custom error message to show
-  url: 'http://www.baidu.com/xxx.png',
-},])
-
-function toBeCompleted() {
+interface projectDetailFormat {
+  id: number,
+  name?: string,
+  code?: string,
+  country?: number,
+  type?: number,
+  amount?: number,
+  currency?: number,
+  exchangeRate?: number,
+  organizationID?: number,
+  relatedPartyID?: number,
+  status?: number,
+  signingDate?: Dayjs,
+  effectiveDate?: Dayjs,
+  ourSignatory?: number,
+  constructionPeriod?: number,
+  content?: string,
 }
 
-const countryOptions = ref<{ value: string, label: string }[]>([])
-const projectTypeOptions = ref<{ value: string, label: string }[]>([])
-const currencyOptions = ref<{ value: string, label: string }[]>()
-const organizationOptions = ref<{ value: string, label: string }[]>()
-const statusOptions = ref<{ value: string, label: string }[]>()
+const projectDetail = reactive<projectDetailFormat>({
+  id: 0,
+})
 
-const relatedPartyOptions = ref<{ value: string, label: string }[]>()
+const formLoading = ref(true)
+
+const countryOptions = ref<SelectProps['options']>([])
+const projectTypeOptions = ref<SelectProps['options']>([])
+
+const currencyOptions = ref<SelectProps['options']>()
+//人民币的id
+const CNY = ref<number>()
+//监听币种的变化，如果是人民币，就隐藏汇率
+//如果不是人民币，就显示汇率
+watch(() => projectDetail.currency, (newValue) => {
+      if (newValue === CNY.value) {
+        exchangeRateVisible.value = false
+        projectDetail.exchangeRate = 1
+      } else {
+        exchangeRateVisible.value = true
+      }
+    }
+)
+//汇率框是否显示
+const exchangeRateVisible = ref(false)
+
+const organizationOptions = ref<SelectProps['options']>()
+const statusOptions = ref<SelectProps['options']>()
+
+const relatedPartyOptions = ref<SelectProps['options']>()
 const relatedPartyFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-const ourSignatoryOptions = ref<{ value: string, label: string }[]>()
+const ourSignatoryOptions = ref<SelectProps['options']>()
 
 const countryFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
-const data = reactive<projectUpdate>({
-  id: 0
-})
+//弹窗是否显示
+const modalVisible = ref(false)
 
-// 签约日期
-let signingDate = ref<Dayjs>()
-
-// 生效日期
-let effectiveDate = ref<Dayjs>()
-
-const visible = ref(false)
 const form = ref<FormInstance>()
 
+//重置表单
 function resetForm() {
-  //记得还要修改不在reactive里的数据
-  Object.keys(data).map(key => {
-    delete data[key as keyof typeof data]
+  //数据尽可能放在form里，但也要记得修改不在reactive里的数据
+  Object.keys(projectDetail).map(key => {
+    delete projectDetail[key as keyof typeof projectDetail]
   })
 }
 
 const emit = defineEmits(['loadTableData'])
 
-function showModal(projectID: number) {
-  visible.value = true
-  projectApi.get({id: projectID}).then(
-      res => {
-        data.id = res.data?.id || undefined
-        data.code = res.data?.code
-        data.name = res.data?.name
-        data.country = res.data?.country?.id || undefined
-        data.type = res.data?.type?.id || undefined
-        data.amount = res.data?.amount || undefined
-        data.currency = res.data?.currency?.id || undefined
-        data.exchange_rate = res.data?.exchange_rate || undefined
-        data.status = res.data?.status?.id || undefined
-        data.our_signatory = res.data?.our_signatory?.id || undefined
-        data.construction_period = res.data?.construction_period || undefined
-        data.organization_id = res.data?.organization?.id || undefined
-        data.related_party_id = res.data?.related_party?.id || undefined
-        signingDate.value = res.data?.signing_date ? dayjs(res.data.signing_date) : undefined
-        effectiveDate.value = res.data?.effective_date ? dayjs(res.data.effective_date) : undefined
-        data.content = res.data?.content
-      }
-  )
+async function showModal(projectID: number) {
+  try {
+    modalVisible.value = true
+    formLoading.value = true
 
-  dictionaryDetailApi.getList({dictionary_type_name: "国家", page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          countryOptions.value = result
+    const res1 = await dictionaryDetailApi.getList({dictionary_type_name: "国家", page_size: 0})
+    if (res1?.code === 0) {
+      countryOptions.value = []
+      for (let item of res1.data) {
+        countryOptions.value.push({value: item.id, label: item.name})
+      }
+    } else {
+      console.log(res1.message)
+    }
+
+    const res2 = await dictionaryDetailApi.getList({dictionary_type_name: "项目类型", page_size: 0})
+    if (res2?.code === 0) {
+      projectTypeOptions.value = []
+      for (let item of res2.data) {
+        projectTypeOptions.value.push({value: item.id, label: item.name})
+      }
+    } else {
+      console.log(res2.message)
+    }
+
+    const res3 = await dictionaryDetailApi.getList({dictionary_type_name: "币种", page_size: 0})
+    if (res3?.code === 0) {
+      currencyOptions.value = []
+      for (let item of res3.data) {
+        currencyOptions.value.push({value: item.id, label: item.name})
+        if (item.name === '人民币') {
+          CNY.value = item.id
         }
       }
-  )
+    } else {
+      console.log(res3.message)
+    }
 
-  dictionaryDetailApi.getList({dictionary_type_name: "项目类型", page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          projectTypeOptions.value = result
-        }
+    const res4 = await dictionaryDetailApi.getList({dictionary_type_name: "项目状态", page_size: 0})
+    if (res4?.code === 0) {
+      statusOptions.value = []
+      for (let item of res4.data) {
+        statusOptions.value.push({value: item.id, label: item.name})
       }
-  )
+    } else {
+      console.log(res4.message)
+    }
 
-  dictionaryDetailApi.getList({dictionary_type_name: "币种", page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          currencyOptions.value = result
-        }
+    const res5 = await organizationApi.getList({is_valid: true, page_size: 0})
+    if (res5?.code === 0) {
+      organizationOptions.value = []
+      for (let item of res5.data) {
+        organizationOptions.value.push({value: item.id, label: item.name})
       }
-  )
+    } else {
+      console.log(res5.message)
+    }
 
-  dictionaryDetailApi.getList({dictionary_type_name: "项目状态", page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          statusOptions.value = result
-        }
+    const res6 = await relatedPartyApi.getList({page_size: 0})
+    if (res6?.code === 0) {
+      relatedPartyOptions.value = []
+      for (let item of res6.data) {
+        relatedPartyOptions.value.push({value: item.id, label: item.name})
       }
-  )
+    } else {
+      console.log(res6.message)
+    }
 
-  organizationApi.getList({is_valid: true, page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          organizationOptions.value = result
-        }
+    const res7 = await dictionaryDetailApi.getList({dictionary_type_name: "我方签约主体", page_size: 0})
+    if (res7?.code === 0) {
+      ourSignatoryOptions.value = []
+      for (let item of res7.data) {
+        ourSignatoryOptions.value.push({value: item.id, label: item.name}
+        )
       }
-  )
+    } else {
+      console.log(res7.message)
+    }
 
-  relatedPartyApi.getList({page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          relatedPartyOptions.value = result
-        }
-      }
-  )
-
-  dictionaryDetailApi.getList({dictionary_type_name: "我方签约主体", page_size: 0}).then(
-      res => {
-        if (res.data) {
-          let result: { value: string, label: string }[] = []
-          for (let item of res.data) {
-            result.push({value: item.id, label: item.name})
-          }
-          ourSignatoryOptions.value = result
-        }
-      }
-  )
+    const res = await projectApi.get({id: projectID})
+    if (res.code === 0) {
+      projectDetail.id = projectID
+      projectDetail.code = res.data?.code
+      projectDetail.name = res.data?.name
+      projectDetail.country = res.data?.country?.id
+      projectDetail.type = res.data?.type?.id
+      projectDetail.amount = res.data?.amount
+      projectDetail.currency = res.data?.currency?.id
+      projectDetail.exchangeRate = res.data?.exchange_rate
+      projectDetail.status = res.data?.status?.id
+      projectDetail.ourSignatory = res.data?.our_signatory?.id
+      projectDetail.constructionPeriod = res.data?.construction_period
+      projectDetail.organizationID = res.data?.organization?.id
+      projectDetail.relatedPartyID = res.data?.related_party?.id
+      projectDetail.signingDate = res.data?.signing_date ? dayjs(res.data.signing_date) : undefined
+      projectDetail.effectiveDate = res.data?.effective_date ? dayjs(res.data.effective_date) : undefined
+      projectDetail.content = res.data?.content
+    } else {
+      console.log(res.message)
+    }
+  } catch (e: any) {
+    console.log(e)
+  } finally {
+    formLoading.value = false
+  }
 }
-
 
 function onSubmit() {
   form.value?.validateFields().then(
-      () => {
-        projectApi.update({
-          id: data.id,
-          code: data.code,
-          name: data.name,
-          country: data.country === null ? -1 : data.country,
-          type: data.type === null ? -1 : data.type,
-          amount: data.amount === null ? -1 : data.amount,
-          currency: data.currency === null ? -1 : data.currency,
-          exchange_rate: data.exchange_rate === null ? -1 : data.exchange_rate,
-          status: data.status === null ? -1 : data.status,
-          our_signatory: data.our_signatory === null ? -1 : data.our_signatory,
-          construction_period: data.construction_period === null ? -1 : data.construction_period,
-          organization_id: data.organization_id === null ? -1 : data.organization_id,
-          related_party_id: data.related_party_id === null ? -1 : data.related_party_id,
-          content: data.content,
-          signing_date: signingDate.value?.format("YYYY-MM-DD") || "",
-          effective_date: effectiveDate.value?.format("YYYY-MM-DD") || "",
-        }).then(res => {
+      async () => {
+        try {
+          const res = await projectApi.update({
+            id: projectDetail.id,
+            code: projectDetail.code,
+            name: projectDetail.name,
+            country: projectDetail.country ? projectDetail.country : -1,
+            type: projectDetail.type ? projectDetail.type : -1,
+            amount: projectDetail.amount ? projectDetail.amount : 0,
+            currency: projectDetail.currency ? projectDetail.currency : -1,
+            exchange_rate: projectDetail.exchangeRate ? projectDetail.exchangeRate : -1,
+            status: projectDetail.status ? projectDetail.status : -1,
+            our_signatory: projectDetail.ourSignatory ? projectDetail.ourSignatory : -1,
+            construction_period: projectDetail.constructionPeriod ? projectDetail.constructionPeriod : -1,
+            organization_id: projectDetail.organizationID ? projectDetail.organizationID : -1,
+            related_party_id: projectDetail.relatedPartyID ? projectDetail.relatedPartyID : -1,
+            content: projectDetail.content,
+            signing_date: projectDetail.signingDate?.format("YYYY-MM-DD") || "",
+            effective_date: projectDetail.effectiveDate?.format("YYYY-MM-DD") || "",
+          })
+
           if (res?.code === 0) {
             message.success('修改成功')
-            visible.value = false
             emit('loadTableData')
           } else {
-            message.error(res?.message || '修改失败')
+            message.error(res.message)
           }
-        });
-      })
+        } catch (e: any) {
+          console.log(e);
+        } finally {
+          modalVisible.value = false
+        }
+      }
+  )
 }
-
-//上传文件
-function beforeUpload(file: any) {
-  const isLessThan50MB = file.size / 1024 / 1024 < 50
-  if (!isLessThan50MB) {
-    message.error('上传的文件必须小于50MB')
-    return Upload.LIST_IGNORE
-  }
-
-  const suffixIsLegal = file.type === 'image/jpeg' || file.type === 'image/png'
-  if (!suffixIsLegal) {
-    message.error('只支持后缀为.jpg/.png的文件')
-    return Upload.LIST_IGNORE
-  }
-
-  return (isLessThan50MB && suffixIsLegal) || Upload.LIST_IGNORE
-}
-
-const handleChange = ({file, fileList: innerFileList}: UploadChangeParam) => {
-  if (file.status == 'done') {
-    if (file.response?.code === 0) {
-      file.url = 'http://127.0.0.1:8000/download/' + file.response?.data?.file_name
-      console.log(file);
-      return file.name
-    }
-  }
-};
 
 defineExpose({showModal,})
 
 </script>
 
-<style lang="scss">
-#project_amount {
-  //text-align: right;
-  width: 120px;
-}
+<style scoped lang="scss">
+
 </style>

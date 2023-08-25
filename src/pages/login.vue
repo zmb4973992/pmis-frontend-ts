@@ -5,12 +5,16 @@
         <div class="login-box">
             <!--中文标题-->
             <div class="chinese-title">
-                中文标题
+                PMIS 项目管理信息系统
             </div>
             <!--英文标题-->
             <div class="english_title">
-                English Title
+                Project Management Information System
             </div>
+
+          <div style="text-align: center;margin-top: 20px;font-size: 18px">
+            您好，请使用OA的用户名和密码登录
+          </div>
             <br><br>
             <!--登录表单-->
             <a-form name="login" :model="formState" :label-col="{ span: 5 }"
@@ -93,15 +97,15 @@ const onFinishFailed = (errorInfo: any) => {
 }
 
 .chinese-title {
-  margin-top: 20px;
-  font-size: 30px;
   text-align: center;
+  margin-top: 20px;
+  font-size: 35px;
 }
 
 .english_title {
   text-align: center;
   margin-top: 20px;
-  font-size: 15px;
+  font-size: 20px;
 }
 
 .ant-form {

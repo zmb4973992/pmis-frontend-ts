@@ -24,7 +24,7 @@ interface projectCreate {
     content?: string
 }
 
-interface projectUpdate {
+export interface projectUpdate {
     id: number
     code?: string
     name?: string
@@ -33,7 +33,7 @@ interface projectUpdate {
     type?: number | null
     amount?: number | null
     currency?: number | null
-    exchange_rate?: number | null
+    exchange_rate?: number
     organization_id?: number | null
     related_party_id?: number | null
     status?: number | null

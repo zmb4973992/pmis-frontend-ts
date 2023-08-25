@@ -46,21 +46,26 @@
 
     <a-row class="table-buttons">
       <a-row class="table-left-buttons">
-        <a-button size="small" type="primary" @click="createProject">
-          <template #icon>
-            <PlusOutlined/>
+        <a-tooltip placement="right">
+          <template #title>
+            为确保数据的一致性，新项目会从OA自动同步，无需手动添加
           </template>
-          添加项目
-        </a-button>
+          <a-button size="small" type="primary" disabled>
+            <template #icon>
+              <PlusOutlined/>
+            </template>
+            添加项目
+          </a-button>
+        </a-tooltip>
       </a-row>
 
       <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
-          <a-button type="text" @click="toBeCompleted" size="small">
-            <template #icon>
-              <setting-outlined style="font-size: 16px"/>
-            </template>
-          </a-button>
+<!--          <a-button type="text" @click="toBeCompleted" size="small">-->
+<!--            <template #icon>-->
+<!--              <setting-outlined style="font-size: 16px"/>-->
+<!--            </template>-->
+<!--          </a-button>-->
         </a-tooltip>
       </a-row>
     </a-row>
@@ -84,14 +89,14 @@
           <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
             修改
           </a-button>
-          <a-divider type="vertical"/>
-          <a-tooltip placement="topRight">
-            <template #title>如需删除，请联系管理员</template>
-            <a-button type="link" style="padding: 0" danger disabled
-                      @click="showModalForDeleting(record.id)">
-              删除
-            </a-button>
-          </a-tooltip>
+          <!--          <a-divider type="vertical"/>-->
+          <!--          <a-tooltip placement="topRight">-->
+          <!--            <template #title>如需删除，请联系管理员</template>-->
+          <!--            <a-button type="link" style="padding: 0" danger disabled-->
+          <!--                      @click="showModalForDeleting(record.id)">-->
+          <!--              删除-->
+          <!--            </a-button>-->
+          <!--          </a-tooltip>-->
         </template>
         <template v-else-if="column.dataIndex === 'amount'">
           {{ record.amount.toLocaleString() }}
@@ -104,20 +109,20 @@
                   v-model:pageSize="queryCondition.pageSize" show-less-items
                   :total="tableData.numberOfRecords" show-size-changer
                   :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                  @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                  @change="loadTableData" :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
   </a-card>
 
   <!--修改项目信息的模态框-->
-  <modal-for-updating ref="modalForUpdating" @loadTableData="loadTableData"/>
+  <ModalForUpdating ref="modalForUpdating" @loadTableData="loadTableData"/>
 
   <!--删除项目信息的模态框-->
-  <modal-for-deleting ref="modalForDeleting" @loadTableData="loadTableData"/>
+  <!--  <ModalForDeleting ref="modalForDeleting" @loadTableData="loadTableData"/>-->
 
 </template>
 
 <script setup lang="ts">
 import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
-import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
+// import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
 import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
 import {reactive, ref} from "vue"
 import {FormInstance, message, SelectProps, TableColumnsType} from "ant-design-vue"
@@ -127,7 +132,7 @@ import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
 
 function toBeCompleted() {
-  message.info('待完成')
+  // message.info('待完成')
 }
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
@@ -175,6 +180,7 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
+  desc: true,
 })
 
 let organizationOptions = ref<SelectProps['options']>()
@@ -222,7 +228,7 @@ let columns = ref<TableColumnsType>([
     ellipsis: true,
     align: 'center',
     resizable: true,
-    minWidth:30,
+    minWidth: 30,
     maxWidth: 100,
   },
   {
@@ -275,7 +281,7 @@ let columns = ref<TableColumnsType>([
   {
     title: '币种',
     dataIndex: ['currency', 'name'],
-    width: 90 ,
+    width: 90,
     ellipsis: true,
     align: 'center',
     resizable: true,
@@ -302,7 +308,7 @@ let columns = ref<TableColumnsType>([
   {
     title: '操作',
     dataIndex: 'action',
-    width: 110,
+    width: 70,
     fixed: 'right',
     ellipsis: true,
     align: 'center',
@@ -345,10 +351,6 @@ async function loadTableData() {
 
 loadTableData()
 
-function createProject() {
-  message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
-}
-
 //用于修改项目信息的模态框
 const modalForUpdating = ref()
 
@@ -357,11 +359,11 @@ function showModalForUpdating(id: number) {
 }
 
 //用于删除项目信息的模态框
-const modalForDeleting = ref()
-
-function showModalForDeleting(projectID: number) {
-  modalForDeleting.value.showModal(projectID)
-}
+// const modalForDeleting = ref()
+//
+// function showModalForDeleting(projectID: number) {
+//   modalForDeleting.value.showModal(projectID)
+// }
 
 </script>
 

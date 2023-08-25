@@ -50,7 +50,7 @@ interface contractUpdate {
     content?: string
     deliverable?: string
     penalty_rule?: string
-    attachment?: string
+    file_ids?: number[]
     operator?: string
 }
 

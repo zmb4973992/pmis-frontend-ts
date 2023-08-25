@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted, reactive, ref} from "vue";
+import { reactive, ref} from "vue";
 import dayjs from "dayjs";
 import {projectDailyAndCumulativeIncomeApi} from "@/api/project-daily-and-cumulative-income";
 
@@ -44,7 +44,6 @@ async function loadData() {
       project_id: props.projectId,
       page_size: 0
     })
-
     if (res?.code === 0) {
       for (let item of res.data) {
         if (item.total_planned_income) {
@@ -113,7 +112,7 @@ function drawChart() {
           rotate: 15,
         },
         axisTick: {  //坐标轴刻度
-          inside: true, //坐标轴刻度朝内
+          inside: false, //坐标轴刻度朝外
         },
       },
       yAxis: {  //y轴
@@ -121,17 +120,17 @@ function drawChart() {
       },
       series: [
         {
-          name: '计划收款总额(CNY)',
+          name: '计划付款总额(CNY)',
           type: 'line',
           itemStyle: {color: '#1890FF'},
           lineStyle: {color: '#1890FF', type: 'dashed'},
           connectNull: true,
           smooth: true,
           datasetIndex: 0,  //通过datasetIndex来指定dataset
-          dimension: ['date', 'value']
+          dimension: ['date', 'value'],
         },
         {
-          name: '预测收款总额(CNY)',
+          name: '预测付款总额(CNY)',
           type: 'line',
           itemStyle: {color: 'orange'},
           lineStyle: {color: 'orange', type: 'dashed'},
@@ -141,7 +140,7 @@ function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际收款总额(CNY)',
+          name: '实际付款总额(CNY)',
           type: 'line',
           itemStyle: {color: 'red'},
           lineStyle: {color: 'red'},
@@ -150,7 +149,6 @@ function drawChart() {
           datasetIndex: 2,
           dimension: ['date', 'value']
         },
-
       ],
       dataset: [
         {source: chartData.totalPlannedIncome},

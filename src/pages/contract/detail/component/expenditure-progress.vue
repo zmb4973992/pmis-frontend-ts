@@ -1,14 +1,26 @@
 <template>
-  <div id="chart1" style="width:100%; height: calc(100vh - 179px)"/>
+  <a-spin :spinning="loading" size="large" tip="加载中，请稍等......">
+    <div v-if="loading"></div>
+    <div v-else-if="dataExisted" id="chart2" style="width:100%; height: calc(100vh - 179px)"/>
+    <a-empty v-else>
+      <template #description>
+        暂无付款进度的数据，看看别的吧~
+      </template>
+    </a-empty>
+  </a-spin>
+
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted, reactive} from "vue";
+import { reactive, ref} from "vue";
 import dayjs from "dayjs";
-import {contractCumulativeExpenditureApi} from "@/api/contract-cumulative-expenditure";
+import {contractDailyAndCumulativeExpenditureApi} from "@/api/contract-daily-and-cumulative-expenditure";
 
 const props = defineProps<{ contractId: number }>()
+
+const loading = ref(true)
+const dataExisted = ref(false)
 
 interface valueList {
   date: string
@@ -27,35 +39,44 @@ const chartData = reactive<chartDataFormat>({
   actualExpenditureProgressList: [],
 })
 
-onMounted(() => {
-  drawChart()
-})
+async function loadData() {
+  try {
+    const res1 = await contractDailyAndCumulativeExpenditureApi.getList({
+      contract_id: props.contractId,
+      page_size: 0
+    })
+    if (res1?.code === 0) {
+      for (let item of res1.data) {
+        if (item.planned_expenditure_progress) {
+          chartData.plannedExpenditureProgressList.push({date: item.date, value: item.planned_expenditure_progress})
+        }
+        if (item.forecasted_expenditure_progress) {
+          chartData.forecastedExpenditureProgressList.push({date: item.date, value: item.forecasted_expenditure_progress})
+        }
+        if (item.actual_expenditure_progress) {
+          chartData.actualExpenditureProgressList.push({date: item.date, value: item.actual_expenditure_progress})
+        }
+      }
+    } else {
+      console.log(res1.message)
+    }
 
+    if (chartData.plannedExpenditureProgressList.length > 0 ||
+          chartData.forecastedExpenditureProgressList.length > 0 ||
+          chartData.actualExpenditureProgressList.length > 0) {
+      dataExisted.value = true
+    }
+  } catch (e:any) {
+    console.log(e);
+  } finally {
+    loading.value = false
+  }
+}
 
 async function drawChart() {
-  let htmlElement = document.getElementById('chart1')
+  let htmlElement = document.getElementById('chart2')
   if (!htmlElement) {
     return
-  }
-
-  const res = await contractCumulativeExpenditureApi.getList({
-    contract_id: props.contractId,
-    page_size: 0
-  })
-  if (res && res.data) {
-    // console.log(res.data);
-    for (let item of res.data) {
-      if (item.planned_expenditure_progress) {
-        chartData.plannedExpenditureProgressList.push({date: item.date, value: item.planned_expenditure_progress})
-      }
-      if (item.forecasted_expenditure_progress) {
-        chartData.forecastedExpenditureProgressList.push({date: item.date, value: item.forecasted_expenditure_progress})
-      }
-      if (item.actual_expenditure_progress) {
-        chartData.actualExpenditureProgressList.push({date: item.date, value: item.actual_expenditure_progress})
-      }
-
-    }
   }
 
   let myChart = echarts.init(htmlElement)
@@ -166,6 +187,8 @@ async function drawChart() {
     window.addEventListener('resize', () => myChart.resize())
   }
 }
+
+loadData().then(drawChart)
 
 </script>
 

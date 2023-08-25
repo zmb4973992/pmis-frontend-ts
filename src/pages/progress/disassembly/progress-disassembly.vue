@@ -6,7 +6,7 @@
         <a-card size="small" :bordered="false">
           <div class="label-and-selector">
             <span>项目名称：</span>
-            <a-select class="project-selector" show-search placeholder="支持模糊搜索" allow-clear
+            <a-select class="project-selector" show-search placeholder="支持模糊搜索"
                       :filter-option="projectIDFilterOption" v-model:value="queryCondition.projectID"
                       :options="projectIDOptions" style="width: 0">
             </a-select>
@@ -14,12 +14,9 @@
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
 
-          <!--          <a-button @click="test.value.scrollTo">-->
-          <!--            滚动-->
-          <!--          </a-button>-->
-
           <a-tree v-if="treeData?.length" :tree-data="treeData"
-                  v-model:selectedKeys="disassemblyIDs" default-expand-all>
+                  v-model:selectedKeys="disassemblyIDs" default-expand-all
+                  style="text-align: left">
             <template #title="{title,key,level}">
                             <span class="title">
                                 <span>{{ title }}</span>
@@ -75,11 +72,11 @@
 
             <div class="buttons-for-table-setting">
               <a-tooltip title="设置列" size="small">
-                <a-button type="text" @click="toBeCompleted" size="small">
-                  <template #icon>
-                    <setting-outlined style="font-size: 16px"/>
-                  </template>
-                </a-button>
+<!--                <a-button type="text" @click="toBeCompleted" size="small">-->
+<!--                  <template #icon>-->
+<!--                    <setting-outlined style="font-size: 16px"/>-->
+<!--                  </template>-->
+<!--                </a-button>-->
               </a-tooltip>
             </div>
           </a-row>
@@ -108,7 +105,7 @@
                         v-model:pageSize="queryCondition.pageSize" show-less-items
                         :total="tableData.numberOfRecords" show-size-changer
                         :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                        @change="loadTableData" :show-total="total=>`共${total}条记录`"/>
+                        @change="loadTableData" :show-total="total=>`共${total.toLocaleString()}条记录`"/>
         </a-card>
       </a-col>
     </a-row>
@@ -233,7 +230,9 @@ watch(disassemblyIDs, () => {
 
 //加载所有的选项
 function loadOptions() {
-  loadProjectIDOptions().then(loadLocalStorage).then(tipsForSelectingProjectID)
+  loadProjectIDOptions()
+      .then(loadLocalStorage)
+      .then(tipsForSelectingProjectID)
 }
 
 loadOptions()
@@ -334,9 +333,17 @@ async function loadTableData() {
         desc: queryCondition.desc,
       })
       if (res?.code === 0) {
+        let totalWeight = 0
         for (let item of res.data) {
+          totalWeight = (totalWeight * 10000 + item.weight * 10000) / 10000
           item.weight = (item.weight * 100).toFixed(1) + '%'
         }
+
+        if (totalWeight !== 1) {
+          message.error("子分类的权重设置有错误，总权重应为100%。当前总权重为："
+              + (totalWeight * 100).toFixed(1) + "%，请调整",10)
+        }
+
         tableData.list = res?.data
         tableData.numberOfPages = res?.paging?.number_of_pages
         tableData.numberOfRecords = res?.paging?.number_of_records
