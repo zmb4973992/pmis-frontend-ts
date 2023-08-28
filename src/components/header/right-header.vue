@@ -22,7 +22,7 @@
 <!--          </a-menu-item>-->
 <!--          <a-menu-divider :style="{margin:'7px'}"/>-->
           <a-menu-item>
-            <a href="javascript:" @click="logout">退出登录</a>
+            <a href="javascript:" @click="logOut">退出登录</a>
           </a-menu-item>
         </a-menu>
       </template>
@@ -41,7 +41,7 @@ const user = useUserStore()
 user.updateUserInfo()
 const {fullName} = storeToRefs(user)
 const router = useRouter()
-const logout = () => {
+function logOut() {
   localStorage.removeItem('access_token')
   router.push({name: '登录'})
 }

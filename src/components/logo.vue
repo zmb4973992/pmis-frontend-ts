@@ -30,7 +30,6 @@ const isCollapsed = computed(() => globalStore.isCollapsed)
   .chinese-title {
     font-size: 12px;
     line-height: 35px; //line-height = height时，行内文字垂直居中
-    //默认居中对齐，所以不用text-align
   }
 
   .english-title {

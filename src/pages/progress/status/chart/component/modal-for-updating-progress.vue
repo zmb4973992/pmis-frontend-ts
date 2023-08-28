@@ -37,7 +37,7 @@ import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {Rule} from "ant-design-vue/es/form";
 import dayjs, {Dayjs} from "dayjs";
 import {progressApi} from "@/api/progress";
-import {dictionaryDetailApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 
 interface formDataFormat {
   progressID?: number

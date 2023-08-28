@@ -102,7 +102,7 @@
 import {reactive, ref, watch} from "vue";
 import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {projectApi} from "@/api/project";
-import {dictionaryDetailApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 import dayjs, {Dayjs} from "dayjs";
 import {organizationApi} from "@/api/organization";
 import {relatedPartyApi} from "@/api/related-party";

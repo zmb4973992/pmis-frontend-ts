@@ -131,10 +131,6 @@ import {organizationApi} from "@/api/organization"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
 
-function toBeCompleted() {
-  // message.info('待完成')
-}
-
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
 
@@ -183,7 +179,7 @@ const queryCondition = reactive<queryConditionFormat>({
   desc: true,
 })
 
-let organizationOptions = ref<SelectProps['options']>()
+let organizationOptions = ref<SelectProps['options']>([])
 
 //获取部门下拉框的值
 async function loadOrganizationOptions() {
@@ -192,10 +188,9 @@ async function loadOrganizationOptions() {
       is_valid: true,
       page_size: 0,
     })
-    organizationOptions.value = []
     if (res?.code === 0) {
       for (let item of res.data) {
-        organizationOptions.value.push({value: item.id, label: item.name})
+        organizationOptions.value?.push({value: item.id, label: item.name})
       }
     } else {
 

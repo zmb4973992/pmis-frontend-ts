@@ -351,14 +351,6 @@ const routes: customRouteRecord[] = [
         },
         component: () => import('@/pages/404.vue'),
     },
-    {
-        path:'/dl/:fileID',
-        name:'下载',
-        meta:{
-          hidden: true,
-        },
-        component: ()=> import('@/pages/download.vue')
-    },
 ]
 
 export default routes

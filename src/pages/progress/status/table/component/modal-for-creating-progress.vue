@@ -42,7 +42,7 @@ import {disassemblyApi} from "@/api/disassembly";
 import {Rule} from "ant-design-vue/es/form";
 import {Dayjs} from "dayjs";
 import {progressApi} from "@/api/progress";
-import {dictionaryDetailApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 
 //树形图相关的数据
 interface treeDataFormat {

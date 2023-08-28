@@ -46,7 +46,7 @@ import {onMounted, reactive, ref, watch} from "vue";
 import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {progressApi} from "@/api/progress";
-import {dictionaryDetailApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 import dayjs from "dayjs";
 import * as echarts from 'echarts';
 import useGlobalStore from "@/store/global";

@@ -1,11 +1,11 @@
 import request from "@/utils/request";
 import {list} from "@/api/common-interface";
 
-export interface iProgressGet {
+interface progressGet {
     id: number
 }
 
-export interface iProgressCreate {
+interface progressCreate {
     disassembly_id: number
     date: string
     type: number
@@ -13,7 +13,7 @@ export interface iProgressCreate {
     remarks?: string
 }
 
-export interface iProgressUpdate {
+interface progressUpdate {
     id: number
 
     date?: string
@@ -22,11 +22,11 @@ export interface iProgressUpdate {
     remarks?: string
 }
 
-export interface iProgressDelete {
+interface progressDelete {
     id: number
 }
 
-export interface iProgressGetList extends list {
+interface progressGetList extends list {
     project_id?:number
     disassembly_id?: number
     date_gte?: string
@@ -37,15 +37,15 @@ export interface iProgressGetList extends list {
 }
 
 const progressApi = {
-    get: (param: iProgressGet) => request.get('/progress/' + param.id)
+    get: (param: progressGet) => request.get('/progress/' + param.id)
         .then(res => res.data),
-    create: (param: iProgressCreate) => request.post('/progress', param)
+    create: (param: progressCreate) => request.post('/progress', param)
         .then(res => res.data,),
-    update: (param: iProgressUpdate) => request.patch('/progress/' + param.id, param)
+    update: (param: progressUpdate) => request.patch('/progress/' + param.id, param)
         .then(res => res.data),
-    delete: (param: iProgressDelete) => request.delete('/progress/' + param.id)
+    delete: (param: progressDelete) => request.delete('/progress/' + param.id)
         .then(res => res.data,),
-    getList: (param?: iProgressGetList) => request.post('/progress/list', param)
+    getList: (param?: progressGetList) => request.post('/progress/list', param)
         .then(res => res.data),
 }
 

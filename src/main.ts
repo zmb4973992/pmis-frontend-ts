@@ -10,8 +10,6 @@ import 'normalize.css'
 //导入图标组件库，并重命名
 import * as antIcons from '@ant-design/icons-vue'
 import useUserStore from "@/store/user";
-import {menuApi} from "@/api/menu";
-import useMenuStore from "@/store/menu";
 
 /*
  * -------------------- ※ 着重 解释说明下这里的初始化逻辑 begin ※ --------------------

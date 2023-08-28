@@ -108,7 +108,7 @@ import {relatedPartyApi} from "@/api/related-party";
 import {FormInstance, message, SelectProps, Upload, UploadChangeParam, UploadProps} from "ant-design-vue";
 import {fileApi} from "@/api/file";
 import {contractApi} from "@/api/contract";
-import {dictionaryDetailApi} from "@/api/dictionary-item";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 import dayjs from "dayjs";
 import type {Dayjs} from 'dayjs';
 import {QuestionCircleOutlined} from "@ant-design/icons-vue";

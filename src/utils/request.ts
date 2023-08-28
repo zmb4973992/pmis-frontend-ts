@@ -3,7 +3,7 @@ import {message} from "ant-design-vue";
 import router from "@/router"
 
 const request = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://10.3.0.160:8000',
     timeout: 15000,  //毫秒
 })
 
@@ -27,7 +27,7 @@ request.interceptors.request.use(
 //对返回结果进行封装
 request.interceptors.response.use(
     //暂时不要只返回data，因为ts下使用res.XXX会报错，只能使用res.data.XXX
-    (res) => {
+    (res:any) => {
         // 如果返回结果的错误代码为18（token无效），则清除本地缓存
         if (res.data.code === 18) {
             localStorage.clear()

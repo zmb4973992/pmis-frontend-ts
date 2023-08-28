@@ -176,9 +176,10 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
+  desc:true,
 })
 
-let organizationOptions = ref<SelectProps['options']>()
+let organizationOptions = ref<SelectProps['options']>([])
 
 //获取部门下拉框的值
 async function loadOrganizationOptions() {
@@ -187,10 +188,9 @@ async function loadOrganizationOptions() {
       is_valid:true,
       page_size: 0,
     })
-    organizationOptions.value = []
     if (res?.code === 0) {
       for (let item of res.data) {
-        organizationOptions.value.push({value: item.id, label: item.name})
+        organizationOptions.value?.push({value: item.id, label: item.name})
       }
     } else {
 

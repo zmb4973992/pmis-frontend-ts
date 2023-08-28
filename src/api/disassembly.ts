@@ -1,35 +1,35 @@
 import request from "@/utils/request";
 import {list} from "@/api/common-interface";
 
-export interface iDisassemblyGet {
+interface disassemblyGet {
     id: number
 }
 
-export interface iDisassemblyGetTree {
+interface disassemblyGetTree {
     project_id: number
 }
 
-export interface iDisassemblyCreate {
+interface disassemblyCreate {
     name: string
     weight: number
     superior_id: number
 }
 
-export interface iDisassemblyCreateInBatches {
-    param: iDisassemblyCreate[]
+interface disassemblyCreateInBatches {
+    param: disassemblyCreate[]
 }
 
-export interface iDisassemblyUpdate {
+interface disassemblyUpdate {
     id: number
     name?: string
     weight?: number
 }
 
-export interface iDisassemblyDelete {
+interface disassemblyDelete {
     id: number
 }
 
-export interface iDisassemblyGetList extends list{
+interface disassemblyGetList extends list {
     project_id?: number
     level?: number
     superior_id?: number
@@ -38,19 +38,19 @@ export interface iDisassemblyGetList extends list{
 }
 
 const disassemblyApi = {
-    get: (param: iDisassemblyGet) => request.get(
+    get: (param: disassemblyGet) => request.get(
         '/disassembly/' + param.id).then(res => res.data,),
-    getTree: (param: iDisassemblyGetTree) => request.post(
+    getTree: (param: disassemblyGetTree) => request.post(
         '/disassembly/tree', param).then(res => res.data,),
-    create: (param: iDisassemblyCreate) => request.post(
+    create: (param: disassemblyCreate) => request.post(
         '/disassembly', param).then(res => res.data,),
-    createInBatches: (param: iDisassemblyCreateInBatches) => request.post(
+    createInBatches: (param: disassemblyCreateInBatches) => request.post(
         '/disassembly/batch', param).then(res => res.data,),
-    update: (param: iDisassemblyUpdate) => request.patch(
+    update: (param: disassemblyUpdate) => request.patch(
         '/disassembly/' + param.id, param).then(res => res.data,),
-    delete: (param: iDisassemblyDelete) => request.delete(
+    delete: (param: disassemblyDelete) => request.delete(
         '/disassembly/' + param.id,).then(res => res.data,),
-    getList: (param?: iDisassemblyGetList) => request.post(
+    getList: (param?: disassemblyGetList) => request.post(
         '/disassembly/list', param).then(res => res.data,),
 }
 

@@ -1,11 +1,11 @@
 import request from "@/utils/request";
 import {list} from "@/api/common-interface";
 
-export interface relatedPartyGet {
+interface relatedPartyGet {
     id: number
 }
 
-export interface relatedPartyCreate {
+interface relatedPartyCreate {
     name?: string
     english_name?: string
     address?: string
@@ -15,7 +15,7 @@ export interface relatedPartyCreate {
     file_ids?: string
 }
 
-export interface relatedPartyUpdate {
+interface relatedPartyUpdate {
     id: number
     name?: string
     english_name?: string
@@ -26,11 +26,11 @@ export interface relatedPartyUpdate {
     file_ids?:string
 }
 
-export interface relatedPartyDelete {
+interface relatedPartyDelete {
     id: number
 }
 
-export interface relatedPartyGetList extends list {
+interface relatedPartyGetList extends list {
     name_include?: string
     english_name_include?: string
 }

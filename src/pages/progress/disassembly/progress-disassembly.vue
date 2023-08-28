@@ -8,8 +8,7 @@
             <span>项目名称：</span>
             <a-select class="project-selector" show-search placeholder="支持模糊搜索"
                       :filter-option="projectIDFilterOption" v-model:value="queryCondition.projectID"
-                      :options="projectIDOptions" style="width: 0">
-            </a-select>
+                      :options="projectIDOptions" style="width: 0"/>
           </div>
 
           <a-divider style="margin-top: 14px;margin-bottom: 14px"/>
@@ -18,27 +17,27 @@
                   v-model:selectedKeys="disassemblyIDs" default-expand-all
                   style="text-align: left">
             <template #title="{title,key,level}">
-                            <span class="title">
-                                <span>{{ title }}</span>
-                                <a @click.stop="showModalForCreatingDisassembly(key)">
-                                    <a-tooltip>
-                                        <template #title>添加下级</template>
-                                        <PlusOutlined class="button"/>
-                                    </a-tooltip>
-                                </a>
-                                <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
-                                    <a-tooltip>
-                                        <template #title>修改本项</template>
-                                        <EditOutlined class="button"/>
-                                    </a-tooltip>
-                                </a>
-                                <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
-                                    <a-tooltip>
-                                        <template #title>删除本项</template>
-                                        <DeleteOutlined class="button"/>
-                                    </a-tooltip>
-                                </a>
-                            </span>
+              <span class="title">
+                <span>{{ title }}</span>
+                <a @click.stop="showModalForCreatingDisassembly(key)">
+                  <a-tooltip>
+                    <template #title>添加下级</template>
+                    <PlusOutlined class="button"/>
+                  </a-tooltip>
+                </a>
+                <a v-if="level !== 1" @click.stop="showModalForUpdatingDisassembly(key)">
+                  <a-tooltip>
+                    <template #title>修改本项</template>
+                    <EditOutlined class="button"/>
+                  </a-tooltip>
+                </a>
+                <a v-if="level !== 1" @click.stop="showModalForDeletingDisassembly(key)">
+                  <a-tooltip>
+                    <template #title>删除本项</template>
+                    <DeleteOutlined class="button"/>
+                  </a-tooltip>
+                </a>
+              </span>
             </template>
           </a-tree>
         </a-card>
@@ -72,29 +71,31 @@
 
             <div class="buttons-for-table-setting">
               <a-tooltip title="设置列" size="small">
-<!--                <a-button type="text" @click="toBeCompleted" size="small">-->
-<!--                  <template #icon>-->
-<!--                    <setting-outlined style="font-size: 16px"/>-->
-<!--                  </template>-->
-<!--                </a-button>-->
+                <!--                <a-button type="text" @click="toBeCompleted" size="small">-->
+                <!--                  <template #icon>-->
+                <!--                    <setting-outlined style="font-size: 16px"/>-->
+                <!--                  </template>-->
+                <!--                </a-button>-->
               </a-tooltip>
             </div>
           </a-row>
 
           <a-table :data-source="tableData.list" :columns="columns"
                    size="small" :pagination="false" @change="tableChange"
-                   :loading="loading">
+                   :loading="tableLoading">
             <template #bodyCell="{column,record,index}">
               <template v-if="column.dataIndex === 'line_number'">
                 {{ index + 1 }}
               </template>
               <template v-else-if="column.dataIndex === 'action'">
                 <a-button type="link" style="padding: 0"
-                          @click="showModalForUpdatingDisassembly(record.id)">修改
+                          @click="showModalForUpdatingDisassembly(record.id)">
+                  修改
                 </a-button>
                 <a-divider type="vertical"/>
                 <a-button type="link" style="padding: 0;color: red"
-                          @click="showModalForDeletingDisassembly(record.id)">删除
+                          @click="showModalForDeletingDisassembly(record.id)">
+                  删除
                 </a-button>
               </template>
             </template>
@@ -105,7 +106,8 @@
                         v-model:pageSize="queryCondition.pageSize" show-less-items
                         :total="tableData.numberOfRecords" show-size-changer
                         :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                        @change="loadTableData" :show-total="total=>`共${total.toLocaleString()}条记录`"/>
+                        @change="loadTableData"
+                        :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
         </a-card>
       </a-col>
     </a-row>
@@ -135,7 +137,6 @@ import {disassemblyApi} from "@/api/disassembly";
 import {projectApi} from "@/api/project";
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
-import {useRoute} from "vue-router";
 
 //项目id的选项
 const projectIDOptions = ref<SelectProps['options']>([])
@@ -145,10 +146,10 @@ const projectIDFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //加载项目下拉框的选项
-async function loadProjectIDOptions() {
+async function loadProjectOptions() {
   try {
     let res = await projectApi.getSimplifiedList()
-    if (res?.data) {
+    if (res?.code === 0) {
       for (let item of res.data) {
         projectIDOptions.value?.push({label: item.name, value: item.id})
       }
@@ -192,8 +193,8 @@ async function loadTreeData() {
     treeData.value = []
     if (queryCondition.projectID) {
       let res = await disassemblyApi.getTree({project_id: queryCondition.projectID})
-      for (let index in res.data) {
-        treeData.value.push(switchToTreeData(res.data[index]))
+      for (let item of res.data) {
+        treeData.value.push(switchToTreeData(item))
       }
     }
   } catch (err) {
@@ -229,13 +230,9 @@ watch(disassemblyIDs, () => {
 })
 
 //加载所有的选项
-function loadOptions() {
-  loadProjectIDOptions()
-      .then(loadLocalStorage)
-      .then(tipsForSelectingProjectID)
-}
-
-loadOptions()
+loadProjectOptions()
+    .then(loadLocalStorage)
+    .then(tipsForSelectingProjectID)
 
 //查询条件的格式
 interface queryConditionFormat extends pagingFormat {
@@ -270,7 +267,7 @@ watch(() => queryCondition.disassemblyID, () => {
 let tableData = reactive({list: [], numberOfPages: 1, numberOfRecords: 0,})
 
 //表格的状态，是否为加载中
-const loading = ref(false)
+const tableLoading = ref(false)
 
 //表格的列
 let columns = ref([
@@ -324,7 +321,7 @@ async function loadTableData() {
   try {
     //如果选择了拆解id
     if (queryCondition.disassemblyID) {
-      loading.value = true
+      tableLoading.value = true
       let res = await disassemblyApi.getList({
         superior_id: queryCondition.disassemblyID,
         page_size: queryCondition.pageSize,
@@ -341,7 +338,7 @@ async function loadTableData() {
 
         if (totalWeight !== 1) {
           message.error("子分类的权重设置有错误，总权重应为100%。当前总权重为："
-              + (totalWeight * 100).toFixed(1) + "%，请调整",10)
+              + (totalWeight * 100).toFixed(1) + "%，请调整", 10)
         }
 
         tableData.list = res?.data
@@ -363,7 +360,7 @@ async function loadTableData() {
     tableData.numberOfRecords = 0
     console.log(err)
   } finally {
-    loading.value = false
+    tableLoading.value = false
   }
 }
 

@@ -24,7 +24,7 @@ interface projectCreate {
     content?: string
 }
 
-export interface projectUpdate {
+interface projectUpdate {
     id: number
     code?: string
     name?: string
