@@ -99,7 +99,7 @@ const routes: customRouteRecord[] = [
                         path: '/progress/status/table',
                         name: routeName.progressStatusTable,
                         meta: {
-                            label: '详情',
+                            label: '详情(编辑)',
                             requireAuth: true,
                             permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                         },
@@ -109,22 +109,22 @@ const routes: customRouteRecord[] = [
                         path: '/progress/status/chart',
                         name: routeName.progressStatusChart,
                         meta: {
-                            label: '示意图',
+                            label: '示意图(查看)',
                         },
                         component: () => import('@/pages/progress/status/chart/progress-status-chart.vue')
                     },
                 ],
             },
-            // {
-            //     path: '/progress/update_log',
-            //     name: '更新日志',
-            //     meta: {
-            //         label: '更新日志',
-            //         requireAuth: true,
-            //         permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-            //     },
-            //     component: () => import('@/pages/progress/update-log.vue'),
-            // },
+            {
+                path: '/progress/update_log',
+                name: '更新日志',
+                meta: {
+                    label: '更新日志',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/progress/update-log/update-log-table.vue'),
+            },
         ],
     },
     {

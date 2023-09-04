@@ -120,7 +120,7 @@ function drawChart() {
       },
       series: [
         {
-          name: '计划付款总额(CNY)',
+          name: '计划收款总额(CNY)',
           type: 'line',
           itemStyle: {color: '#1890FF'},
           lineStyle: {color: '#1890FF', type: 'dashed'},
@@ -130,7 +130,7 @@ function drawChart() {
           dimension: ['date', 'value'],
         },
         {
-          name: '预测付款总额(CNY)',
+          name: '预测收款总额(CNY)',
           type: 'line',
           itemStyle: {color: 'orange'},
           lineStyle: {color: 'orange', type: 'dashed'},
@@ -140,7 +140,7 @@ function drawChart() {
           dimension: ['date', 'value']
         },
         {
-          name: '实际付款总额(CNY)',
+          name: '实际收款总额(CNY)',
           type: 'line',
           itemStyle: {color: 'red'},
           lineStyle: {color: 'red'},
