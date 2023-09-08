@@ -58,11 +58,11 @@
 
         <div class="buttons-for-table-setting">
           <a-tooltip title="设置列" size="small">
-<!--            <a-button type="text" @click="toBeCompleted" size="small">-->
-<!--              <template #icon>-->
-<!--                <setting-outlined style="font-size: 16px"/>-->
-<!--              </template>-->
-<!--            </a-button>-->
+            <!--            <a-button type="text" @click="toBeCompleted" size="small">-->
+            <!--              <template #icon>-->
+            <!--                <setting-outlined style="font-size: 16px"/>-->
+            <!--              </template>-->
+            <!--            </a-button>-->
           </a-tooltip>
         </div>
       </a-row>
@@ -130,14 +130,14 @@
             <a-button type="link" style="padding: 0" @click="showModalForUpdating(record.id)">
               修改
             </a-button>
-<!--            <a-divider type="vertical"/>-->
-<!--            <a-tooltip placement="topLeft">-->
-<!--              <template #title>如需删除，请联系管理员</template>-->
-<!--              <a-button type="link" style="padding: 0" danger disabled-->
-<!--                        @click="deleteContract">-->
-<!--                删除-->
-<!--              </a-button>-->
-<!--            </a-tooltip>-->
+            <!--            <a-divider type="vertical"/>-->
+            <!--            <a-tooltip placement="topLeft">-->
+            <!--              <template #title>如需删除，请联系管理员</template>-->
+            <!--              <a-button type="link" style="padding: 0" danger disabled-->
+            <!--                        @click="deleteContract">-->
+            <!--                删除-->
+            <!--              </a-button>-->
+            <!--            </a-tooltip>-->
           </template>
 
         </template>
@@ -158,9 +158,9 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {reactive, ref, watch} from "vue";
 import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import {FormInstance, message, SelectProps} from "ant-design-vue";
+import {FormInstance, SelectProps} from "ant-design-vue";
 import {contractApi} from "@/api/contract";
 import {projectApi} from "@/api/project";
 import {pageSizeOptions} from "@/constants/paging-constant";
@@ -176,7 +176,7 @@ interface queryConditionFormat extends pagingFormat {
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
-  desc:true,
+  desc: true,
 })
 
 //部门选项的过滤器（下拉框搜索）
@@ -258,9 +258,15 @@ const columns = ref([
   },
 ])
 
-function toBeCompleted() {
-  message.info('待完成')
+//加载本地存储的数据
+function loadLocalStorage() {
+  const tempProjectID = Number(localStorage.getItem("project_id"))
+  if (tempProjectID > 0) {
+    queryCondition.projectID = tempProjectID
+  }
 }
+
+loadLocalStorage()
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
@@ -279,6 +285,7 @@ function resetQueryCondition() {
   formRef.value?.resetFields()
   queryCondition.page = 1
   queryCondition.pageSize = 12
+  queryCondition.projectID = undefined
   loadTableData()
 }
 
@@ -350,6 +357,16 @@ async function loadProjectOptions() {
 }
 
 loadProjectOptions()
+
+//监测查询条件中projectID的变化
+watch(() => queryCondition.projectID, (newValue:any) => {
+      if (newValue > 0) {
+        localStorage.setItem("project_id", String(queryCondition.projectID))
+      } else {
+       localStorage.removeItem("project_id")
+      }
+    }
+)
 
 </script>
 

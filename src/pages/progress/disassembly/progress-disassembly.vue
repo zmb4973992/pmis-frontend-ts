@@ -393,9 +393,6 @@ function showModalForDeletingDisassembly(disassemblyID: number) {
   modalForDeletingItem.value.showModal(disassemblyID)
 }
 
-function toBeCompleted() {
-  message.info('待完成')
-}
 </script>
 
 <style scoped lang="scss">

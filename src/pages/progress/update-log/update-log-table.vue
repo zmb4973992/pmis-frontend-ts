@@ -87,7 +87,7 @@
 
           <template v-else-if="column.dataIndex[0] === 'operation_type' && column.dataIndex[1] === 'name'">
             <template v-if="record.operation_type?.name === '添加'">
-              <span style="color: cornflowerblue">添加</span>
+              <span style="color: green">添加</span>
             </template>
             <template v-if="record.operation_type?.name === '修改'">
               <span style="color: darkorange">修改</span>

@@ -53,6 +53,7 @@ interface projectGetList extends list {
     organization_id_in?: number[]
     organization_name_include?: string
     related_party_id?: number
+    country?:number
     ignore_data_authority?: boolean
 }
 

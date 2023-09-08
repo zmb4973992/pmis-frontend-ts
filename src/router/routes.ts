@@ -16,17 +16,29 @@ const privateRoutes: customRouteRecord[] = []
 
 
 const routes: customRouteRecord[] = [
-    // {
-    //     path: '/home',
-    //     name: routeName.homePage,
-    //     meta: {
-    //         label: '首页',
-    //         icon: 'HomeOutlined',
-    //         requireAuth: true,
-    //         permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
-    //     },
-    //     component: () => import('@/pages/layout.vue'),
-    // },
+    {
+        path: '/dashboard',
+        name: '仪表盘',
+        meta: {
+            label: '仪表盘',
+            icon: 'HomeOutlined',
+            requireAuth: true,
+            permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+        },
+        component: () => import('@/pages/layout.vue'),
+        children:[
+            {
+                path: '/dashboard/analysis',
+                name: '项目分析页',
+                meta: {
+                    label: '项目分析页',
+                    requireAuth: true,
+                    permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
+                },
+                component: () => import('@/pages/test.vue'),
+            },
+        ]
+    },
     {
         path: '/project',
         name: routeName.project,

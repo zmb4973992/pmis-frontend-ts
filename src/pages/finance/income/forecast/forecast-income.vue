@@ -11,7 +11,7 @@
                         :filter-option="projectFilterOption"
                         v-model:value="queryCondition.projectID"
                         :options="projectOptions"
-                        style="width:130px"/>
+                        style="width:170px"/>
             </a-form-item>
           </a-col>
           <a-col>
@@ -51,13 +51,13 @@
           添加预测收款记录
         </a-button>
         <div class="buttons-for-table-setting">
-          <a-tooltip title="设置列" size="small">
-            <a-button type="text" @click="toBeCompleted" size="small">
-              <template #icon>
-                <setting-outlined style="font-size: 16px"/>
-              </template>
-            </a-button>
-          </a-tooltip>
+<!--          <a-tooltip title="设置列" size="small">-->
+<!--            <a-button type="text" @click="toBeCompleted" size="small">-->
+<!--              <template #icon>-->
+<!--                <setting-outlined style="font-size: 16px"/>-->
+<!--              </template>-->
+<!--            </a-button>-->
+<!--          </a-tooltip>-->
         </div>
       </a-row>
 
@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {reactive, ref, watch} from "vue";
 import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
 import {FormInstance, message, SelectProps} from "ant-design-vue";
 import {projectApi} from "@/api/project";
@@ -230,10 +230,6 @@ const columns = ref([
   },
 ])
 
-function toBeCompleted() {
-  message.info('待完成')
-}
-
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
 
@@ -251,6 +247,7 @@ function resetQueryCondition() {
   formRef.value?.resetFields()
   queryCondition.page = 1
   queryCondition.pageSize = 12
+  queryCondition.projectID = undefined
   loadTableData()
 }
 
@@ -301,8 +298,6 @@ async function loadTableData() {
   }
 }
 
-loadTableData()
-
 const projectOptions = ref<SelectProps['options']>([])
 
 //获取项目下拉框的选项
@@ -317,7 +312,33 @@ async function loadProjectOptions() {
   }
 }
 
-loadProjectOptions()
+//加载所有的查询选项
+async function loadQueryOptions() {
+  await loadProjectOptions()
+}
+
+//加载本地存储的查询条件
+function loadLocalQueryConditions() {
+  const tempProjectID = Number(localStorage.getItem("project_id"))
+  if (tempProjectID > 0) {
+    queryCondition.projectID = tempProjectID
+  }
+}
+
+//先加载所有的查询选项，然后加载本地所有的查询条件，然后根据查询条件加载表格数据
+loadQueryOptions()
+    .then(() => loadLocalQueryConditions())
+    .then(() => loadTableData())
+
+//监测查询条件中projectID的变化
+watch(() => queryCondition.projectID, (newValue:any) => {
+      if (newValue > 0) {
+        localStorage.setItem("project_id", String(queryCondition.projectID))
+      } else {
+        localStorage.removeItem("project_id")
+      }
+    }
+)
 
 </script>
 

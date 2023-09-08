@@ -273,7 +273,7 @@ async function showModal(contractID: number) {
       if (res.data.files) {
         for (let item of res.data.files) {
           contractDetail.files.push({
-            name: item.name,
+            name: item.name + "　　" + item.size_mb + "MB",
             url: item.url,
             response: {id: item.id,}
           })

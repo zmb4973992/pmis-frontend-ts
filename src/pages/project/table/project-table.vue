@@ -13,6 +13,16 @@
             </a-select>
           </a-form-item>
         </a-col>
+
+        <a-col>
+          <a-form-item class="query-item" label="所在国" name="country">
+            <a-select show-search allow-clear :filter-option="countryFilterOption"
+                       placeholder="所在国" v-model:value="queryCondition.country"
+                      :options="countryOptions" style="width:150px">
+            </a-select>
+          </a-form-item>
+        </a-col>
+
         <a-col>
           <a-form-item class="query-item" label="项目全称" name="nameInclude">
             <a-input v-model:value="queryCondition.nameInclude"
@@ -130,6 +140,7 @@ import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
@@ -171,6 +182,7 @@ function tableChange(pagination: any, filter: any, sorter: any) {
 interface queryConditionFormat extends pagingFormat {
   organizationIDIn?: number[]
   nameInclude?: string
+  country?:number
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -179,7 +191,7 @@ const queryCondition = reactive<queryConditionFormat>({
   desc: true,
 })
 
-let organizationOptions = ref<SelectProps['options']>([])
+const organizationOptions = ref<SelectProps['options']>([])
 
 //获取部门下拉框的值
 async function loadOrganizationOptions() {
@@ -192,10 +204,7 @@ async function loadOrganizationOptions() {
       for (let item of res.data) {
         organizationOptions.value?.push({value: item.id, label: item.name})
       }
-    } else {
-
     }
-
   } catch (err) {
     console.log(err);
   }
@@ -203,8 +212,33 @@ async function loadOrganizationOptions() {
 
 loadOrganizationOptions()
 
+const countryOptions = ref<SelectProps['options']>([])
+
 //部门选项的过滤器（下拉框搜索）
 const organizationFilterOption = (input: string, option: any) =>
+    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
+//获取部门下拉框的值
+async function loadCountryOptions() {
+  try {
+    let res = await dictionaryDetailApi.getList({
+      dictionary_type_name:"国家",
+      page_size: 0,
+    })
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        countryOptions.value?.push({value: item.id, label: item.name})
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+loadCountryOptions()
+
+//国家选项的过滤器（下拉框搜索）
+const countryFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 
 //表格数据
@@ -245,7 +279,7 @@ let columns = ref<TableColumnsType>([
     maxWidth: 150,
   },
   {
-    title: '所在国家',
+    title: '所在国',
     dataIndex: ['country', 'name'],
     width: 100,
     ellipsis: true,
@@ -322,6 +356,7 @@ async function loadTableData() {
     let res = await projectApi.getList({
       organization_id_in: queryCondition.organizationIDIn,
       name_include: queryCondition.nameInclude,
+      country:queryCondition.country,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
