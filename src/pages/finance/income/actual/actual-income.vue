@@ -15,9 +15,8 @@
           </a-col>
 
           <a-col>
-            <a-form-item class="query-item" label="付款日期" name="dateRange">
-              <a-range-picker v-model:value="queryCondition.dateRange"
-                              value-format="YYYY-MM-DD"/>
+            <a-form-item class="query-item" label="收款日期" name="dateRange">
+              <a-range-picker v-model:value="queryCondition.dateRange"/>
             </a-form-item>
           </a-col>
 
@@ -143,7 +142,8 @@ import {pagingFormat} from "@/interfaces/paging-interface"
 import {incomeAndExpenditureApi} from "@/api/income-and-expenditure"
 import ModalForCreatingActualIncome from "@/pages/finance/income/actual/component/modal-for-creating-actual-income.vue"
 import ModalForCreatingProgress from "@/pages/progress/status/table/component/modal-for-creating-progress.vue"
-import dayjs, {Dayjs} from "dayjs"
+import dayjs from "dayjs"
+import type {Dayjs} from "dayjs"
 import {useRoute} from "vue-router"
 import router from "@/router"
 
@@ -306,9 +306,9 @@ async function loadTableData() {
       kind:"实际",
       fund_direction: "收款",
       date_gte: queryCondition.dateRange?.length === 2 ?
-          queryCondition.dateRange[0]?.format("YYYY-MM-DD") : undefined,
+          queryCondition.dateRange[0].format("YYYY-MM-DD") : undefined,
       date_lte: queryCondition.dateRange?.length === 2 ?
-          queryCondition.dateRange[1]?.format("YYYY-MM-DD") : undefined,
+          queryCondition.dateRange[1].format("YYYY-MM-DD") : undefined,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,

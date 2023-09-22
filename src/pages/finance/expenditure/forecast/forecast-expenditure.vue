@@ -16,7 +16,7 @@
           </a-col>
           <a-col>
             <a-form-item class="query-item" label="付款日期" name="dateRange">
-              <a-range-picker v-model:value="queryCondition.dateRange" value-format="YYYY-MM-DD"/>
+              <a-range-picker v-model:value="queryCondition.dateRange"/>
             </a-form-item>
           </a-col>
           <a-col>
@@ -135,6 +135,7 @@ import {projectApi} from "@/api/project";
 import {pageSizeOptions} from "@/constants/paging-constant";
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
+import type {Dayjs} from "dayjs";
 
 function createExpenditure() {
   message.warn('为确保数据的一致性，信息会从OA自动同步，无需手动添加', 5)
@@ -152,7 +153,7 @@ function deleteExpenditure() {
 interface queryConditionFormat extends pagingFormat {
   projectID?: number
   nameInclude?: string
-  dateRange?: [string, string]
+  dateRange?: [Dayjs, Dayjs]
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -283,8 +284,10 @@ async function loadTableData() {
       project_id: queryCondition.projectID,
       kind:"预测",
       fund_direction: "付款",
-      date_gte: queryCondition.dateRange ? queryCondition.dateRange[0] : undefined,
-      date_lte: queryCondition.dateRange ? queryCondition.dateRange[1] : undefined,
+      date_gte: queryCondition.dateRange?.length === 2 ?
+          queryCondition.dateRange[0]?.format("YYYY-MM-DD") : undefined,
+      date_lte: queryCondition.dateRange?.length === 2 ?
+          queryCondition.dateRange[1]?.format("YYYY-MM-DD") : undefined,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,

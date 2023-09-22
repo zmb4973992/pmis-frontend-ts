@@ -17,7 +17,7 @@
 
           <a-col>
             <a-form-item class="query-item" label="付款日期" name="dateRange">
-              <a-range-picker v-model:value="queryCondition.dateRange" value-format="YYYY-MM-DD"/>
+              <a-range-picker v-model:value="queryCondition.dateRange"/>
             </a-form-item>
           </a-col>
 
