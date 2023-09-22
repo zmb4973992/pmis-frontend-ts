@@ -54,11 +54,18 @@ interface projectGetList extends list {
     organization_name_include?: string
     related_party_id?: number
     country?:number
+    approval_date_gte?: string
+    approval_date_lte?: string
     ignore_data_authority?: boolean
 }
 
 interface projectGetSimplifiedList {
     ignore_data_authority?: boolean
+}
+
+interface projectGetCount {
+    approval_date_gte?:string,
+    approval_date_lte?:string,
 }
 
 const projectApi = {
@@ -73,6 +80,8 @@ const projectApi = {
     getList: (param?: projectGetList) => request.post('/project/list', param)
         .then(res => res.data),
     getSimplifiedList: (param?: projectGetSimplifiedList) => request.post('/project/simplified-list', param)
+        .then(res => res.data),
+    getCount: (param?: projectGetCount) => request.post('/project/count', param)
         .then(res => res.data),
 }
 

@@ -221,6 +221,13 @@ const columns = ref([
     align: 'center',
   },
   {
+    title: '汇率',
+    dataIndex: 'exchange_rate',
+    width: 100,
+    ellipsis: true,
+    align: 'center',
+  },
+  {
     title: '操作',
     dataIndex: 'operation',
     width: '110px',
@@ -303,7 +310,7 @@ const projectOptions = ref<SelectProps['options']>([])
 //获取项目下拉框的选项
 async function loadProjectOptions() {
   try {
-    let res = await projectApi.getList({page_size: 0})
+    let res = await projectApi.getList({page_size: 0,desc:true})
     for (let item of res.data) {
       projectOptions.value?.push({label: item.name, value: item.id})
     }

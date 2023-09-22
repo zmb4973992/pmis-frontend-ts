@@ -62,7 +62,7 @@ const onFinish = (data: any) => {
         res => {
             if (res.code === 0) {
                 message.success('登录成功，正在跳转......', 1)
-                router.push({name: routeName.projectTable})
+                router.push({name:"看板"})
             } else {
                 message.error('用户名或密码错误')
             }

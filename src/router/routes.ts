@@ -17,7 +17,7 @@ const privateRoutes: customRouteRecord[] = []
 
 const routes: customRouteRecord[] = [
     {
-        path: '/dashboard',
+        path: '/42342343434',
         name: '仪表盘',
         meta: {
             label: '仪表盘',
@@ -28,19 +28,19 @@ const routes: customRouteRecord[] = [
         component: () => import('@/pages/layout.vue'),
         children:[
             {
-                path: '/dashboard/analysis',
-                name: '项目分析页',
+                path: '/dashboard',
+                name: '看板',
                 meta: {
-                    label: '项目分析页',
+                    label: '看板',
                     requireAuth: true,
                     permittedRoles: ['管理员', '公司级', '事业部级', '部门级', '项目级'],
                 },
-                component: () => import('@/pages/test.vue'),
+                component: () => import('@/pages/dashboard/dashboard.vue'),
             },
         ]
     },
     {
-        path: '/project',
+        path: '/undkek',
         name: routeName.project,
         component: () => import('@/pages/layout.vue'),
         meta: {
@@ -256,7 +256,7 @@ const routes: customRouteRecord[] = [
                 children: [
                     {
                         path: '/finance/income/actual',
-                        name: '实际收款',
+                        name: '实际收款列表',
                         meta: {
                             label: '实际收款',
                         },
@@ -264,7 +264,7 @@ const routes: customRouteRecord[] = [
                     },
                     {
                         path: '/finance/income/forecast',
-                        name: '预测收款',
+                        name: '预测收款列表',
                         meta: {
                             label: '预测收款',
                         },
@@ -281,7 +281,7 @@ const routes: customRouteRecord[] = [
                 children: [
                     {
                         path: '/finance/expenditure/actual',
-                        name: '实际付款',
+                        name: '实际付款列表',
                         meta: {
                             label: '实际付款',
                         },
@@ -289,7 +289,7 @@ const routes: customRouteRecord[] = [
                     },
                     {
                         path: '/finance/expenditure/forecast',
-                        name: '预测付款',
+                        name: '预测付款列表',
                         meta: {
                             label: '预测付款',
                         },
@@ -297,12 +297,6 @@ const routes: customRouteRecord[] = [
                     },
                 ]
             },
-            // {
-            //     path: '/finance/project-fund-status',
-            //     name: '项目资金情况',
-            //     meta: {label: '项目资金情况'},
-            //     component: () => import('@/pages/finance/project-fund-status/project-fund-status.vue')
-            // },
         ],
     },
     //以下为消息中心

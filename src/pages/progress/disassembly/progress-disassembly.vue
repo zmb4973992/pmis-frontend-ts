@@ -148,7 +148,10 @@ const projectIDFilterOption = (input: string, option: any) =>
 //加载项目下拉框的选项
 async function loadProjectOptions() {
   try {
-    let res = await projectApi.getSimplifiedList()
+    let res = await projectApi.getList({
+      page_size: 0,
+      desc: true,
+    })
     if (res?.code === 0) {
       for (let item of res.data) {
         projectIDOptions.value?.push({label: item.name, value: item.id})

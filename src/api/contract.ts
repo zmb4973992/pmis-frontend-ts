@@ -63,7 +63,15 @@ interface contractGetList extends list {
     related_party_id?: number
     fund_direction?: number
     name_include?: string
+    approval_date_gte?:string,
+    approval_date_lte?:string,
     ignore_data_authority?: boolean,
+}
+
+interface contractGetCount {
+    fund_direction?: string
+    approval_date_gte?:string,
+    approval_date_lte?:string,
 }
 
 const contractApi = {
@@ -76,6 +84,8 @@ const contractApi = {
     delete: (param: contractDelete) => request.delete('/contract/' + param.id)
         .then(res => res.data,),
     getList: (param?: contractGetList) => request.post('/contract/list', param)
+        .then(res => res.data),
+    getCount:(param?: contractGetCount) => request.post('/contract/count', param)
         .then(res => res.data),
 }
 

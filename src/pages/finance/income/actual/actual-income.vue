@@ -13,12 +13,14 @@
                         style="width:170px"/>
             </a-form-item>
           </a-col>
+
           <a-col>
             <a-form-item class="query-item" label="付款日期" name="dateRange">
               <a-range-picker v-model:value="queryCondition.dateRange"
                               value-format="YYYY-MM-DD"/>
             </a-form-item>
           </a-col>
+
           <a-col>
             <a-form-item class="query-item">
               <a-button-group>
@@ -37,6 +39,7 @@
               </a-button-group>
             </a-form-item>
           </a-col>
+
         </a-row>
       </a-form>
     </a-card>
@@ -131,15 +134,18 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref, watch} from "vue";
-import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue";
-import {FormInstance, message, SelectProps} from "ant-design-vue";
-import {projectApi} from "@/api/project";
-import {pageSizeOptions} from "@/constants/paging-constant";
-import {pagingFormat} from "@/interfaces/paging-interface";
-import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
-import ModalForCreatingActualIncome from "@/pages/finance/income/actual/component/modal-for-creating-actual-income.vue";
-import ModalForCreatingProgress from "@/pages/progress/status/table/component/modal-for-creating-progress.vue";
+import {reactive, ref, watch} from "vue"
+import {SearchOutlined, RedoOutlined, PlusOutlined} from "@ant-design/icons-vue"
+import {FormInstance, message, SelectProps} from "ant-design-vue"
+import {projectApi} from "@/api/project"
+import {pageSizeOptions} from "@/constants/paging-constant"
+import {pagingFormat} from "@/interfaces/paging-interface"
+import {incomeAndExpenditureApi} from "@/api/income-and-expenditure"
+import ModalForCreatingActualIncome from "@/pages/finance/income/actual/component/modal-for-creating-actual-income.vue"
+import ModalForCreatingProgress from "@/pages/progress/status/table/component/modal-for-creating-progress.vue"
+import dayjs, {Dayjs} from "dayjs"
+import {useRoute} from "vue-router"
+import router from "@/router"
 
 const modalForCreatingActualIncome = ref()
 
@@ -160,7 +166,7 @@ function deleteIncome() {
 interface queryConditionFormat extends pagingFormat {
   projectID?: number
   nameInclude?: string
-  dateRange?: [string, string]
+  dateRange?: [Dayjs, Dayjs]
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -212,9 +218,9 @@ const columns = ref([
     sorter: true,
   },
   {
-    title: '类型',
-    dataIndex: 'type',
-    width: '200px',
+    title:"分类",
+    dataIndex:['data_source','name'],
+    width: '100px',
     ellipsis: true,
     align: 'center',
   },
@@ -229,6 +235,13 @@ const columns = ref([
     title: '项目名称',
     dataIndex: ['project', 'name'],
     width: '260px',
+    ellipsis: true,
+    align: 'center',
+  },
+  {
+    title: '汇率',
+    dataIndex: 'exchange_rate',
+    width: 100,
     ellipsis: true,
     align: 'center',
   },
@@ -249,6 +262,9 @@ const formRef = ref<FormInstance>();
 function query() {
   //所有查询都从第一页开始
   queryCondition.page = 1
+  //刷新url，清空url的query参数
+  router.push({name: '实际收款列表',})
+  //加载表格数据
   loadTableData()
 }
 
@@ -257,9 +273,14 @@ function resetQueryCondition() {
   //使用resetFields时，要确保相关的a-form-item都添加了name属性
   //同时name的值要等于reactive数据的字段名，这样form的函数才能找到相关字段
   formRef.value?.resetFields()
+  //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置！！！
+  queryCondition.dateRange = undefined
   queryCondition.page = 1
   queryCondition.pageSize = 12
   queryCondition.projectID = undefined
+  //刷新url，清空url的query参数
+  router.push({name: '实际收款列表',})
+  //加载表格数据
   loadTableData()
 }
 
@@ -284,8 +305,10 @@ async function loadTableData() {
       project_id: queryCondition.projectID,
       kind:"实际",
       fund_direction: "收款",
-      date_gte: queryCondition.dateRange ? queryCondition.dateRange[0] : undefined,
-      date_lte: queryCondition.dateRange ? queryCondition.dateRange[1] : undefined,
+      date_gte: queryCondition.dateRange?.length === 2 ?
+          queryCondition.dateRange[0]?.format("YYYY-MM-DD") : undefined,
+      date_lte: queryCondition.dateRange?.length === 2 ?
+          queryCondition.dateRange[1]?.format("YYYY-MM-DD") : undefined,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -315,7 +338,7 @@ const projectOptions = ref<SelectProps['options']>([])
 //获取项目下拉框的选项
 async function loadProjectOptions() {
   try {
-    let res = await projectApi.getList({page_size: 0})
+    let res = await projectApi.getList({page_size: 0,desc:true})
     for (let item of res.data) {
       projectOptions.value?.push({label: item.name, value: item.id})
     }
@@ -329,19 +352,6 @@ async function loadQueryOptions() {
   await loadProjectOptions()
 }
 
-//加载本地存储的查询条件
-function loadLocalQueryConditions() {
-  const tempProjectID = Number(localStorage.getItem("project_id"))
-  if (tempProjectID > 0) {
-    queryCondition.projectID = tempProjectID
-  }
-}
-
-//先加载所有的查询选项，然后加载本地所有的查询条件，然后根据查询条件加载表格数据
-loadQueryOptions()
-    .then(() => loadLocalQueryConditions())
-    .then(() => loadTableData())
-
 //监测查询条件中projectID的变化
 watch(() => queryCondition.projectID, (newValue:any) => {
       if (newValue > 0) {
@@ -351,6 +361,32 @@ watch(() => queryCondition.projectID, (newValue:any) => {
       }
     }
 )
+
+//加载本地存储的数据
+function loadLocalStorage() {
+  const tempProjectID = Number(localStorage.getItem("project_id"))
+  if (tempProjectID > 0) {
+    queryCondition.projectID = tempProjectID
+  }
+}
+
+const route = useRoute()
+
+async function loadQueryConditionsInUrl() {
+  //日期范围必须有开始日期和结束日期
+  if (route?.query.start_date && route?.query.end_date) {
+    queryCondition.dateRange = [dayjs(), dayjs()]
+    queryCondition.dateRange[0] = dayjs(route.query.start_date as string)
+    queryCondition.dateRange[1] = dayjs(route.query.end_date as string)
+  }
+}
+
+//先加载所有的查询选项，然后加载url里的query参数，
+// 然后加载本地所有的查询条件，然后根据查询条件加载表格数据
+loadQueryOptions()
+    .then(() => loadQueryConditionsInUrl())
+    .then(() => loadLocalStorage())
+    .then(() => loadTableData())
 
 </script>
 

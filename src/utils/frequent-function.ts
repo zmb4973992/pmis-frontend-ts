@@ -2,7 +2,7 @@ import router from "@/router";
 import {routeName} from "@/utils/routeName";
 
 function backToHomePage() {
-    router.push({name: '项目列表'})
+    router.push({name: '看板'})
 }
 
 function logout() {

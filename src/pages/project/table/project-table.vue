@@ -6,9 +6,11 @@
       <a-row :gutter="10">
         <a-col>
           <a-form-item class="query-item" label="部门" name="organizationIDIn">
-            <a-select show-search allow-clear mode="multiple" :filter-option="organizationFilterOption"
+            <a-select show-search allow-clear mode="multiple"
+                      :filter-option="organizationFilterOption"
                       :max-tag-count="1" :max-tag-text-length="2" placeholder="部门"
-                      v-model:value="queryCondition.organizationIDIn" :options="organizationOptions"
+                      v-model:value="queryCondition.organizationIDIn"
+                      :options="organizationOptions"
                       style="width:170px">
             </a-select>
           </a-form-item>
@@ -17,7 +19,7 @@
         <a-col>
           <a-form-item class="query-item" label="所在国" name="country">
             <a-select show-search allow-clear :filter-option="countryFilterOption"
-                       placeholder="所在国" v-model:value="queryCondition.country"
+                      placeholder="所在国" v-model:value="queryCondition.country"
                       :options="countryOptions" style="width:150px">
             </a-select>
           </a-form-item>
@@ -29,6 +31,13 @@
                      placeholder="支持模糊搜索" style="width: 180px"/>
           </a-form-item>
         </a-col>
+
+        <a-col v-if="!queryRowIsCollapsed">
+          <a-form-item class="query-item" label="立项日期" name="approvalDateRange">
+            <a-range-picker v-model:value="queryCondition.approvalDateRange"/>
+          </a-form-item>
+        </a-col>
+
         <a-col>
           <a-form-item class="query-item">
             <a-button-group>
@@ -47,6 +56,22 @@
             </a-button-group>
           </a-form-item>
         </a-col>
+
+        <a-col>
+          <a-form-item class="query-item">
+            <a-button type="link" style="padding-left: 0" @click="changeQueryRowStatus">
+              <template v-if="queryRowIsCollapsed">
+                <DownOutlined/>
+                展开高级搜索
+              </template>
+              <template v-else>
+                <UpOutlined/>
+                收起高级搜索
+              </template>
+            </a-button>
+          </a-form-item>
+        </a-col>
+
       </a-row>
     </a-form>
   </a-card>
@@ -71,11 +96,11 @@
 
       <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
-<!--          <a-button type="text" @click="toBeCompleted" size="small">-->
-<!--            <template #icon>-->
-<!--              <setting-outlined style="font-size: 16px"/>-->
-<!--            </template>-->
-<!--          </a-button>-->
+          <!--          <a-button type="text" @click="toBeCompleted" size="small">-->
+          <!--            <template #icon>-->
+          <!--              <setting-outlined style="font-size: 16px"/>-->
+          <!--            </template>-->
+          <!--          </a-button>-->
         </a-tooltip>
       </a-row>
     </a-row>
@@ -132,23 +157,55 @@
 
 <script setup lang="ts">
 import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
-// import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
-import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
+import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
+import {
+  SearchOutlined, RedoOutlined, PlusOutlined,
+  UpOutlined, DownOutlined
+} from "@ant-design/icons-vue"
 import {reactive, ref} from "vue"
-import {FormInstance, message, SelectProps, TableColumnsType} from "ant-design-vue"
+import {FormInstance, SelectProps, TableColumnsType} from "ant-design-vue"
 import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
-import {pagingFormat} from "@/interfaces/paging-interface";
-import {pageSizeOptions} from "@/constants/paging-constant";
-import {dictionaryDetailApi} from "@/api/dictionary-detail";
+import {pagingFormat} from "@/interfaces/paging-interface"
+import {pageSizeOptions} from "@/constants/paging-constant"
+import {dictionaryDetailApi} from "@/api/dictionary-detail"
+import type {Dayjs} from 'dayjs'
+import {useRoute} from "vue-router"
+import dayjs from 'dayjs'
+import router from "@/router";
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
+
+//查询栏是否收起，默认收起
+const queryRowIsCollapsed = ref(true)
+
+//改变查询栏的收起状态
+function changeQueryRowStatus() {
+  queryRowIsCollapsed.value = !queryRowIsCollapsed.value
+}
+
+//查询条件
+interface queryConditionFormat extends pagingFormat {
+  organizationIDIn?: number[]
+  nameInclude?: string
+  country?: number
+  approvalDateRange?: [Dayjs, Dayjs]
+}
+
+const queryCondition = reactive<queryConditionFormat>({
+  page: 1,
+  pageSize: 12,
+  desc: true,
+})
 
 //查询按钮
 function query() {
   //所有查询都从第一页开始
   queryCondition.page = 1
+  //刷新url，清空url的query参数
+  router.push({name: '项目列表',})
+  //加载表格数据
   loadTableData()
 }
 
@@ -157,10 +214,14 @@ function resetQueryCondition() {
   //使用resetFields时，要确保相关的a-form-item都添加了name属性
   //同时name的值要等于reactive数据的字段名，这样form的函数才能找到相关字段
   formRef.value?.resetFields()
-  //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置
+  //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置！！！
   queryCondition.organizationIDIn = []
+  queryCondition.approvalDateRange = undefined
   queryCondition.page = 1
   queryCondition.pageSize = 12
+  //刷新url，清空url的query参数
+  router.push({name: '项目列表',})
+  //加载表格数据
   loadTableData()
 }
 
@@ -177,19 +238,6 @@ function tableChange(pagination: any, filter: any, sorter: any) {
   }
   loadTableData()
 }
-
-//查询条件
-interface queryConditionFormat extends pagingFormat {
-  organizationIDIn?: number[]
-  nameInclude?: string
-  country?:number
-}
-
-const queryCondition = reactive<queryConditionFormat>({
-  page: 1,
-  pageSize: 12,
-  desc: true,
-})
 
 const organizationOptions = ref<SelectProps['options']>([])
 
@@ -210,8 +258,6 @@ async function loadOrganizationOptions() {
   }
 }
 
-loadOrganizationOptions()
-
 const countryOptions = ref<SelectProps['options']>([])
 
 //部门选项的过滤器（下拉框搜索）
@@ -222,7 +268,7 @@ const organizationFilterOption = (input: string, option: any) =>
 async function loadCountryOptions() {
   try {
     let res = await dictionaryDetailApi.getList({
-      dictionary_type_name:"国家",
+      dictionary_type_name: "国家",
       page_size: 0,
     })
     if (res?.code === 0) {
@@ -234,8 +280,6 @@ async function loadCountryOptions() {
     console.log(err);
   }
 }
-
-loadCountryOptions()
 
 //国家选项的过滤器（下拉框搜索）
 const countryFilterOption = (input: string, option: any) =>
@@ -298,7 +342,6 @@ let columns = ref<TableColumnsType>([
   },
   {
     title: '金额',
-    className: 'amount',
     dataIndex: 'amount',
     width: 120,
     ellipsis: true,
@@ -322,6 +365,16 @@ let columns = ref<TableColumnsType>([
     width: 100,
     ellipsis: true,
     align: 'center',
+    resizable: true,
+    maxWidth: 150,
+  },
+  {
+    title: '立项日期',
+    dataIndex: 'approval_date',
+    width: 120,
+    ellipsis: true,
+    align: 'center',
+    sorter: true,
     resizable: true,
     maxWidth: 150,
   },
@@ -356,7 +409,11 @@ async function loadTableData() {
     let res = await projectApi.getList({
       organization_id_in: queryCondition.organizationIDIn,
       name_include: queryCondition.nameInclude,
-      country:queryCondition.country,
+      country: queryCondition.country,
+      approval_date_gte: queryCondition.approvalDateRange?.length === 2 ?
+          queryCondition.approvalDateRange[0]?.format("YYYY-MM-DD") : undefined,
+      approval_date_lte: queryCondition.approvalDateRange?.length === 2 ?
+          queryCondition.approvalDateRange[1]?.format("YYYY-MM-DD") : undefined,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -379,8 +436,6 @@ async function loadTableData() {
   }
 }
 
-loadTableData()
-
 //用于修改项目信息的模态框
 const modalForUpdating = ref()
 
@@ -394,6 +449,32 @@ function showModalForUpdating(id: number) {
 // function showModalForDeleting(projectID: number) {
 //   modalForDeleting.value.showModal(projectID)
 // }
+
+//加载所有的查询选项
+async function loadQueryOptions() {
+  await loadOrganizationOptions()
+  await loadCountryOptions()
+}
+
+const route = useRoute()
+
+async function loadQueryConditionsInUrl() {
+  //立项日期范围必须有开始日期和结束日期
+  if (route?.query.start_date && route?.query.end_date) {
+    queryCondition.approvalDateRange = [dayjs(), dayjs()]
+    queryCondition.approvalDateRange[0] = dayjs(route.query.start_date as string)
+    queryCondition.approvalDateRange[1] = dayjs(route.query.end_date as string)
+  }
+
+  if (route?.query.collapsed === 'no') {
+    queryRowIsCollapsed.value = false
+  }
+}
+
+//先加载所有的查询选项，然后加载url里的query参数，然后根据查询条件加载表格数据
+loadQueryOptions()
+    .then(() => loadQueryConditionsInUrl())
+    .then(() => loadTableData())
 
 </script>
 

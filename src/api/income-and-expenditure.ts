@@ -48,6 +48,13 @@ interface incomeAndExpenditureGetList extends list {
     date_lte?: string
 }
 
+interface incomeAndExpenditureGetCumulativeTotalAmount {
+    kind?: string //款项种类（计划、实际、预测）
+    fund_direction?: string
+    date_gte?: string
+    date_lte?: string
+}
+
 const incomeAndExpenditureApi = {
     get: (param: incomeAndExpenditureGet) => request.get('/income-and-expenditure/' + param.id)
         .then(res => res.data),
@@ -59,6 +66,9 @@ const incomeAndExpenditureApi = {
         .then(res => res.data,),
     getList: (param?: incomeAndExpenditureGetList) => request.post('/income-and-expenditure/list', param)
         .then(res => res.data),
+    getCumulativeTotalAmount: (param?: incomeAndExpenditureGetCumulativeTotalAmount) =>
+        request.post('/income-and-expenditure/total-amount', param)
+            .then(res => res.data),
 }
 
 export {incomeAndExpenditureApi,}
