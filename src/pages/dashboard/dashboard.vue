@@ -1,8 +1,24 @@
 <template>
-  <a-row :gutter="10">
+  <a-row>
+    <a-col :span="24">
+      <a-card size="small" style="font-size: 18px">
+        <span>请选择月份：</span>
+        <a-date-picker picker="month" v-model:value="data.month"/>
+        <a-button-group style="margin-left: 10px">
+          <a-button @click="()=>data.month = data.month.subtract(1,'month')">
+            上月
+          </a-button>
+          <a-button @click="()=>data.month = data.month.add(1,'month')">
+            下月
+          </a-button>
+        </a-button-group>
+      </a-card>
+    </a-col>
+  </a-row>
+  <a-row :gutter="10" style="margin-top: 10px">
     <a-col :span="8">
       <a-spin :spinning="data.approvedProject.loading">
-        <a-card>
+        <a-card class="content">
           <template #title>
             <span style="font-size: 25px">
               新立项的项目
@@ -11,7 +27,7 @@
           <template #extra>
             <a-tag color="green" style="padding: 5px">
               <span style="font-size: 20px">
-                本月
+                {{ data.month.month() + 1 }}月
               </span>
             </a-tag>
           </template>
@@ -29,7 +45,7 @@
             <span style="font-size: 25px"> 个</span>
           </router-link>
           <a-divider style="margin-top: 10px;margin-bottom: 10px;"/>
-          <span style="font-size: 20px">上月</span>
+          <span style="font-size: 20px">{{ data.month.month() }}月</span>
           <span style="font-size: 20px">
         {{ data.approvedProject.numberOfLastMouth }}
           </span>
@@ -50,7 +66,7 @@
 
     <a-col :span="8">
       <a-spin :spinning="data.approvedIncomeContract.loading">
-        <a-card>
+        <a-card class="content">
           <template #title>
             <span style="font-size: 25px">
               新增收款合同
@@ -59,17 +75,19 @@
           <template #extra>
             <a-tag color="green" style="padding: 5px">
               <span style="font-size: 20px">
-                本月
+                {{ data.month.month() + 1 }}月
               </span>
             </a-tag>
           </template>
-          <router-link target="_blank" :to="{
+          <router-link target="_blank" @click="removeItemInLocalStorage('project_id')"
+                       :to="{
             name:'合同列表',
             query:{
               fund_direction: '收款合同',
               start_date:dayjs().startOf('month').format('YYYY-MM-DD'),
               end_date:dayjs().endOf('month').format('YYYY-MM-DD'),
               collapsed:'no',
+              ignore_project_id:'yes',
             }
           }">
           <span style="font-size: 50px">
@@ -78,7 +96,7 @@
             <span style="font-size: 25px"> 个</span>
           </router-link>
           <a-divider style="margin-top: 10px;margin-bottom: 10px;"/>
-          <span style="font-size: 20px">上月</span>
+          <span style="font-size: 20px">{{ data.month.month() }}月</span>
           <span style="font-size: 20px">
         {{ data.approvedIncomeContract.numberOfLastMouth }}
           </span>
@@ -98,7 +116,7 @@
 
     <a-col :span="8">
       <a-spin :spinning="data.approvedExpenditureContract.loading">
-        <a-card>
+        <a-card class="content">
           <template #title>
             <span style="font-size: 25px">
               新增付款合同
@@ -107,11 +125,12 @@
           <template #extra>
             <a-tag color="green" style="padding: 5px">
               <span style="font-size: 20px">
-                本月
+                {{ data.month.month() + 1 }}月
               </span>
             </a-tag>
           </template>
-          <router-link target="_blank" :to="{
+          <router-link target="_blank" @click="removeItemInLocalStorage('project_id')"
+                       :to="{
             name:'合同列表',
             query:{
               fund_direction: '付款合同',
@@ -126,7 +145,7 @@
             <span style="font-size: 25px"> 个</span>
           </router-link>
           <a-divider style="margin-top: 10px;margin-bottom: 10px;"/>
-          <span style="font-size: 20px">上月</span>
+          <span style="font-size: 20px">{{ data.month.month() }}月</span>
           <span style="font-size: 20px">
         {{ data.approvedExpenditureContract.numberOfLastMouth }}
           </span>
@@ -138,7 +157,8 @@
           {{ data.approvedExpenditureContract.growthPercentage.toFixed(0) }}%
         </span>
           <span>&nbsp</span>
-          <CaretUpOutlined v-if="data.approvedExpenditureContract.growthPercentage >= 0" style="color: red;font-size: 20px"/>
+          <CaretUpOutlined v-if="data.approvedExpenditureContract.growthPercentage >= 0"
+                           style="color: red;font-size: 20px"/>
           <CaretDownOutlined v-else style="color: green;font-size: 20px"/>
         </a-card>
       </a-spin>
@@ -149,20 +169,21 @@
   <a-row :gutter="10" style="margin-top: 10px">
     <a-col :span="12">
       <a-spin :spinning="data.totalAmountOfActualIncome.loading">
-        <a-card>
+        <a-card class="content">
           <template #title>
             <span style="font-size: 25px">
-            项目收款总额（CNY）
+            项目收款总额(CNY)
             </span>
           </template>
           <template #extra>
             <a-tag color="green" style="padding: 5px">
               <span style="font-size: 20px">
-                本月
+                {{ data.month.month() + 1 }}月
               </span>
             </a-tag>
           </template>
-          <router-link target="_blank" :to="{
+          <router-link target="_blank" @click="removeItemInLocalStorage('project_id')"
+                       :to="{
             name:'实际收款列表',
             query:{
               start_date:dayjs().startOf('month').format('YYYY-MM-DD'),
@@ -175,7 +196,7 @@
             <span style="font-size: 25px"> 元</span>
           </router-link>
           <a-divider style="margin-top: 10px;margin-bottom: 10px;"/>
-          <span style="font-size: 20px">上月</span>
+          <span style="font-size: 20px">{{ data.month.month() }}月</span>
           <span style="font-size: 20px">
         {{ data.totalAmountOfActualIncome.numberOfLastMouth.toLocaleString() }}
           </span>
@@ -187,7 +208,8 @@
           {{ data.totalAmountOfActualIncome.growthPercentage.toFixed(0) }}%
         </span>
           <span>&nbsp</span>
-          <CaretUpOutlined v-if="data.totalAmountOfActualIncome.growthPercentage >= 0" style="color: red;font-size: 20px"/>
+          <CaretUpOutlined v-if="data.totalAmountOfActualIncome.growthPercentage >= 0"
+                           style="color: red;font-size: 20px"/>
           <CaretDownOutlined v-else style="color: green;font-size: 20px"/>
         </a-card>
       </a-spin>
@@ -195,20 +217,21 @@
 
     <a-col :span="12">
       <a-spin :spinning="data.totalAmountOfActualExpenditure.loading">
-        <a-card>
+        <a-card class="content">
           <template #title>
             <span style="font-size: 25px">
-            项目付款总额（CNY）
+            项目付款总额(CNY)
             </span>
           </template>
           <template #extra>
             <a-tag color="green" style="padding: 5px">
               <span style="font-size: 20px">
-                本月
+                {{ data.month.month() + 1 }}月
               </span>
             </a-tag>
           </template>
-          <router-link target="_blank" :to="{
+          <router-link target="_blank" @click="removeItemInLocalStorage('project_id')"
+                       :to="{
             name:'实际付款列表',
             query:{
               start_date:dayjs().startOf('month').format('YYYY-MM-DD'),
@@ -221,7 +244,7 @@
             <span style="font-size: 25px"> 元</span>
           </router-link>
           <a-divider style="margin-top: 10px;margin-bottom: 10px;"/>
-          <span style="font-size: 20px">上月</span>
+          <span style="font-size: 20px">{{ data.month.month() }}月</span>
           <span style="font-size: 20px">
         {{ data.totalAmountOfActualExpenditure.numberOfLastMouth.toLocaleString() }}
           </span>
@@ -233,7 +256,8 @@
           {{ data.totalAmountOfActualExpenditure.growthPercentage.toFixed(0) }}%
         </span>
           <span>&nbsp</span>
-          <CaretUpOutlined v-if="data.totalAmountOfActualExpenditure.growthPercentage >= 0" style="color: red;font-size: 20px"/>
+          <CaretUpOutlined v-if="data.totalAmountOfActualExpenditure.growthPercentage >= 0"
+                           style="color: red;font-size: 20px"/>
           <CaretDownOutlined v-else style="color: green;font-size: 20px"/>
         </a-card>
       </a-spin>
@@ -246,25 +270,15 @@
 import CaretDownOutlined from '@ant-design/icons-vue/CaretDownOutlined'
 import CaretUpOutlined from '@ant-design/icons-vue/CaretUpOutlined'
 import {projectApi} from "@/api/project";
-import {pagingFormat} from "@/interfaces/paging-interface";
 import type {Dayjs} from "dayjs";
-import {reactive, ref} from "vue";
+import {reactive, ref, watch} from "vue";
 import dayjs from "dayjs";
-import {dictionaryDetailApi} from "@/api/dictionary-detail";
 import {contractApi} from "@/api/contract";
 import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
 
-//查询条件
-interface queryConditionFormat extends pagingFormat {
-  approvalDateRange?: [Dayjs, Dayjs]
-}
-
-const queryCondition = reactive({
-  pageSize: 0,
-})
-
-//表格数据
+//数据
 let data = reactive({
+  month: dayjs(),
   approvedProject: { //新立项的项目
     loading: true,
     numberOfThisMouth: 0,  //本月新立项的项目数量
@@ -311,12 +325,12 @@ const dictionaryDetailIdOfIncome = ref()
 const dictionaryDetailIdOfExpenditure = ref()
 
 
-async function loadData() {
+async function loadData(date: Dayjs) {
   try {
     //获取本月新立项的项目数量
     let res1 = await projectApi.getCount({
-      approval_date_gte: dayjs().startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().endOf("month").format("YYYY-MM-DD"),
+      approval_date_gte: date.startOf("month").format("YYYY-MM-DD"),
+      approval_date_lte: date.endOf("month").format("YYYY-MM-DD"),
     })
     if (res1?.code === 0) {
       data.approvedProject.numberOfThisMouth = res1?.data?.count
@@ -326,9 +340,9 @@ async function loadData() {
 
     //获取上月新立项的项目数量
     let res2 = await projectApi.getCount({
-      approval_date_gte: dayjs().subtract(1, "month")
+      approval_date_gte: date.subtract(1, "month")
           .startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().subtract(1, "month")
+      approval_date_lte: date.subtract(1, "month")
           .endOf("month").format("YYYY-MM-DD"),
     })
     if (res2?.code === 0) {
@@ -344,7 +358,11 @@ async function loadData() {
               data.approvedProject.numberOfLastMouth) /
           data.approvedProject.numberOfLastMouth * 100
     } else {
-      data.approvedProject.growthPercentage = 100
+      if (data.approvedProject.numberOfThisMouth !== 0) {
+        data.approvedProject.growthPercentage = 100
+      } else {
+        data.approvedProject.growthPercentage = 0
+      }
     }
   } catch (e: any) {
     console.log(e);
@@ -356,8 +374,8 @@ async function loadData() {
     //获取本月新过审的收款合同数量
     let res1 = await contractApi.getCount({
       fund_direction: "收款合同",
-      approval_date_gte: dayjs().startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().endOf("month").format("YYYY-MM-DD"),
+      approval_date_gte: date.startOf("month").format("YYYY-MM-DD"),
+      approval_date_lte: date.endOf("month").format("YYYY-MM-DD"),
     })
     if (res1?.code === 0) {
       data.approvedIncomeContract.numberOfThisMouth = res1?.data?.count
@@ -368,9 +386,9 @@ async function loadData() {
     //获取上月新过审的收款合同数量
     let res2 = await contractApi.getCount({
       fund_direction: "收款合同",
-      approval_date_gte: dayjs().subtract(1, "month")
+      approval_date_gte: date.subtract(1, "month")
           .startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().subtract(1, "month")
+      approval_date_lte: date.subtract(1, "month")
           .endOf("month").format("YYYY-MM-DD"),
     })
     if (res2?.code === 0) {
@@ -386,7 +404,11 @@ async function loadData() {
               data.approvedIncomeContract.numberOfLastMouth) /
           data.approvedIncomeContract.numberOfLastMouth * 100
     } else {
-      data.approvedIncomeContract.growthPercentage = 100
+      if (data.approvedIncomeContract.numberOfThisMouth !== 0) {
+        data.approvedIncomeContract.growthPercentage = 100
+      } else {
+        data.approvedIncomeContract.growthPercentage = 0
+      }
     }
   } catch (e) {
     console.log(e);
@@ -398,8 +420,8 @@ async function loadData() {
     //获取本月新过审的付款合同数量
     let res2 = await contractApi.getCount({
       fund_direction: "付款合同",
-      approval_date_gte: dayjs().startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().endOf("month").format("YYYY-MM-DD"),
+      approval_date_gte: date.startOf("month").format("YYYY-MM-DD"),
+      approval_date_lte: date.endOf("month").format("YYYY-MM-DD"),
     })
     if (res2?.code === 0) {
       data.approvedExpenditureContract.numberOfThisMouth = res2?.data?.count
@@ -410,9 +432,9 @@ async function loadData() {
     //获取上月新过审的付款合同数量
     let res3 = await contractApi.getCount({
       fund_direction: "付款合同",
-      approval_date_gte: dayjs().subtract(1, "month")
+      approval_date_gte: date.subtract(1, "month")
           .startOf("month").format("YYYY-MM-DD"),
-      approval_date_lte: dayjs().subtract(1, "month")
+      approval_date_lte: date.subtract(1, "month")
           .endOf("month").format("YYYY-MM-DD"),
     })
     if (res3?.code === 0) {
@@ -428,7 +450,11 @@ async function loadData() {
               data.approvedExpenditureContract.numberOfLastMouth) /
           data.approvedExpenditureContract.numberOfLastMouth * 100
     } else {
-      data.approvedExpenditureContract.growthPercentage = 100
+      if (data.approvedExpenditureContract.numberOfThisMouth !== 0) {
+        data.approvedExpenditureContract.growthPercentage = 100
+      } else {
+        data.approvedExpenditureContract.growthPercentage = 0
+      }
     }
   } catch (e) {
     console.log(e);
@@ -442,8 +468,8 @@ async function loadData() {
     let res1 = await incomeAndExpenditureApi.getCumulativeTotalAmount({
       kind: "实际",
       fund_direction: "收款",
-      date_gte: dayjs().startOf("month").format("YYYY-MM-DD"),
-      date_lte: dayjs().endOf("month").format("YYYY-MM-DD"),
+      date_gte: date.startOf("month").format("YYYY-MM-DD"),
+      date_lte: date.endOf("month").format("YYYY-MM-DD"),
     })
 
     if (res1?.code === 0) {
@@ -456,9 +482,9 @@ async function loadData() {
     let res2 = await incomeAndExpenditureApi.getCumulativeTotalAmount({
       kind: "实际",
       fund_direction: "收款",
-      date_gte: dayjs().subtract(1, "month")
+      date_gte: date.subtract(1, "month")
           .startOf("month").format("YYYY-MM-DD"),
-      date_lte: dayjs().subtract(1, "month")
+      date_lte: date.subtract(1, "month")
           .endOf("month").format("YYYY-MM-DD"),
     })
     if (res2?.code === 0) {
@@ -474,7 +500,11 @@ async function loadData() {
               data.totalAmountOfActualIncome.numberOfLastMouth) /
           data.totalAmountOfActualIncome.numberOfLastMouth * 100
     } else {
-      data.totalAmountOfActualIncome.growthPercentage = 100
+      if (data.totalAmountOfActualIncome.numberOfThisMouth !== 0) {
+        data.totalAmountOfActualIncome.growthPercentage = 100
+      } else {
+        data.totalAmountOfActualIncome.growthPercentage = 0
+      }
     }
   } catch (e) {
     console.log(e);
@@ -487,8 +517,8 @@ async function loadData() {
     let res1 = await incomeAndExpenditureApi.getCumulativeTotalAmount({
       kind: "实际",
       fund_direction: "付款",
-      date_gte: dayjs().startOf("month").format("YYYY-MM-DD"),
-      date_lte: dayjs().endOf("month").format("YYYY-MM-DD"),
+      date_gte: date.startOf("month").format("YYYY-MM-DD"),
+      date_lte: date.endOf("month").format("YYYY-MM-DD"),
     })
 
     if (res1?.code === 0) {
@@ -501,9 +531,9 @@ async function loadData() {
     let res2 = await incomeAndExpenditureApi.getCumulativeTotalAmount({
       kind: "实际",
       fund_direction: "付款",
-      date_gte: dayjs().subtract(1, "month")
+      date_gte: date.subtract(1, "month")
           .startOf("month").format("YYYY-MM-DD"),
-      date_lte: dayjs().subtract(1, "month")
+      date_lte: date.subtract(1, "month")
           .endOf("month").format("YYYY-MM-DD"),
     })
     if (res2?.code === 0) {
@@ -519,7 +549,11 @@ async function loadData() {
               data.totalAmountOfActualExpenditure.numberOfLastMouth) /
           data.totalAmountOfActualExpenditure.numberOfLastMouth * 100
     } else {
-      data.totalAmountOfActualExpenditure.growthPercentage = 100
+      if (data.totalAmountOfActualExpenditure.numberOfThisMouth !== 0) {
+        data.totalAmountOfActualExpenditure.growthPercentage = 100
+      } else {
+        data.totalAmountOfActualExpenditure.growthPercentage = 0
+      }
     }
   } catch (e) {
     console.log(e);
@@ -529,8 +563,13 @@ async function loadData() {
 
 }
 
-loadData()
+loadData(dayjs())
 
+watch(() => data.month, (newValue) => loadData(newValue))
+
+function removeItemInLocalStorage(key: string) {
+  localStorage.removeItem(key)
+}
 </script>
 
 <style scoped lang="scss">
@@ -542,8 +581,11 @@ loadData()
 }
 
 //调整卡片内容区域的边距
-:deep(.ant-card-body) {
-  padding: 0 15px 15px;
+.content {
+  :deep(.ant-card-body) {
+    padding: 0 15px 15px;
+  }
 }
+
 
 </style>

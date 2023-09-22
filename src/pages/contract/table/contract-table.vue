@@ -319,7 +319,7 @@ const columns = ref([
 ])
 
 //加载本地存储的数据
-function loadLocalStorage() {
+function loadQueryConditionsInLocalStorage() {
   const tempProjectID = Number(localStorage.getItem("project_id"))
   if (tempProjectID > 0) {
     queryCondition.projectID = tempProjectID
@@ -452,6 +452,11 @@ watch(() => queryCondition.projectID, (newValue: any) => {
     }
 )
 
+async function loadQueryConditions() {
+  loadQueryConditionsInLocalStorage()
+  await loadQueryConditionsInUrl()
+}
+
 //加载所有的查询选项
 async function loadQueryOptions() {
   await loadProjectOptions()
@@ -482,11 +487,11 @@ async function loadQueryConditionsInUrl() {
   }
 }
 
-//先加载所有的查询选项，然后加载url里的query参数，
-// 然后加载本地所有的查询条件，然后根据查询条件加载表格数据
+// 先加载所有的查询选项
+// 然后加载查询条件
+// 然后根据查询条件加载表格数据
 loadQueryOptions()
-    .then(() => loadQueryConditionsInUrl())
-    .then(() => loadLocalStorage())
+    .then(() => loadQueryConditions())
     .then(() => loadTableData())
 
 </script>

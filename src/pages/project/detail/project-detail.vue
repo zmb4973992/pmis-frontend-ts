@@ -12,6 +12,10 @@
             {{ projectDetail.code }}
           </a-descriptions-item>
 
+          <a-descriptions-item label="所属部门">
+            {{ projectDetail.organizationName }}
+          </a-descriptions-item>
+
           <a-descriptions-item label="签约对方">
             {{ projectDetail.relatedPartyName }}
           </a-descriptions-item>
@@ -84,6 +88,7 @@ interface projectDetailFormat {
   typeName?: string,
   relatedPartyName?: string,
   organizationName?: string,
+
 }
 
 let projectDetail = reactive<projectDetailFormat>({})
