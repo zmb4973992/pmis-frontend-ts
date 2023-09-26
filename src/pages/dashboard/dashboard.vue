@@ -26,9 +26,9 @@
           </template>
           <template #extra>
             <a-tag color="green" style="padding: 5px">
-              <span style="font-size: 20px">
-                {{ data.month.month() + 1 }}月
-              </span>
+            <span style="font-size: 20px">
+              {{ data.month.month() + 1 }}月
+            </span>
             </a-tag>
           </template>
           <router-link target="_blank" :to="{
@@ -269,12 +269,12 @@
 <script setup lang="ts">
 import CaretDownOutlined from '@ant-design/icons-vue/CaretDownOutlined'
 import CaretUpOutlined from '@ant-design/icons-vue/CaretUpOutlined'
-import {projectApi} from "@/api/project";
-import type {Dayjs} from "dayjs";
-import {reactive, ref, watch} from "vue";
-import dayjs from "dayjs";
-import {contractApi} from "@/api/contract";
-import {incomeAndExpenditureApi} from "@/api/income-and-expenditure";
+import {projectApi} from "@/api/project"
+import type {Dayjs} from "dayjs"
+import {reactive, ref, watch} from "vue"
+import dayjs from "dayjs"
+import {contractApi} from "@/api/contract"
+import {incomeAndExpenditureApi} from "@/api/income-and-expenditure"
 
 //数据
 let data = reactive({

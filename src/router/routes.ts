@@ -17,6 +17,14 @@ const privateRoutes: customRouteRecord[] = []
 
 const routes: customRouteRecord[] = [
     {
+        path:'',
+        name:'首页',
+        redirect:'/dashboard',
+        meta:{
+            hidden:true,
+        },
+    },
+    {
         path: '/42342343434',
         name: '仪表盘',
         meta: {
@@ -40,7 +48,7 @@ const routes: customRouteRecord[] = [
         ]
     },
     {
-        path: '/undkek',
+        path: '/545454',
         name: routeName.project,
         component: () => import('@/pages/layout.vue'),
         meta: {

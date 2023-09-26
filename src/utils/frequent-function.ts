@@ -1,8 +1,7 @@
 import router from "@/router";
-import {routeName} from "@/utils/routeName";
 
 function backToHomePage() {
-    router.push({name: '看板'})
+    router.push({name: '首页'})
 }
 
 function logout() {

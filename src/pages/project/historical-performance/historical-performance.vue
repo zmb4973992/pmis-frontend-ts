@@ -13,12 +13,21 @@
             </a-select>
           </a-form-item>
         </a-col>
+
         <a-col>
           <a-form-item class="query-item" label="项目全称" name="nameInclude">
             <a-input v-model:value="queryCondition.nameInclude"
                      placeholder="支持模糊搜索" style="width: 180px"/>
           </a-form-item>
         </a-col>
+
+        <a-col>
+          <a-form-item class="query-item" label="类型" name="type">
+            <a-select allow-clear placeholder="类型" v-model:value="queryCondition.type"
+                      :options="typeOptions" style="width:130px"/>
+          </a-form-item>
+        </a-col>
+
         <a-col>
           <a-form-item class="query-item">
             <a-button-group>
@@ -50,11 +59,11 @@
 
       <a-row class="table-right-buttons">
         <a-tooltip title="设置列" size="small">
-<!--          <a-button type="text" @click="toBeCompleted" size="small">-->
-<!--            <template #icon>-->
-<!--              <setting-outlined style="font-size: 16px"/>-->
-<!--            </template>-->
-<!--          </a-button>-->
+          <!--          <a-button type="text" @click="toBeCompleted" size="small">-->
+          <!--            <template #icon>-->
+          <!--              <setting-outlined style="font-size: 16px"/>-->
+          <!--            </template>-->
+          <!--          </a-button>-->
         </a-tooltip>
       </a-row>
     </a-row>
@@ -111,7 +120,7 @@
                   v-model:pageSize="queryCondition.pageSize" show-less-items
                   :total="tableData.numberOfRecords" show-size-changer
                   :pageSizeOptions="pageSizeOptions" show-quick-jumper
-                  @change="loadTableData" :show-total="total=>`共${total.toLocaleString()}条记录`"/>
+                  @change="loadTableData" :show-total="(total:any)=>`共${total.toLocaleString()}条记录`"/>
   </a-card>
 
 </template>
@@ -119,17 +128,14 @@
 <script setup lang="ts">
 import ModalForUpdating from "@/pages/project/table/component/modal-for-updating.vue"
 import ModalForDeleting from "@/pages/project/table/component/modal-for-deleting.vue"
-import {SearchOutlined, RedoOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons-vue"
+import {SearchOutlined, RedoOutlined} from "@ant-design/icons-vue"
 import {reactive, ref} from "vue"
-import {FormInstance, message, SelectProps} from "ant-design-vue"
+import {FormInstance, SelectProps} from "ant-design-vue"
 import {projectApi} from "@/api/project"
 import {organizationApi} from "@/api/organization"
 import {pagingFormat} from "@/interfaces/paging-interface";
 import {pageSizeOptions} from "@/constants/paging-constant";
-
-function toBeCompleted() {
-  message.info('待完成')
-}
+import {dictionaryDetailApi} from "@/api/dictionary-detail";
 
 //声明form表单，便于使用form相关的函数。这里的变量名要跟form表单的ref保持一致
 const formRef = ref<FormInstance>();
@@ -148,6 +154,7 @@ function resetQueryCondition() {
   formRef.value?.resetFields()
   //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置
   queryCondition.organizationIDIn = []
+  queryCondition.type = undefined
   queryCondition.page = 1
   queryCondition.pageSize = 12
   loadTableData()
@@ -171,12 +178,13 @@ function tableChange(pagination: any, filter: any, sorter: any) {
 interface queryConditionFormat extends pagingFormat {
   organizationIDIn?: number[]
   nameInclude?: string
+  type?:number
 }
 
 const queryCondition = reactive<queryConditionFormat>({
   page: 1,
   pageSize: 12,
-  desc:true,
+  desc: true,
 })
 
 let organizationOptions = ref<SelectProps['options']>([])
@@ -185,7 +193,7 @@ let organizationOptions = ref<SelectProps['options']>([])
 async function loadOrganizationOptions() {
   try {
     let res = await organizationApi.getList({
-      is_valid:true,
+      is_valid: true,
       page_size: 0,
     })
     if (res?.code === 0) {
@@ -196,6 +204,25 @@ async function loadOrganizationOptions() {
 
     }
 
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const typeOptions = ref<SelectProps['options']>([])
+
+//获取类型下拉框的值
+async function loadTypeOptions() {
+  try {
+    let res = await dictionaryDetailApi.getList({
+      dictionary_type_name: "项目类型",
+      page_size: 0,
+    })
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        typeOptions.value?.push({value: item.id, label: item.name})
+      }
+    }
   } catch (err) {
     console.log(err);
   }
@@ -284,15 +311,19 @@ let columns = ref([
 
 ])
 
+const finished = ref<number>()
+
 const tableLoading = ref(false)
 
 async function loadTableData() {
   try {
     tableLoading.value = true
     let res = await projectApi.getList({
-      ignore_data_authority:true,
+      ignore_data_authority: true,
       organization_id_in: queryCondition.organizationIDIn,
       name_include: queryCondition.nameInclude,
+      status: finished.value,
+      type:queryCondition.type,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -315,12 +346,6 @@ async function loadTableData() {
   }
 }
 
-loadTableData()
-
-function createProject() {
-  message.warn('为确保数据的一致性，新项目会从OA自动同步，无需手动添加', 5)
-}
-
 //用于修改项目信息的模态框
 const modalForUpdating = ref()
 
@@ -334,6 +359,30 @@ const modalForDeleting = ref()
 function showModalForDeleting(projectID: number) {
   modalForDeleting.value.showModal(projectID)
 }
+
+async function loadQueryConditions() {
+  try {
+    const res1 = await dictionaryDetailApi.getList({
+      dictionary_type_name: "项目状态",
+      name: "已完成",
+    })
+    if (res1?.code === 0) {
+      finished.value = res1.data[0].id
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+//加载所有的查询选项
+async function loadQueryOptions() {
+  await loadOrganizationOptions()
+  await loadTypeOptions()
+}
+
+loadQueryOptions()
+    .then(loadQueryConditions)
+    .then(loadTableData)
 
 </script>
 

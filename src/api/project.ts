@@ -56,6 +56,8 @@ interface projectGetList extends list {
     country?:number
     approval_date_gte?: string
     approval_date_lte?: string
+    status?: number
+    type?: number
     ignore_data_authority?: boolean
 }
 

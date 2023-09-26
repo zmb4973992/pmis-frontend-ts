@@ -1,43 +1,43 @@
 <template>
   <!--版面总图-->
-    <div class="layout">
-        <!--登录框-->
-        <div class="login-box">
-            <!--中文标题-->
-            <div class="chinese-title">
-                PMIS 项目管理信息系统
-            </div>
-            <!--英文标题-->
-            <div class="english_title">
-                Project Management Information System
-            </div>
+  <div class="layout">
+    <!--登录框-->
+    <div class="login-box">
+      <!--中文标题-->
+      <div class="chinese-title">
+        PMIS 项目管理信息系统
+      </div>
+      <!--英文标题-->
+      <div class="english_title">
+        Project Management Information System
+      </div>
 
-          <div style="text-align: center;margin-top: 20px;font-size: 18px">
-            您好，请使用OA的用户名和密码登录
-          </div>
-            <br><br>
-            <!--登录表单-->
-            <a-form name="login" :model="formState" :label-col="{ span: 5 }"
-                    :wrapper-col="{ span: 19 }" autocomplete="off" @finish="onFinish"
-                    @finishFailed="onFinishFailed">
+      <div style="text-align: center;margin-top: 20px;font-size: 18px">
+        您好，请使用OA的用户名和密码登录
+      </div>
+      <br><br>
+      <!--登录表单-->
+      <a-form name="login" :model="formState" :label-col="{ span: 5 }"
+              :wrapper-col="{ span: 19 }" autocomplete="off" @finish="onFinish"
+              @finishFailed="onFinishFailed">
 
-                <a-form-item label="用户名：" name="username"
-                             :rules="[{ required: true, message: '请输入用户名！' }]">
-                    <a-input v-model:value="formState.username"/>
-                </a-form-item>
+        <a-form-item label="用户名：" name="username"
+                     :rules="[{ required: true, message: '请输入用户名！' }]">
+          <a-input v-model:value="formState.username"/>
+        </a-form-item>
 
-                <a-form-item class="password_setting" label="密码：" name="password"
-                             :rules="[{ required: true, message: '请输入密码' }]">
-                    <a-input-password v-model:value="formState.password"/>
-                </a-form-item>
+        <a-form-item class="password_setting" label="密码：" name="password"
+                     :rules="[{ required: true, message: '请输入密码' }]">
+          <a-input-password v-model:value="formState.password"/>
+        </a-form-item>
 
-                <a-form-item class="login-button" :wrapper-col="{ offset: 10, span: 16 }">
-                    <a-button class="login-button" type="primary" html-type="submit">登录</a-button>
-                </a-form-item>
+        <a-form-item class="login-button" :wrapper-col="{ offset: 10, span: 16 }">
+          <a-button class="login-button" type="primary" html-type="submit">登录</a-button>
+        </a-form-item>
 
-            </a-form>
-        </div>
+      </a-form>
     </div>
+  </div>
 
 
 </template>
@@ -52,27 +52,27 @@ import {routeName} from "@/utils/routeName";
 const router = useRouter()
 
 const formState = reactive({
-    username: '',
-    password: '',
+  username: '',
+  password: '',
 })
 
 const onFinish = (data: any) => {
-    login(data).then(
-        // 如果请求成功发出
-        res => {
-            if (res.code === 0) {
-                message.success('登录成功，正在跳转......', 1)
-                router.push({name:"看板"})
-            } else {
-                message.error('用户名或密码错误')
-            }
-        },
-        //如果请求发送失败
-        err => (console.log(err))
-    )
+  login(data).then(
+      // 如果请求成功发出
+      res => {
+        if (res.code === 0) {
+          message.success('登录成功，正在跳转......', 1)
+          router.push({name: "首页"})
+        } else {
+          message.error('用户名或密码错误')
+        }
+      },
+      //如果请求发送失败
+      err => (console.log(err))
+  )
 };
 const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+  console.log('Failed:', errorInfo);
 };
 
 </script>

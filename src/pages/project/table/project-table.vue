@@ -20,8 +20,7 @@
           <a-form-item class="query-item" label="所在国" name="country">
             <a-select show-search allow-clear :filter-option="countryFilterOption"
                       placeholder="所在国" v-model:value="queryCondition.country"
-                      :options="countryOptions" style="width:150px">
-            </a-select>
+                      :options="countryOptions" style="width:150px"/>
           </a-form-item>
         </a-col>
 
@@ -35,6 +34,20 @@
         <a-col v-if="!queryRowIsCollapsed">
           <a-form-item class="query-item" label="立项日期" name="approvalDateRange">
             <a-range-picker v-model:value="queryCondition.approvalDateRange"/>
+          </a-form-item>
+        </a-col>
+
+        <a-col v-if="!queryRowIsCollapsed">
+          <a-form-item class="query-item" label="类型" name="type">
+            <a-select allow-clear placeholder="类型" v-model:value="queryCondition.type"
+                      :options="typeOptions" style="width:130px"/>
+          </a-form-item>
+        </a-col>
+
+        <a-col v-if="!queryRowIsCollapsed">
+          <a-form-item class="query-item" label="状态" name="status">
+            <a-select allow-clear placeholder="状态" v-model:value="queryCondition.status"
+                      :options="statusOptions" style="width:130px"/>
           </a-form-item>
         </a-col>
 
@@ -191,6 +204,8 @@ interface queryConditionFormat extends pagingFormat {
   nameInclude?: string
   country?: number
   approvalDateRange?: [Dayjs, Dayjs]
+  status?: number
+  type?:number
 }
 
 const queryCondition = reactive<queryConditionFormat>({
@@ -217,6 +232,8 @@ function resetQueryCondition() {
   //resetFields会把数组变为[null]，而不是空数组，所以这里需要自行重置！！！
   queryCondition.organizationIDIn = []
   queryCondition.approvalDateRange = undefined
+  queryCondition.status = undefined
+  queryCondition.type = undefined
   queryCondition.page = 1
   queryCondition.pageSize = 12
   //刷新url，清空url的query参数
@@ -284,6 +301,44 @@ async function loadCountryOptions() {
 //国家选项的过滤器（下拉框搜索）
 const countryFilterOption = (input: string, option: any) =>
     option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
+const statusOptions = ref<SelectProps['options']>([])
+
+//获取状态下拉框的值
+async function loadStatusOptions() {
+  try {
+    let res = await dictionaryDetailApi.getList({
+      dictionary_type_name: "项目状态",
+      page_size: 0,
+    })
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        statusOptions.value?.push({value: item.id, label: item.name})
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const typeOptions = ref<SelectProps['options']>([])
+
+//获取类型下拉框的值
+async function loadTypeOptions() {
+  try {
+    let res = await dictionaryDetailApi.getList({
+      dictionary_type_name: "项目类型",
+      page_size: 0,
+    })
+    if (res?.code === 0) {
+      for (let item of res.data) {
+        typeOptions.value?.push({value: item.id, label: item.name})
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 //表格数据
 let tableData = reactive({
@@ -414,6 +469,8 @@ async function loadTableData() {
           queryCondition.approvalDateRange[0]?.format("YYYY-MM-DD") : undefined,
       approval_date_lte: queryCondition.approvalDateRange?.length === 2 ?
           queryCondition.approvalDateRange[1]?.format("YYYY-MM-DD") : undefined,
+      status: queryCondition.status,
+      type:queryCondition.type,
       page: queryCondition.page,
       page_size: queryCondition.pageSize,
       order_by: queryCondition.orderBy,
@@ -454,6 +511,8 @@ function showModalForUpdating(id: number) {
 async function loadQueryOptions() {
   await loadOrganizationOptions()
   await loadCountryOptions()
+  await loadStatusOptions()
+  await loadTypeOptions()
 }
 
 const route = useRoute()
